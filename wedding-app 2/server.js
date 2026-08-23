@@ -9,6 +9,15 @@ const auth = require("./auth");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Render (like Heroku, Vercel, etc.) puts the app behind a reverse proxy
+// that sets X-Forwarded-For to the real client IP. Express ignores that
+// header by default, which makes express-rate-limit's IP-based key
+// generator throw (ERR_ERL_UNEXPECTED_X_FORWARDED_FOR) instead of handling
+// the request — that crash is what surfaced to users as "Network error"
+// on login. Trusting exactly one hop (the platform's own edge proxy) is
+// the standard, safe setting for this kind of single-proxy deployment.
+app.set("trust proxy", 1);
+
 app.disable("x-powered-by");
 app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
