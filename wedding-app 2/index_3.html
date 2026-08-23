@@ -1,0 +1,2374 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The Wedding Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eeeef2;
+    --paper-2: #e7e7ee;
+    --surface: #fbfbfd;
+    --ink: #23253a;
+    --ink-2: #5b5e72;
+    --ink-muted: #898c9e;
+    --line: #d9d9e2;
+    --line-strong: #c3c3d1;
+    --accent: #33406b;
+    --accent-ink: #ffffff;
+    --accent-soft: #e3e6f0;
+    --brass: #a8843d;
+    --brass-soft: #f1e7d2;
+    --brass-ink: #4a3a13;
+    --good: #0ca30c;
+    --good-soft: #e3f4e0;
+    --warning: #b8790a;
+    --warning-soft: #fbeed3;
+    --critical: #b23a3a;
+    --critical-soft: #f8e2e0;
+    --series-1: #2a78d6;
+    --series-2: #eb6834;
+    --shadow: 0 1px 2px rgba(35,37,58,0.06), 0 8px 24px -12px rgba(35,37,58,0.18);
+    --radius: 10px;
+    font-size: 16px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #15161f;
+      --paper-2: #1a1b26;
+      --surface: #1e1f2b;
+      --ink: #e9e9f2;
+      --ink-2: #a7a9c0;
+      --ink-muted: #7d7f97;
+      --line: #34364c;
+      --line-strong: #454863;
+      --accent: #8b9bd6;
+      --accent-ink: #171a2b;
+      --accent-soft: #262c47;
+      --brass: #d2ae6b;
+      --brass-soft: #362c17;
+      --brass-ink: #ecd8a8;
+      --good: #4fbe4f;
+      --good-soft: #1c3320;
+      --warning: #e0a930;
+      --warning-soft: #3a2e13;
+      --critical: #e37b7b;
+      --critical-soft: #3a2020;
+      --series-1: #3987e5;
+      --series-2: #d95926;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #15161f;
+    --paper-2: #1a1b26;
+    --surface: #1e1f2b;
+    --ink: #e9e9f2;
+    --ink-2: #a7a9c0;
+    --ink-muted: #7d7f97;
+    --line: #34364c;
+    --line-strong: #454863;
+    --accent: #8b9bd6;
+    --accent-ink: #171a2b;
+    --accent-soft: #262c47;
+    --brass: #d2ae6b;
+    --brass-soft: #362c17;
+    --brass-ink: #ecd8a8;
+    --good: #4fbe4f;
+    --good-soft: #1c3320;
+    --warning: #e0a930;
+    --warning-soft: #3a2e13;
+    --critical: #e37b7b;
+    --critical-soft: #3a2020;
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+
+  /* ---------- colorways ----------
+     "Classic" (unscoped :root above) stays the default until a couple
+     picks one of these on the Profile tab. Each colorway restyles --accent
+     (primary) and --brass (secondary — kept as the variable name so every
+     existing rule that references it, like the masthead rule and pills,
+     just works) plus the neutral paper/ink tones so the whole page reads
+     as one cohesive palette, not just a swapped button color. --good/
+     --warning/--critical are intentionally left alone in every colorway:
+     they're functional status colors (RSVP, budget), not brand colors,
+     and changing their meaning per-theme would make the app harder to
+     read, not nicer to look at. */
+
+  :root[data-colorway="sage"] {
+    --paper: #f3f1ea; --paper-2: #ece8dd; --surface: #fbfaf6;
+    --ink: #2f3a2c; --ink-2: #5c6b57; --ink-muted: #8a9384;
+    --line: #ddd9c9; --line-strong: #c7c2ad;
+    --accent: #6b7f5e; --accent-ink: #ffffff; --accent-soft: #e2e8db;
+    --brass: #c98fa0; --brass-soft: #f7e3e8; --brass-ink: #6b3345;
+    --series-1: #6b7f5e; --series-2: #c98fa0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-colorway="sage"]:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #171a15; --paper-2: #1c2018; --surface: #20241c;
+      --ink: #e7ece2; --ink-2: #aab5a3; --ink-muted: #7c8778;
+      --line: #333c2c; --line-strong: #445039;
+      --accent: #9db98c; --accent-ink: #142012; --accent-soft: #263320;
+      --brass: #e3a8b8; --brass-soft: #3a2229; --brass-ink: #f6d7de;
+      --series-1: #9db98c; --series-2: #e3a8b8;
+    }
+  }
+  :root[data-colorway="sage"][data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #171a15; --paper-2: #1c2018; --surface: #20241c;
+    --ink: #e7ece2; --ink-2: #aab5a3; --ink-muted: #7c8778;
+    --line: #333c2c; --line-strong: #445039;
+    --accent: #9db98c; --accent-ink: #142012; --accent-soft: #263320;
+    --brass: #e3a8b8; --brass-soft: #3a2229; --brass-ink: #f6d7de;
+    --series-1: #9db98c; --series-2: #e3a8b8;
+  }
+
+  :root[data-colorway="emerald"] {
+    --paper: #f0efe9; --paper-2: #e8e6dc; --surface: #fbfaf6;
+    --ink: #22201b; --ink-2: #5a544a; --ink-muted: #8c8578;
+    --line: #dbd7c8; --line-strong: #c4bfab;
+    --accent: #0f5c46; --accent-ink: #ffffff; --accent-soft: #dcece5;
+    --brass: #8a6a52; --brass-soft: #ece2d6; --brass-ink: #4a382a;
+    --series-1: #0f5c46; --series-2: #8a6a52;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-colorway="emerald"]:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #121815; --paper-2: #171e1a; --surface: #1b2320;
+      --ink: #e6ece8; --ink-2: #a6b3ac; --ink-muted: #77857e;
+      --line: #2b3733; --line-strong: #3a4a43;
+      --accent: #4fbf9a; --accent-ink: #0c211a; --accent-soft: #1e3931;
+      --brass: #c6a483; --brass-soft: #3a2c1f; --brass-ink: #eeddc7;
+      --series-1: #4fbf9a; --series-2: #c6a483;
+    }
+  }
+  :root[data-colorway="emerald"][data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #121815; --paper-2: #171e1a; --surface: #1b2320;
+    --ink: #e6ece8; --ink-2: #a6b3ac; --ink-muted: #77857e;
+    --line: #2b3733; --line-strong: #3a4a43;
+    --accent: #4fbf9a; --accent-ink: #0c211a; --accent-soft: #1e3931;
+    --brass: #c6a483; --brass-soft: #3a2c1f; --brass-ink: #eeddc7;
+    --series-1: #4fbf9a; --series-2: #c6a483;
+  }
+
+  :root[data-colorway="chocolate"] {
+    --paper: #f4ede8; --paper-2: #ede2da; --surface: #fcf8f5;
+    --ink: #3a2418; --ink-2: #6b5142; --ink-muted: #9a8474;
+    --line: #e0d0c5; --line-strong: #cbb5a5;
+    --accent: #5c3a21; --accent-ink: #ffffff; --accent-soft: #ecdfd4;
+    --brass: #d98aa0; --brass-soft: #f9e3ea; --brass-ink: #7a2f45;
+    --series-1: #5c3a21; --series-2: #d98aa0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-colorway="chocolate"]:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #1a1310; --paper-2: #201814; --surface: #251c17;
+      --ink: #f0e5dc; --ink-2: #c2ab9a; --ink-muted: #93796a;
+      --line: #3a2c22; --line-strong: #4d3b2d;
+      --accent: #c08a5e; --accent-ink: #211307; --accent-soft: #3a2a1c;
+      --brass: #eb9fb4; --brass-soft: #3d2129; --brass-ink: #f8d6e0;
+      --series-1: #c08a5e; --series-2: #eb9fb4;
+    }
+  }
+  :root[data-colorway="chocolate"][data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #1a1310; --paper-2: #201814; --surface: #251c17;
+    --ink: #f0e5dc; --ink-2: #c2ab9a; --ink-muted: #93796a;
+    --line: #3a2c22; --line-strong: #4d3b2d;
+    --accent: #c08a5e; --accent-ink: #211307; --accent-soft: #3a2a1c;
+    --brass: #eb9fb4; --brass-soft: #3d2129; --brass-ink: #f8d6e0;
+    --series-1: #c08a5e; --series-2: #eb9fb4;
+  }
+
+  :root[data-colorway="mocha"] {
+    --paper: #f2ede6; --paper-2: #eae2d6; --surface: #fbf8f4;
+    --ink: #332a20; --ink-2: #635243; --ink-muted: #948473;
+    --line: #ddd2c0; --line-strong: #c7b9a3;
+    --accent: #7a5c46; --accent-ink: #ffffff; --accent-soft: #ece3d8;
+    --brass: #8fa583; --brass-soft: #e6ebe1; --brass-ink: #3d4a35;
+    --series-1: #7a5c46; --series-2: #8fa583;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-colorway="mocha"]:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #17130f; --paper-2: #1c1712; --surface: #221c16;
+      --ink: #ede4d9; --ink-2: #b8a996; --ink-muted: #87796a;
+      --line: #362c22; --line-strong: #493c2d;
+      --accent: #b6906c; --accent-ink: #241a10; --accent-soft: #3c2d1e;
+      --brass: #a9c19a; --brass-soft: #253022; --brass-ink: #dcebd3;
+      --series-1: #b6906c; --series-2: #a9c19a;
+    }
+  }
+  :root[data-colorway="mocha"][data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #17130f; --paper-2: #1c1712; --surface: #221c16;
+    --ink: #ede4d9; --ink-2: #b8a996; --ink-muted: #87796a;
+    --line: #362c22; --line-strong: #493c2d;
+    --accent: #b6906c; --accent-ink: #241a10; --accent-soft: #3c2d1e;
+    --brass: #a9c19a; --brass-soft: #253022; --brass-ink: #dcebd3;
+    --series-1: #b6906c; --series-2: #a9c19a;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+  a { color: var(--accent); }
+  h1, h2, h3 { font-family: "Fraunces", Georgia, serif; text-wrap: balance; margin: 0; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  button { font-family: inherit; }
+  input, textarea, select {
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    padding: 0.55em 0.7em;
+    width: 100%;
+  }
+  input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--ink-2); margin-bottom: 0.35em; letter-spacing: 0.01em; }
+  .field { display: flex; flex-direction: column; gap: 0; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5em;
+    padding: 0.6em 1.1em; border-radius: 7px; border: 1px solid transparent;
+    font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: filter 0.12s ease, transform 0.05s ease;
+    white-space: nowrap;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-secondary { background: var(--surface); color: var(--ink); border-color: var(--line-strong); }
+  .btn-secondary:hover { background: var(--accent-soft); }
+  .btn-ghost { background: transparent; color: var(--accent); border-color: transparent; padding: 0.6em 0.8em; }
+  .btn-ghost:hover { background: var(--accent-soft); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-sm { padding: 0.4em 0.8em; font-size: 0.8rem; }
+
+  .shell { max-width: 1320px; margin: 0 auto; padding: 2rem 1.25rem 6rem; }
+
+  .masthead {
+    display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1.5rem;
+    padding-bottom: 1.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid var(--brass);
+    position: relative;
+  }
+  .masthead-title { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 500; }
+  .masthead-sub { color: var(--ink-2); font-size: 0.95rem; margin-top: 0.35rem; }
+  .masthead-count { text-align: right; }
+  .masthead-count .num { font-family: "IBM Plex Mono", monospace; font-size: 2.1rem; font-weight: 500; color: var(--accent); line-height: 1; }
+  .masthead-count .lbl { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-muted); margin-top: 0.3rem; }
+
+  .stat-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; margin-bottom: 1.75rem; }
+  .stat-tile { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.9rem 1rem; box-shadow: var(--shadow); }
+  .stat-tile .stat-val { font-family: "IBM Plex Mono", monospace; font-size: 1.5rem; font-weight: 500; }
+  .stat-tile .stat-lbl { font-size: 0.75rem; color: var(--ink-2); margin-top: 0.15rem; }
+  .stat-tile.warn .stat-val { color: var(--warning); }
+  .stat-tile.critical .stat-val { color: var(--critical); }
+  .stat-tile.good .stat-val { color: var(--good); }
+
+  .app-shell { display: flex; gap: 1.75rem; align-items: flex-start; }
+  .sidebar { display: flex; flex-direction: column; gap: 0.2rem; width: 196px; flex: none; position: sticky; top: 1.25rem; }
+  .main-content { flex: 1; min-width: 0; }
+  .tab-btn {
+    background: none; border: none; border-radius: 8px; padding: 0.65em 0.9em; font-weight: 600; font-size: 0.87rem;
+    color: var(--ink-2); cursor: pointer; text-align: left; white-space: nowrap;
+  }
+  .sidebar .tab-btn { white-space: normal; }
+  .tab-btn:hover { color: var(--ink); background: var(--accent-soft); }
+  .tab-btn.active { color: var(--accent-ink); background: var(--accent); }
+  .tab-btn.active:hover { color: var(--accent-ink); background: var(--accent); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: fadein 0.15s ease; }
+  @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+
+  @media (max-width: 760px) {
+    .app-shell { flex-direction: column; }
+    .sidebar { flex-direction: row; width: 100%; overflow-x: auto; position: static; border-bottom: 1px solid var(--line); padding-bottom: 0.6rem; margin-bottom: 0.25rem; }
+    .sidebar .tab-btn { white-space: nowrap; flex: none; }
+  }
+
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow); margin-bottom: 1.25rem; }
+  .card h2 { font-size: 1.15rem; margin-bottom: 0.9rem; }
+  .card h3 { font-size: 1rem; margin-bottom: 0.6rem; }
+  .card-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.9rem; }
+  .card-head h2 { margin-bottom: 0; }
+  .muted { color: var(--ink-2); font-size: 0.9rem; }
+  .tiny { font-size: 0.78rem; color: var(--ink-muted); }
+
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1rem; }
+
+  .pill { display: inline-flex; align-items: center; gap: 0.4em; padding: 0.25em 0.65em; border-radius: 999px; font-size: 0.74rem; font-weight: 600; border: 1px solid var(--line-strong); background: var(--surface); white-space: nowrap; flex: none; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .dot.good { background: var(--good); }
+  .dot.warning { background: var(--warning); }
+  .dot.critical { background: var(--critical); }
+  .dot.neutral { background: var(--ink-muted); }
+  .dot.accent { background: var(--accent); }
+
+  .gap-list { display: flex; flex-direction: column; gap: 0.6rem; }
+  .gap-item { display: flex; gap: 0.7rem; align-items: flex-start; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--line); background: var(--paper-2); }
+  .gap-item.critical { border-color: var(--critical); background: var(--critical-soft); }
+  .gap-item.warning { border-color: var(--warning); background: var(--warning-soft); }
+  .gap-item .stripe { width: 3px; align-self: stretch; border-radius: 2px; background: var(--ink-muted); flex: none; }
+  .gap-item.critical .stripe { background: var(--critical); }
+  .gap-item.warning .stripe { background: var(--warning); }
+  .gap-item-body { flex: 1; }
+  .gap-item-title { font-weight: 600; font-size: 0.92rem; }
+  .gap-item-sub { font-size: 0.82rem; color: var(--ink-2); margin-top: 0.15rem; }
+  .empty-note { text-align: center; padding: 1.5rem 1rem; color: var(--ink-2); font-size: 0.9rem; }
+
+  .colorway-grid { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.75rem; }
+  .colorway-option {
+    display: flex; flex-direction: column; align-items: center; gap: 0.35rem; width: 108px;
+    background: none; border: 1px solid transparent; border-radius: 12px; padding: 0.6rem 0.5rem 0.7rem; cursor: pointer;
+  }
+  .colorway-option:hover:not(:disabled) { background: var(--paper-2); }
+  .colorway-option:disabled { cursor: default; }
+  .colorway-option.active { border-color: var(--line-strong); background: var(--paper-2); }
+  .colorway-swatch { width: 46px; height: 46px; border-radius: 50%; border: 2px solid var(--line-strong); position: relative; overflow: hidden; box-shadow: var(--shadow); }
+  .colorway-swatch span { position: absolute; inset: 0; }
+  .colorway-swatch span:first-child { clip-path: polygon(0 0, 100% 0, 0 100%); }
+  .colorway-swatch span:last-child { clip-path: polygon(100% 0, 100% 100%, 0 100%); }
+  .colorway-option.active .colorway-swatch { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .colorway-label { font-size: 0.78rem; font-weight: 700; text-align: center; color: var(--ink); }
+  .colorway-sub { font-size: 0.68rem; color: var(--ink-muted); text-align: center; }
+
+  .cat-card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
+  .cat-card-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem 0.75rem; padding: 0.9rem 1rem; }
+  .cat-card-head h3 { margin: 0; font-size: 0.98rem; font-family: "Public Sans", sans-serif; font-weight: 700; min-width: 0; }
+  .cat-card-body { padding: 0 1rem 1rem; }
+  .cat-note { font-size: 0.82rem; color: var(--ink-2); margin: 0.4rem 0 0.7rem; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+  th { text-align: left; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); font-weight: 600; padding: 0.5em 0.6em; border-bottom: 1px solid var(--line-strong); }
+  td { padding: 0.65em 0.6em; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .table-scroll { overflow-x: auto; }
+  td.num, th.num { text-align: right; font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+
+  .checklist-group { margin-bottom: 1.1rem; }
+  .checklist-group h4 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); margin: 0 0 0.5rem; }
+  .check-row { display: flex; align-items: flex-start; gap: 0.65rem; padding: 0.5rem 0.2rem; border-bottom: 1px solid var(--line); }
+  .check-row:last-child { border-bottom: none; }
+  .check-row input[type="checkbox"] { width: 18px; height: 18px; margin-top: 0.15rem; accent-color: var(--accent); flex: none; }
+  .check-row.done .check-title { text-decoration: line-through; color: var(--ink-muted); }
+  .check-title { font-size: 0.92rem; }
+  .check-due { font-size: 0.76rem; color: var(--ink-muted); margin-top: 0.1rem; }
+  .check-due.overdue { color: var(--critical); font-weight: 600; }
+  .check-remove { margin-left: auto; }
+
+  .barchart { display: flex; flex-direction: column; gap: 0.55rem; }
+  .barrow { display: grid; grid-template-columns: 130px 1fr 90px; align-items: center; gap: 0.6rem; }
+  .barrow .barlabel { font-size: 0.82rem; color: var(--ink-2); }
+  .bartrack { position: relative; height: 20px; background: var(--paper-2); border-radius: 4px; overflow: hidden; }
+  .barfill { position: absolute; top: 0; left: 0; height: 100%; border-radius: 4px; }
+  .barfill.s1 { background: var(--series-1); }
+  .barfill.s2 { background: var(--series-2); opacity: 0.55; height: 8px; top: 6px; }
+  .barrow .barval { font-size: 0.78rem; text-align: right; font-family: "IBM Plex Mono", monospace; }
+  .legend { display: flex; gap: 1.2rem; margin-top: 0.6rem; font-size: 0.78rem; color: var(--ink-2); }
+  .legend span { display: inline-flex; align-items: center; gap: 0.4em; }
+  .legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+
+  textarea { min-height: 4.5em; resize: vertical; }
+  .save-row { display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 0.9rem; align-items: center; }
+  .save-status { font-size: 0.8rem; color: var(--ink-muted); }
+  .save-status.err { color: var(--critical); }
+  .save-status.ok { color: var(--good); }
+
+  .request-item { display: flex; gap: 0.75rem; padding: 0.75rem 0; border-bottom: 1px solid var(--line); }
+  .request-item:last-child { border-bottom: none; }
+  .request-item .ri-body { flex: 1; }
+  .request-item .ri-text { font-size: 0.9rem; }
+  .request-item .ri-meta { font-size: 0.75rem; color: var(--ink-muted); margin-top: 0.15rem; }
+  .request-item .ri-response { font-size: 0.85rem; margin-top: 0.4rem; padding: 0.6rem 0.75rem; background: var(--accent-soft); border-radius: 7px; }
+
+  .booked-badge { display: inline-flex; align-items: center; gap: 0.35em; padding: 0.2em 0.6em; border-radius: 999px; background: var(--brass-soft); color: var(--brass-ink); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.03em; white-space: nowrap; flex: none; }
+
+  footer.note { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); font-size: 0.8rem; color: var(--ink-muted); }
+  .readonly-banner { background: var(--warning-soft); color: var(--brass-ink); border: 1px solid var(--warning); border-radius: 8px; padding: 0.7rem 1rem; font-size: 0.85rem; margin-bottom: 1.25rem; }
+  .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 0.65em 1.2em; border-radius: 8px; font-size: 0.85rem; box-shadow: var(--shadow); opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; z-index: 50; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
+
+  .btn-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  select.status-select { width: auto; }
+
+  .guest-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.75rem; margin-bottom: 1.25rem; }
+
+  .file-input-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+  .file-input-row input[type="file"] { width: auto; flex: 1; min-width: 200px; font-size: 0.85rem; padding: 0.4em 0; border: none; background: none; }
+
+  .copy-fallback { border: 1px solid var(--warning); background: var(--warning-soft); border-radius: 8px; padding: 0.9rem; margin-bottom: 1rem; }
+  .copy-fallback textarea { min-height: 6em; font-family: "IBM Plex Mono", monospace; font-size: 0.78rem; }
+  .copy-fallback .save-row { margin-top: 0.6rem; }
+
+  .guest-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 1rem; }
+  .filter-group { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+  .filter-btn {
+    background: var(--surface); border: 1px solid var(--line-strong); color: var(--ink-2);
+    padding: 0.35em 0.8em; border-radius: 999px; font-size: 0.78rem; font-weight: 600; cursor: pointer;
+  }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .filter-label { font-size: 0.75rem; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-right: 0.2rem; }
+
+  .guest-group-header { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; margin: 1.1rem 0 0.4rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--line-strong); }
+  .guest-group-header h4 { font-size: 0.85rem; margin: 0; }
+  .guest-group-header .grp-actions { font-size: 0.75rem; display: flex; gap: 0.7rem; }
+  .guest-group-header .grp-actions button { background: none; border: none; color: var(--accent); font-weight: 600; cursor: pointer; padding: 0; font-size: 0.75rem; }
+  .guest-group-header .grp-actions button:hover { text-decoration: underline; }
+
+  .guest-row-name input, .guest-row-side input, .guest-row-group input { font-size: 0.85rem; padding: 0.4em 0.55em; }
+  .status-btn-group { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 7px; overflow: hidden; }
+  .status-btn { background: var(--surface); border: none; border-right: 1px solid var(--line-strong); color: var(--ink-2); padding: 0.35em 0.65em; font-size: 0.76rem; font-weight: 600; cursor: pointer; }
+  .status-btn:last-child { border-right: none; }
+  .status-btn.on.invite { background: var(--good-soft); color: var(--good); }
+  .status-btn.on.no { background: var(--critical-soft); color: var(--critical); }
+  .status-btn.on.undecided { background: var(--paper-2); color: var(--ink); }
+  td.guest-plus1 { text-align: center; }
+  td.guest-plus1 input { width: 16px; height: 16px; accent-color: var(--accent); }
+
+  .closeness-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 0.4em; vertical-align: middle; }
+  .closeness-close { background: var(--good); }
+  .closeness-casual { background: var(--series-1); }
+  .closeness-acquaintance { background: var(--warning); }
+  .closeness-lost_touch { background: var(--ink-muted); }
+
+  .detail-toggle { background: none; border: none; color: var(--accent); font-size: 0.76rem; font-weight: 600; cursor: pointer; padding: 0.2em 0; }
+  .detail-row td { background: var(--paper-2); padding: 0.9rem 0.75rem; }
+  .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; }
+  .detail-grid .field label { font-size: 0.72rem; }
+  .last-contact-ago { font-size: 0.75rem; color: var(--ink-muted); margin-top: 0.25rem; }
+
+  .import-log { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.75rem; }
+  .import-item { display: flex; gap: 0.7rem; align-items: flex-start; padding: 0.65rem 0.8rem; border-radius: 8px; border: 1px solid var(--line); background: var(--paper-2); font-size: 0.85rem; }
+  .import-item .imp-name { font-weight: 600; }
+  .import-item .imp-meta { font-size: 0.75rem; color: var(--ink-muted); margin-top: 0.1rem; }
+  .import-item .imp-response { font-size: 0.82rem; margin-top: 0.35rem; padding: 0.5rem 0.65rem; background: var(--accent-soft); border-radius: 6px; }
+
+  .sort-select { width: auto; font-size: 0.8rem; padding: 0.35em 0.6em; }
+
+  .seat-visual-grid { display: flex; flex-wrap: wrap; gap: 1.5rem 2rem; }
+  .seat-visual-wrap { text-align: center; padding-bottom: 0.5rem; }
+  .seat-visual-wrap .seat-visual-name { font-weight: 700; font-size: 0.85rem; margin-top: 0.5rem; }
+  .seat-visual-stage { position: relative; margin: 0 auto; }
+  .seat-table-visual { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; border: 2px dashed var(--line-strong); background: var(--paper-2); }
+  .seat-table-visual.over { border-color: var(--critical); }
+  .seat-table-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 70%; }
+  .seat-pill {
+    position: absolute; transform: translate(-50%, -50%); max-width: 118px; padding: 0.28rem 0.65rem; border-radius: 999px;
+    font-size: 0.7rem; font-weight: 700; border: 2px solid var(--line-strong); background: var(--surface); color: var(--ink-2);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .seat-pill.filled { cursor: pointer; }
+  .seat-pill.good { border-color: var(--good); background: var(--good-soft); color: var(--good); }
+  .seat-pill.critical { border-color: var(--critical); background: var(--critical-soft); color: var(--critical); }
+  .seat-pill.neutral { border-color: var(--ink-muted); background: var(--paper-2); color: var(--ink-2); }
+  .seat-dot { position: absolute; transform: translate(-50%, -50%); width: 12px; height: 12px; border-radius: 50%; border: 2px dashed var(--line-strong); background: var(--paper-2); }
+  .seat-remove-link { background: none; border: none; color: var(--accent); font-size: 0.75rem; font-weight: 600; cursor: pointer; margin-top: 0.35rem; }
+
+  .login-shell { max-width: 380px; margin: 4.5rem auto; padding: 0 1.25rem; }
+  .login-shell h1 { font-size: 1.5rem; margin-bottom: 0.4rem; }
+  .login-shell .login-sub { color: var(--ink-2); font-size: 0.9rem; margin-bottom: 1.5rem; }
+  .login-error { background: var(--critical-soft); color: var(--critical); border: 1px solid var(--critical); border-radius: 8px; padding: 0.65rem 0.9rem; font-size: 0.85rem; margin-bottom: 1rem; }
+  .login-shell .field { margin-bottom: 1rem; }
+  .masthead-account { display: flex; align-items: center; gap: 0.75rem; }
+  .logout-link { background: none; border: none; color: var(--ink-muted); font-size: 0.78rem; font-weight: 600; cursor: pointer; text-decoration: underline; padding: 0; }
+</style>
+</head>
+<body>
+<div class="shell" id="app-root">
+  <!-- rendered by JS -->
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- constants ---------- */
+
+  var CATEGORY_META = [
+    { key: "planner", label: "Wedding Planner", lead: 11 },
+    { key: "venue", label: "Venue", lead: 10 },
+    { key: "photography", label: "Photography", lead: 9 },
+    { key: "videography", label: "Videography", lead: 9 },
+    { key: "catering", label: "Catering", lead: 8 },
+    { key: "attire", label: "Attire", lead: 7 },
+    { key: "florist", label: "Florist & Décor", lead: 6 },
+    { key: "music", label: "Music (DJ / Band)", lead: 6 },
+    { key: "officiant", label: "Officiant", lead: 5 },
+    { key: "invitations", label: "Invitations & Stationery", lead: 4 },
+    { key: "rentals", label: "Rentals", lead: 4 },
+    { key: "hairMakeup", label: "Hair & Makeup", lead: 4 },
+    { key: "transportation", label: "Transportation", lead: 3 },
+    { key: "cake", label: "Cake & Desserts", lead: 3 }
+  ];
+
+  var CHECKLIST_DEFAULTS = [
+    { id: "cl-01", title: "Set a total budget and rough guest count", offset: -365 },
+    { id: "cl-02", title: "Draft the guest list", offset: -330 },
+    { id: "cl-03", title: "Book a venue", offset: -300, category: "venue" },
+    { id: "cl-04", title: "Book a wedding planner (if using one)", offset: -300, category: "planner" },
+    { id: "cl-05", title: "Book photographer and videographer", offset: -270, category: "photography" },
+    { id: "cl-06", title: "Choose the wedding party", offset: -260 },
+    { id: "cl-07", title: "Book catering", offset: -240, category: "catering" },
+    { id: "cl-08", title: "Start dress / attire shopping", offset: -210, category: "attire" },
+    { id: "cl-09", title: "Book florist", offset: -180, category: "florist" },
+    { id: "cl-10", title: "Book music (DJ or band)", offset: -180, category: "music" },
+    { id: "cl-11", title: "Book officiant", offset: -150, category: "officiant" },
+    { id: "cl-12", title: "Block hotel rooms for out-of-town guests", offset: -150 },
+    { id: "cl-13", title: "Order invitations", offset: -120, category: "invitations" },
+    { id: "cl-14", title: "Book rental items (linens, chairs, tenting)", offset: -120, category: "rentals" },
+    { id: "cl-15", title: "Plan the honeymoon", offset: -110 },
+    { id: "cl-16", title: "Order the cake", offset: -90, category: "cake" },
+    { id: "cl-17", title: "Send invitations", offset: -75 },
+    { id: "cl-18", title: "Book hair & makeup trial", offset: -70, category: "hairMakeup" },
+    { id: "cl-19", title: "Book transportation", offset: -60, category: "transportation" },
+    { id: "cl-20", title: "Apply for marriage license (check local rules)", offset: -45 },
+    { id: "cl-21", title: "Final dress fitting", offset: -30 },
+    { id: "cl-22", title: "Give caterer final headcount", offset: -21 },
+    { id: "cl-23", title: "Finalize seating chart", offset: -14 },
+    { id: "cl-24", title: "Confirm details with every vendor", offset: -10 },
+    { id: "cl-25", title: "Pay final vendor balances", offset: -7 },
+    { id: "cl-26", title: "Rehearsal", offset: -1 },
+    { id: "cl-27", title: "Wedding day", offset: 0 }
+  ];
+
+  var TABS = [
+    { key: "overview", label: "Overview" },
+    { key: "profile", label: "Profile & Requests" },
+    { key: "checklist", label: "Checklist" },
+    { key: "budget", label: "Budget" },
+    { key: "vendors", label: "Vendors" },
+    { key: "guests", label: "Guest List" },
+    { key: "dayof", label: "Day-of" }
+  ];
+
+  var DAY_MS = 86400000;
+
+  // Swatch colors are each colorway's light-mode --accent / --brass so the
+  // picker looks the same regardless of which colorway (or light/dark
+  // mode) happens to be active while you're choosing.
+  var COLORWAYS = [
+    { key: "classic", label: "Classic", sub: "Navy & Brass", colors: ["#33406b", "#a8843d"] },
+    { key: "sage", label: "Sage & Blush", sub: "Green + pink", colors: ["#6b7f5e", "#c98fa0"] },
+    { key: "emerald", label: "Emerald & Mocha", sub: "Green + brown", colors: ["#0f5c46", "#8a6a52"] },
+    { key: "chocolate", label: "Cocoa & Blush", sub: "Brown + pink", colors: ["#5c3a21", "#d98aa0"] },
+    { key: "mocha", label: "Mocha & Sage", sub: "Brown + green", colors: ["#7a5c46", "#8fa583"] }
+  ];
+
+  function applyColorway(key) {
+    var known = COLORWAYS.some(function (c) { return c.key === key; });
+    if (!known || key === "classic") {
+      document.documentElement.removeAttribute("data-colorway");
+    } else {
+      document.documentElement.setAttribute("data-colorway", key);
+    }
+  }
+
+  function defaultPayment() {
+    return { depositAmount: null, depositPaid: false, depositDueDate: "", balanceAmount: null, balancePaid: false, balanceDueDate: "" };
+  }
+
+  function defaultState() {
+    var cats = {};
+    CATEGORY_META.forEach(function (c) {
+      cats[c.key] = { requestStatus: "none", requestNote: "", vendors: [], bookedVendorId: null, allocated: null, actual: null, payment: defaultPayment() };
+    });
+    return {
+      profile: { coupleNames: "", weddingDate: "", location: "", guestCount: null, budgetTotal: null, style: "", notes: "" },
+      categories: cats,
+      checklist: CHECKLIST_DEFAULTS.map(function (d) {
+        return { id: d.id, title: d.title, offset: d.offset, category: d.category || null, done: false, custom: false };
+      }),
+      requests: [],
+      guests: [],
+      fileImports: [],
+      timeline: [],
+      tables: [],
+      settings: { colorway: "classic" },
+      writable: true,
+      _rev: 0
+    };
+  }
+
+  var CLOSENESS_META = [
+    { value: "close", label: "Close" },
+    { value: "casual", label: "Casual" },
+    { value: "acquaintance", label: "Acquaintance" },
+    { value: "lost_touch", label: "Lost touch" }
+  ];
+  var MAX_IMPORT_BYTES = 8 * 1024 * 1024;
+
+  function partnerLabels() {
+    var raw = (state.profile.coupleNames || "").split(/\s*(?:&|\+|,| and )\s*/i).map(function (s) { return s.trim(); }).filter(Boolean);
+    if (raw.length === 2) return raw;
+    return ["Partner 1", "Partner 2"];
+  }
+
+  /* ---------- state + persistence ---------- */
+
+  var state = defaultState();
+  var activeTab = "overview";
+  var canWrite = true;
+  var currentUser = null;
+
+  function applyLoadedState(parsed) {
+    state = Object.assign(defaultState(), parsed, {
+      profile: Object.assign(defaultState().profile, parsed.profile || {}),
+      categories: mergeCategories(parsed.categories),
+      settings: Object.assign(defaultState().settings, parsed.settings || {})
+    });
+    applyColorway(state.settings.colorway);
+  }
+
+  function mergeCategories(saved) {
+    var base = defaultState().categories;
+    if (!saved) return base;
+    Object.keys(base).forEach(function (k) {
+      if (saved[k]) base[k] = Object.assign(base[k], saved[k]);
+    });
+    return base;
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  var saving = false;
+  function saveState(nextState, opts) {
+    opts = opts || {};
+    nextState._rev = state._rev || 0;
+    if (saving) return Promise.resolve();
+    saving = true;
+    setSaveStatus("Saving…", "");
+    return fetch("/api/state", {
+      method: "PUT",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ state: nextState, expectedRev: state._rev || 0 })
+    }).then(function (res) {
+      saving = false;
+      if (res.status === 401) {
+        currentUser = null;
+        render();
+        setSaveStatus("Signed out — log in again to save.", "err");
+        return null;
+      }
+      if (res.status === 409) {
+        return res.json().then(function (data) {
+          applyLoadedState(data.state);
+          state._rev = data.rev;
+          render();
+          setSaveStatus("Someone updated this — refreshed with the latest.", "");
+        });
+      }
+      if (!res.ok) {
+        setSaveStatus("Could not save. Try again.", "err");
+        return null;
+      }
+      return res.json().then(function (data) {
+        state = nextState;
+        state._rev = data.rev;
+        render();
+        setSaveStatus(opts.doneLabel || "Saved.", "ok");
+      });
+    }).catch(function (err) {
+      saving = false;
+      console.error(err);
+      setSaveStatus("Could not save. Try again.", "err");
+    });
+  }
+
+  function setSaveStatus(text, cls) {
+    // Every tab renders its own save-status span with its own id
+    // (save-status-badge, save-status-badge-3, -4, -5, …) since each tab's
+    // Save button is independent. Update whichever one(s) currently exist
+    // in the DOM rather than only the first tab's, so the "Saved." /
+    // "Saving…" confirmation actually shows up next to the button someone
+    // clicked, not just on the Profile tab.
+    document.querySelectorAll(".save-status").forEach(function (el) {
+      el.textContent = text;
+      el.className = "save-status " + (cls || "");
+    });
+    showToast(text);
+  }
+
+  var toastTimer = null;
+  function showToast(text) {
+    var t = document.getElementById("toast");
+    if (!t) return;
+    t.textContent = text;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove("show"); }, 2600);
+  }
+
+  /* ---------- derived data ---------- */
+
+  function parseDate(s) {
+    if (!s) return null;
+    var d = new Date(s + "T00:00:00");
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  function today() {
+    var d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
+  function daysUntil(dateStr) {
+    var d = parseDate(dateStr);
+    if (!d) return null;
+    return Math.round((d.getTime() - today().getTime()) / DAY_MS);
+  }
+
+  // The built-in checklist offsets assume a 12-month (365-day) runway. When
+  // the wedding is sooner than that, scale every default offset down
+  // proportionally so the whole plan compresses into the time actually
+  // available instead of showing most of the checklist as already overdue.
+  // Offset 0 (wedding day) and offsets near it barely move; the earliest
+  // items (offset -365) land right around today. Custom to-dos the couple
+  // added themselves are left alone — those "days before" values were
+  // typed in on purpose and already mean what they say.
+  var CHECKLIST_BASELINE_DAYS = 365;
+  function checklistOffsetScale() {
+    var du = daysUntil(state.profile.weddingDate);
+    if (du === null || du <= 0) return 1;
+    if (du >= CHECKLIST_BASELINE_DAYS) return 1;
+    return du / CHECKLIST_BASELINE_DAYS;
+  }
+
+  function dueDateFor(item) {
+    var wd = parseDate(state.profile.weddingDate);
+    if (!wd) return null;
+    var offset = item.offset;
+    if (!item.custom) offset = Math.round(offset * checklistOffsetScale());
+    return new Date(wd.getTime() + offset * DAY_MS);
+  }
+
+  function fmtDate(d) {
+    if (!d) return "";
+    if (typeof d === "string") d = parseDate(d);
+    if (!d) return "";
+    return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+  }
+
+  function timeSince(dateStr) {
+    var d = parseDate(dateStr);
+    if (!d) return "";
+    var days = Math.round((today().getTime() - d.getTime()) / DAY_MS);
+    if (days < 0) return "in the future";
+    if (days < 1) return "today";
+    if (days < 30) return days + " day" + (days === 1 ? "" : "s") + " ago";
+    if (days < 365) { var m = Math.round(days / 30.44); return m + " month" + (m === 1 ? "" : "s") + " ago"; }
+    var y = Math.round(days / 365.25 * 10) / 10;
+    return y + " year" + (y === 1 ? "" : "s") + " ago";
+  }
+
+  function fmtMoney(n) {
+    if (n === null || n === undefined || n === "" || isNaN(n)) return "—";
+    return "$" + Number(n).toLocaleString(undefined, { maximumFractionDigits: 0 });
+  }
+
+  function computeGaps() {
+    var gaps = [];
+    var wd = state.profile.weddingDate;
+    var monthsUntil = daysUntil(wd) === null ? null : daysUntil(wd) / 30.44;
+
+    if (!wd) {
+      gaps.push({ level: "warning", title: "No wedding date set", sub: "Add a date on the Profile tab to unlock timeline tracking and gap alerts." });
+    }
+    if (!state.profile.budgetTotal) {
+      gaps.push({ level: "warning", title: "No total budget set", sub: "Add a budget on the Profile tab to track spending against it." });
+    }
+    if (monthsUntil !== null) {
+      CATEGORY_META.forEach(function (c) {
+        var cat = state.categories[c.key];
+        if (cat.bookedVendorId) return;
+        if (monthsUntil <= c.lead) {
+          var level = monthsUntil <= c.lead / 2 ? "critical" : "warning";
+          if (cat.requestStatus === "none") {
+            gaps.push({ level: level, title: c.label + " — no vendors requested yet", sub: "Typically booked by about " + c.lead + " months out. Request vendors on the Profile tab." });
+          } else if (cat.requestStatus === "pending") {
+            gaps.push({ level: level === "critical" ? "critical" : "warning", sub: "Vendor research is still in progress.", title: c.label + " — research pending" });
+          } else if (cat.requestStatus === "done" && cat.vendors.length && !cat.bookedVendorId) {
+            gaps.push({ level: level, title: c.label + " — vendors found, none booked", sub: "Compare options on the Vendors tab and mark one as booked." });
+          }
+        }
+      });
+    }
+    state.checklist.forEach(function (item) {
+      var due = dueDateFor(item);
+      if (due && !item.done && due.getTime() < today().getTime()) {
+        gaps.push({ level: "critical", title: item.title, sub: "Overdue — was due " + fmtDate(due) + "." });
+      }
+    });
+    var budget = computeBudget();
+    if (budget.total && budget.spentPlusAllocated > budget.total) {
+      gaps.push({ level: "critical", title: "Over budget", sub: fmtMoney(budget.spentPlusAllocated) + " allocated/spent against a " + fmtMoney(budget.total) + " budget." });
+    }
+    state.requests.forEach(function (r) {
+      if (r.status === "pending") {
+        gaps.push({ level: "warning", title: "Request pending: " + (r.category ? categoryLabel(r.category) : "general"), sub: truncate(r.text, 90) });
+      }
+    });
+    if (monthsUntil !== null) {
+      if (!state.guests.length && monthsUntil <= 10) {
+        gaps.push({ level: monthsUntil <= 6 ? "critical" : "warning", title: "Guest list not started", sub: "Upload or add guests on the Guest List tab so invitations and headcounts have somewhere to start." });
+      } else if (state.guests.length) {
+        var gStats = computeGuestStats();
+        if (gStats.undecided && monthsUntil <= 5) {
+          gaps.push({ level: monthsUntil <= 3 ? "critical" : "warning", title: gStats.undecided + " guest" + (gStats.undecided === 1 ? "" : "s") + " still undecided", sub: "Work through the Guest List tab to mark everyone Invite or Not invited before invitations go out." });
+        }
+        if (state.profile.guestCount && gStats.estAttending > Number(state.profile.guestCount)) {
+          gaps.push({ level: "warning", title: "Invited headcount is running over", sub: "About " + gStats.estAttending + " est. attending vs. a budgeted guest count of " + state.profile.guestCount + "." });
+        }
+        if (gStats.awaitingRsvp && monthsUntil <= 2) {
+          gaps.push({ level: monthsUntil <= 1 ? "critical" : "warning", title: gStats.awaitingRsvp + " guest" + (gStats.awaitingRsvp === 1 ? "" : "s") + " still haven't RSVP'd", sub: "Follow up before finalizing headcount and seating on the Guest List and Day-of tabs." });
+        }
+      }
+      if (monthsUntil < 0 && gStats.thankYouPending) {
+        gaps.push({ level: "warning", title: gStats.thankYouPending + " thank-you note" + (gStats.thankYouPending === 1 ? "" : "s") + " still pending", sub: "Mark them sent on the Guest List tab as you go." });
+      }
+    }
+
+    CATEGORY_META.forEach(function (c) {
+      var cat = state.categories[c.key];
+      if (!cat.bookedVendorId || !cat.payment) return;
+      var p = cat.payment;
+      if (p.balanceAmount && !p.balancePaid && p.balanceDueDate) {
+        var dd = parseDate(p.balanceDueDate);
+        if (dd && dd.getTime() < today().getTime()) {
+          gaps.push({ level: "critical", title: c.label + " balance is overdue", sub: fmtMoney(p.balanceAmount) + " was due " + fmtDate(dd) + "." });
+        } else if (dd && monthsUntil !== null && (dd.getTime() - today().getTime()) / DAY_MS <= 14) {
+          gaps.push({ level: "warning", title: c.label + " balance due soon", sub: fmtMoney(p.balanceAmount) + " due " + fmtDate(dd) + "." });
+        }
+      }
+    });
+    var order = { critical: 0, warning: 1 };
+    gaps.sort(function (a, b) { return (order[a.level] || 2) - (order[b.level] || 2); });
+    return gaps;
+  }
+
+  function truncate(s, n) { s = s || ""; return s.length > n ? s.slice(0, n - 1) + "…" : s; }
+
+  function categoryLabel(key) {
+    var m = CATEGORY_META.filter(function (c) { return c.key === key; })[0];
+    return m ? m.label : key;
+  }
+
+  function computeBudget() {
+    var total = state.profile.budgetTotal ? Number(state.profile.budgetTotal) : 0;
+    var allocated = 0, actual = 0;
+    CATEGORY_META.forEach(function (c) {
+      var cat = state.categories[c.key];
+      if (cat.allocated) allocated += Number(cat.allocated);
+      if (cat.actual) actual += Number(cat.actual);
+    });
+    return { total: total, allocated: allocated, actual: actual, spentPlusAllocated: actual + (allocated > actual ? allocated - actual : 0), remaining: total - actual };
+  }
+
+  // Typical U.S. wedding-budget split by category (sums to 100). A starting
+  // point, not a quote — nudged below by style keywords, guest count, and
+  // any real vendor prices already on file.
+  var BASE_BUDGET_PCT = {
+    planner: 8, venue: 15, photography: 9, videography: 5, catering: 28,
+    attire: 6, florist: 7, music: 8, officiant: 1, invitations: 2,
+    rentals: 5, hairMakeup: 2, transportation: 2, cake: 2
+  };
+
+  var STYLE_ADJUSTMENTS = [
+    { test: /\b(luxury|black[\s-]?tie|formal|upscale|glam(orous)?)\b/i,
+      mult: { venue: 1.25, catering: 1.1, attire: 1.25, florist: 1.2, hairMakeup: 1.15 } },
+    { test: /\b(diy|backyard|casual|budget|small|intimate|elopement|micro[\s-]?wedding)\b/i,
+      mult: { venue: 0.6, florist: 0.75, planner: 0.5, rentals: 1.3, catering: 0.9 } },
+    { test: /\b(destination)\b/i,
+      mult: { venue: 1.15, transportation: 1.6, invitations: 0.8, rentals: 0.8 } },
+    { test: /\b(rustic|barn|garden|outdoor)\b/i,
+      mult: { rentals: 1.3, florist: 1.15, venue: 0.9 } }
+  ];
+
+  function parsePriceNumber(s) {
+    if (!s) return null;
+    var m = String(s).replace(/,/g, "").match(/\d+(\.\d+)?/g);
+    if (!m || !m.length) return null;
+    var nums = m.map(Number);
+    return nums.reduce(function (a, b) { return a + b; }, 0) / nums.length;
+  }
+
+  // A signal of what a category is likely to actually cost, drawn from
+  // whatever's already on file for it — booked spend, a booked vendor's
+  // price, or an average of researched vendor prices — in that order.
+  function marketSignal(cat) {
+    if (cat.actual) return Number(cat.actual);
+    if (cat.bookedVendorId) {
+      var booked = (cat.vendors || []).filter(function (x) { return x.id === cat.bookedVendorId; })[0];
+      if (booked) {
+        var n = booked.priceValue || parsePriceNumber(booked.price);
+        if (n) return n;
+      }
+    }
+    if (cat.vendors && cat.vendors.length) {
+      var nums = cat.vendors.map(function (v) { return v.priceValue || parsePriceNumber(v.price); }).filter(function (n) { return n; });
+      if (nums.length) return nums.reduce(function (a, b) { return a + b; }, 0) / nums.length;
+    }
+    return null;
+  }
+
+  // Top-down recommendation: given a total budget, suggest a $ amount per
+  // category. Computed entirely client-side from BASE_BUDGET_PCT, nudged by
+  // style/notes keywords, guest count, and any market signal per category —
+  // then renormalized so the percentages still sum to 100.
+  function computeRecommendedBudget() {
+    var total = Number(state.profile.budgetTotal) || 0;
+    var text = ((state.profile.style || "") + " " + (state.profile.notes || "")).toLowerCase();
+    var weights = {};
+    CATEGORY_META.forEach(function (c) { weights[c.key] = BASE_BUDGET_PCT[c.key] || 1; });
+
+    STYLE_ADJUSTMENTS.forEach(function (adj) {
+      if (adj.test.test(text)) {
+        Object.keys(adj.mult).forEach(function (k) { if (weights[k] !== undefined) weights[k] *= adj.mult[k]; });
+      }
+    });
+
+    var gc = Number(state.profile.guestCount) || 0;
+    if (gc >= 150) { weights.catering *= 1.1; weights.venue *= 1.05; weights.florist *= 0.9; }
+    else if (gc && gc <= 30) { weights.catering *= 0.9; weights.planner *= 1.15; }
+
+    var usedSignal = {};
+    CATEGORY_META.forEach(function (c) {
+      var signal = marketSignal(state.categories[c.key]);
+      if (signal && total) {
+        var impliedPct = Math.min(60, (signal / total) * 100);
+        weights[c.key] = weights[c.key] * 0.5 + impliedPct * 0.5;
+        usedSignal[c.key] = true;
+      }
+    });
+
+    var sum = 0;
+    CATEGORY_META.forEach(function (c) { sum += weights[c.key]; });
+    var out = {};
+    CATEGORY_META.forEach(function (c) {
+      var pct = sum ? (weights[c.key] / sum) * 100 : 0;
+      out[c.key] = { pct: pct, amount: total ? Math.round((total * pct / 100) / 5) * 5 : 0, fromSignal: !!usedSignal[c.key] };
+    });
+    return out;
+  }
+
+  function computeGuestStats() {
+    var total = state.guests.length;
+    var invite = state.guests.filter(function (g) { return g.status === "invite"; }).length;
+    var no = state.guests.filter(function (g) { return g.status === "no"; }).length;
+    var undecided = total - invite - no;
+    var plusOnes = state.guests.filter(function (g) { return g.status === "invite" && g.plusOne; }).length;
+    var confirmedAttending = 0;
+    state.guests.forEach(function (g) { if (g.rsvp === "attending") confirmedAttending += 1 + (g.plusOneName ? 1 : 0); });
+    var declined = state.guests.filter(function (g) { return g.rsvp === "declined"; }).length;
+    var awaitingRsvp = state.guests.filter(function (g) { return g.status === "invite" && g.rsvp !== "attending" && g.rsvp !== "declined"; }).length;
+    var needsHotel = state.guests.filter(function (g) { return g.needsHotel; }).length;
+    var thankYouPending = state.guests.filter(function (g) { return g.giftReceived && !g.thankYouSent; }).length;
+    var seated = state.guests.filter(function (g) { return g.tableId; }).length;
+    return {
+      total: total, invite: invite, no: no, undecided: undecided, plusOnes: plusOnes, estAttending: invite + plusOnes,
+      confirmedAttending: confirmedAttending, declined: declined, awaitingRsvp: awaitingRsvp,
+      needsHotel: needsHotel, thankYouPending: thankYouPending, seated: seated
+    };
+  }
+
+  function fmtTime(t) {
+    if (!t) return "";
+    var parts = t.split(":");
+    var h = Number(parts[0]);
+    if (isNaN(h)) return t;
+    var ap = h >= 12 ? "PM" : "AM";
+    var h12 = h % 12; if (h12 === 0) h12 = 12;
+    return h12 + ":" + (parts[1] || "00") + " " + ap;
+  }
+
+  function vendorScore(v) {
+    var vals = [v.scorePrice, v.scoreAvailability, v.scoreFit].filter(function (n) { return n !== null && n !== undefined && n !== ""; }).map(Number);
+    if (!vals.length) return null;
+    return vals.reduce(function (a, b) { return a + b; }, 0) / vals.length;
+  }
+
+  function syncCatActualFromPayments(cat) {
+    var p = cat.payment;
+    if (!p) return;
+    var paid = (p.depositPaid ? Number(p.depositAmount) || 0 : 0) + (p.balancePaid ? Number(p.balanceAmount) || 0 : 0);
+    if (paid > 0) cat.actual = paid;
+  }
+
+  /* ---------- guest list import / export ---------- */
+
+  function parseDelimited(text) {
+    var rows = [], row = [], field = "", inQuotes = false;
+    for (var i = 0; i < text.length; i++) {
+      var c = text[i];
+      if (inQuotes) {
+        if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else inQuotes = false; }
+        else field += c;
+      } else {
+        if (c === '"') inQuotes = true;
+        else if (c === "," || c === "\t") { row.push(field); field = ""; }
+        else if (c === "\n") { row.push(field); rows.push(row); row = []; field = ""; }
+        else if (c === "\r") { /* skip */ }
+        else field += c;
+      }
+    }
+    if (field.length || row.length) { row.push(field); rows.push(row); }
+    return rows.filter(function (r) { return r.some(function (c) { return c.trim() !== ""; }); });
+  }
+
+  function guessColumns(headerRow) {
+    var map = {};
+    headerRow.forEach(function (h, idx) {
+      var k = (h || "").toLowerCase().trim();
+      if (map.name === undefined && /^(full\s*name|guest\s*name|name)$/.test(k)) map.name = idx;
+      else if (map.first === undefined && /first/.test(k)) map.first = idx;
+      else if (map.last === undefined && /last/.test(k)) map.last = idx;
+      else if (map.side === undefined && /(side|partner)/.test(k)) map.side = idx;
+      else if (map.group === undefined && /(group|relation|category)/.test(k)) map.group = idx;
+      else if (map.plusOne === undefined && /plus/.test(k)) map.plusOne = idx;
+      else if (map.howYouKnow === undefined && /(how.*know|relationship|connection)/.test(k)) map.howYouKnow = idx;
+      else if (map.lastContact === undefined && /(last.*(contact|spoke|talk)|contact.*date)/.test(k)) map.lastContact = idx;
+      else if (map.closeness === undefined && /(closeness|tier)/.test(k)) map.closeness = idx;
+      else if (map.rsvp === undefined && /rsvp/.test(k)) map.rsvp = idx;
+      else if (map.mealChoice === undefined && /meal/.test(k)) map.mealChoice = idx;
+      else if (map.notes === undefined && /note/.test(k)) map.notes = idx;
+    });
+    return map;
+  }
+
+  function normalizeRsvp(v) {
+    v = (v || "").toLowerCase().trim();
+    if (/^(attend|yes|coming|accept)/.test(v)) return "attending";
+    if (/^(decline|no|not\s*attend|regret)/.test(v)) return "declined";
+    if (/^sent/.test(v)) return "sent";
+    return "not_sent";
+  }
+
+  function normalizeCloseness(v) {
+    v = (v || "").toLowerCase().trim();
+    var m = CLOSENESS_META.filter(function (c) { return c.value === v || c.label.toLowerCase() === v; })[0];
+    return m ? m.value : "";
+  }
+
+  function makeGuestId() { return "g-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7); }
+
+  function rowsToGuests(rows) {
+    if (!rows.length) return [];
+    var map = guessColumns(rows[0]);
+    var hasHeader = map.name !== undefined || map.first !== undefined || map.last !== undefined;
+    var dataRows = hasHeader ? rows.slice(1) : rows;
+    return dataRows.map(function (r) {
+      var name;
+      if (hasHeader && map.name !== undefined) name = (r[map.name] || "").trim();
+      else if (hasHeader && (map.first !== undefined || map.last !== undefined)) name = ((r[map.first] || "") + " " + (r[map.last] || "")).trim();
+      else name = (r[0] || "").trim();
+      if (!name) return null;
+      return {
+        id: makeGuestId(),
+        name: name,
+        side: hasHeader && map.side !== undefined ? (r[map.side] || "").trim() : "",
+        group: hasHeader && map.group !== undefined ? (r[map.group] || "").trim() : "",
+        plusOne: hasHeader && map.plusOne !== undefined ? /^(y|yes|true|1)/i.test((r[map.plusOne] || "").trim()) : false,
+        status: "undecided",
+        howYouKnow: hasHeader && map.howYouKnow !== undefined ? (r[map.howYouKnow] || "").trim() : "",
+        lastContact: hasHeader && map.lastContact !== undefined ? (r[map.lastContact] || "").trim() : "",
+        closeness: hasHeader && map.closeness !== undefined ? normalizeCloseness(r[map.closeness]) : "",
+        notes: hasHeader && map.notes !== undefined ? (r[map.notes] || "").trim() : "",
+        rsvp: hasHeader && map.rsvp !== undefined ? normalizeRsvp(r[map.rsvp]) : "not_sent",
+        mealChoice: hasHeader && map.mealChoice !== undefined ? (r[map.mealChoice] || "").trim() : "",
+        plusOneName: "", needsHotel: false, hotelBlock: "", arrival: "", departure: "",
+        giftReceived: false, giftDescription: "", thankYouSent: false, tableId: ""
+      };
+    }).filter(Boolean);
+  }
+
+  function importGuestsFromText(text, sourceLabel) {
+    var rows = parseDelimited(text);
+    var parsed = rowsToGuests(rows);
+    if (!parsed.length) { showToast("Couldn't find any names in that " + sourceLabel + "."); return; }
+    var existingNames = {};
+    state.guests.forEach(function (g) { existingNames[g.name.trim().toLowerCase()] = true; });
+    var added = parsed.filter(function (g) { return !existingNames[g.name.toLowerCase()]; });
+    var skipped = parsed.length - added.length;
+    state.guests = state.guests.concat(added);
+    var next = clone(state);
+    saveState(next, { doneLabel: "Added " + added.length + " guest" + (added.length === 1 ? "" : "s") + (skipped ? " (" + skipped + " duplicate" + (skipped === 1 ? "" : "s") + " skipped)" : ") from your " + sourceLabel + ".") });
+  }
+
+  var TEXT_LIKE_EXT = /\.(csv|txt|tsv)$/i;
+
+  function isTextLikeFile(file) {
+    return TEXT_LIKE_EXT.test(file.name || "") || /^text\//.test(file.type || "") || file.type === "text/csv";
+  }
+
+  function readFileAsDataURL(file) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function () { resolve(String(reader.result || "")); };
+      reader.onerror = function () { reject(reader.error || new Error("read failed")); };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function queueFileImport(file, targetHint, note) {
+    if (file.size > MAX_IMPORT_BYTES) {
+      showToast("That file's too big (" + Math.round(file.size / 1024 / 1024) + " MB) — 8 MB max. Try a smaller export or a text/CSV paste instead.");
+      return Promise.resolve();
+    }
+    return readFileAsDataURL(file).then(function (dataUrl) {
+      var comma = dataUrl.indexOf(",");
+      var meta = dataUrl.slice(5, comma); // "<mime>;base64"
+      var mimeType = meta.split(";")[0] || file.type || "application/octet-stream";
+      var base64 = dataUrl.slice(comma + 1);
+      var next = clone(state);
+      next.fileImports.push({
+        id: "imp-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7),
+        filename: file.name, mimeType: mimeType, sizeBytes: file.size,
+        dataBase64: base64, targetHint: targetHint, note: note || "",
+        status: "pending", createdAt: Date.now(), response: null
+      });
+      return saveState(next, { doneLabel: "Got “" + file.name + "” — I’ll read it and add what I find, usually within the hour." });
+    }).catch(function (err) {
+      console.error(err);
+      showToast("Couldn't read that file.");
+    });
+  }
+
+  function csvEscapeField(v) {
+    v = String(v === null || v === undefined ? "" : v);
+    if (/[",\n]/.test(v)) return '"' + v.replace(/"/g, '""') + '"';
+    return v;
+  }
+
+  var copyFallback = null;
+
+  function offerDownload(filename, text) {
+    try {
+      var blob = new Blob([text], { type: "text/csv;charset=utf-8" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
+      copyFallback = null;
+    } catch (err) {
+      console.error(err);
+      copyFallback = { filename: filename, text: text };
+      render();
+    }
+  }
+
+  function downloadTemplate() {
+    var csv = "Name,Side,Group,Plus One,How You Know Them,Last Contact,Closeness,RSVP,Meal Choice,Notes\n" +
+      "Jamie Rivera," + partnerLabels()[0] + ",College friends,Yes,College roommate,2026-03-01,close,,,\n" +
+      "Alex Chen," + partnerLabels()[1] + ",Coworkers,No,Coworker,,acquaintance,,,Vegetarian\n";
+    offerDownload("guest-list-template.csv", csv);
+  }
+
+  function exportGuests() {
+    var rows = [["Name", "Side", "Group", "Plus One", "Status", "How You Know Them", "Last Contact", "Closeness", "RSVP", "Plus-One Name", "Meal Choice", "Needs Hotel", "Hotel Block", "Arrival", "Departure", "Gift Received", "Thank-You Sent", "Table", "Notes"]];
+    state.guests.forEach(function (g) {
+      var table = state.tables.filter(function (t) { return t.id === g.tableId; })[0];
+      rows.push([
+        g.name, g.side, g.group, g.plusOne ? "Yes" : "No", g.status, g.howYouKnow || "", g.lastContact || "", g.closeness || "",
+        g.rsvp || "not_sent", g.plusOneName || "", g.mealChoice || "",
+        g.needsHotel ? "Yes" : "No", g.hotelBlock || "", g.arrival || "", g.departure || "",
+        g.giftReceived ? (g.giftDescription || "Yes") : "", g.thankYouSent ? "Yes" : "No",
+        table ? table.name : "", g.notes || ""
+      ]);
+    });
+    var csv = rows.map(function (r) { return r.map(csvEscapeField).join(","); }).join("\n");
+    offerDownload("guest-list.csv", csv);
+  }
+
+  function exportBudget() {
+    var b = computeBudget();
+    var rows = [["Category", "Recommended %", "Recommended $", "Your Plan (Allocated)", "Actually Spent", "Diff"]];
+    var rec = computeRecommendedBudget();
+    CATEGORY_META.forEach(function (c) {
+      var cat = state.categories[c.key];
+      var r = rec[c.key];
+      rows.push([c.label, b.total ? Math.round(r.pct) + "%" : "", b.total ? r.amount : "", cat.allocated || "", cat.actual || "", (cat.allocated && cat.actual) ? (cat.allocated - cat.actual) : ""]);
+    });
+    rows.push([]);
+    rows.push(["Total budget", "", "", b.total || "", "", ""]);
+    rows.push(["Predicted total (your plan)", "", "", b.allocated || "", "", ""]);
+    rows.push(["Spent so far", "", "", "", b.actual || "", ""]);
+    rows.push(["Remaining", "", "", "", "", b.total ? (b.total - b.actual) : ""]);
+    var csv = rows.map(function (r) { return r.map(csvEscapeField).join(","); }).join("\n");
+    offerDownload("wedding-budget.csv", csv);
+  }
+
+  /* ---------- rendering ---------- */
+
+  function render() {
+    var root = document.getElementById("app-root");
+    if (!currentUser) {
+      root.innerHTML = renderLogin();
+      bindLoginEvents();
+      return;
+    }
+    root.innerHTML = renderMasthead() + renderReadonlyBanner() + renderStatStrip() +
+      '<div class="app-shell">' + renderTabs() +
+      '<div class="main-content"><div class="tab-panels">' +
+      renderOverview() + renderProfile() + renderChecklist() + renderBudget() + renderVendors() + renderGuestList() + renderDayOf() +
+      "</div></div></div>" + renderFooter();
+    bindEvents();
+  }
+
+  var loginError = "";
+  function renderLogin() {
+    return '<div class="login-shell"><h1>The Wedding Ledger</h1><div class="login-sub">Sign in to view and edit your planner.</div>' +
+      (loginError ? '<div class="login-error">' + escapeHtml(loginError) + "</div>" : "") +
+      '<form id="login-form">' +
+      '<div class="field"><label for="login-email">Email</label><input id="login-email" type="email" autocomplete="username" required/></div>' +
+      '<div class="field"><label for="login-password">Password</label><input id="login-password" type="password" autocomplete="current-password" required/></div>' +
+      '<button class="btn btn-primary" type="submit" style="width:100%">Sign in</button>' +
+      "</form></div>";
+  }
+
+  function bindLoginEvents() {
+    var form = document.getElementById("login-form");
+    if (!form) return;
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var email = document.getElementById("login-email").value.trim();
+      var password = document.getElementById("login-password").value;
+      var btn = form.querySelector("button[type=submit]");
+      btn.disabled = true;
+      btn.textContent = "Signing in…";
+      fetch("/api/login", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, password: password })
+      }).then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+        .then(function (r) {
+          if (!r.ok) {
+            loginError = (r.data && r.data.error) || "Could not sign in.";
+            render();
+            return;
+          }
+          loginError = "";
+          currentUser = r.data.user;
+          loadStateAndRender();
+        }).catch(function () {
+          loginError = "Network error — try again.";
+          render();
+        });
+    });
+  }
+
+  function renderReadonlyBanner() {
+    if (canWrite) return "";
+    return '<div class="readonly-banner">You\'re viewing a read-only copy of this planner. Ask the owner to share edit access to make changes.</div>';
+  }
+
+  function renderMasthead() {
+    var p = state.profile;
+    var title = p.coupleNames ? escapeHtml(p.coupleNames) : "Our Wedding";
+    var sub = [];
+    if (p.weddingDate) sub.push(fmtDate(p.weddingDate));
+    if (p.location) sub.push(escapeHtml(p.location));
+    var du = daysUntil(p.weddingDate);
+    var countBlock = "";
+    if (du !== null) {
+      var num = du >= 0 ? du : Math.abs(du);
+      var lbl = du > 0 ? "days to go" : (du === 0 ? "today!" : "days married");
+      countBlock = '<div class="masthead-count"><div class="num mono">' + num + '</div><div class="lbl">' + lbl + "</div></div>";
+    }
+    var account = '<div class="masthead-account"><span class="tiny">' + (currentUser ? escapeHtml(currentUser.email) : "") + '</span><button class="logout-link" id="logout-btn" type="button">Log out</button></div>';
+    return '<div class="masthead"><div><h1 class="masthead-title">' + title + "</h1>" +
+      (sub.length ? '<div class="masthead-sub">' + sub.join(" · ") + "</div>" : '<div class="masthead-sub">Fill in your profile to get started</div>') +
+      account + "</div>" + countBlock + "</div>";
+  }
+
+  function renderStatStrip() {
+    var gaps = computeGaps();
+    var critical = gaps.filter(function (g) { return g.level === "critical"; }).length;
+    var warn = gaps.filter(function (g) { return g.level === "warning"; }).length;
+    var budget = computeBudget();
+    var pending = state.requests.filter(function (r) { return r.status === "pending"; }).length;
+    var bookedCount = CATEGORY_META.filter(function (c) { return state.categories[c.key].bookedVendorId; }).length;
+
+    function tile(val, lbl, cls) {
+      return '<div class="stat-tile ' + (cls || "") + '"><div class="stat-val mono">' + val + '</div><div class="stat-lbl">' + lbl + "</div></div>";
+    }
+    return '<div class="stat-strip">' +
+      tile(critical + warn, "open gaps", critical ? "critical" : (warn ? "warn" : "good")) +
+      tile(bookedCount + " / " + CATEGORY_META.length, "categories booked", "") +
+      tile(budget.total ? fmtMoney(budget.remaining) : "—", "budget remaining", budget.total && budget.remaining < 0 ? "critical" : "") +
+      tile(pending, "requests pending", pending ? "warn" : "good") +
+      "</div>";
+  }
+
+  function renderTabs() {
+    return '<div class="sidebar" role="tablist">' + TABS.map(function (t) {
+      return '<button class="tab-btn' + (t.key === activeTab ? " active" : "") + '" data-tab="' + t.key + '" role="tab">' + t.label + "</button>";
+    }).join("") + "</div>";
+  }
+
+  function panel(key, html) {
+    return '<div class="tab-panel' + (key === activeTab ? " active" : "") + '" data-panel="' + key + '">' + html + "</div>";
+  }
+
+  function renderOverview() {
+    var gaps = computeGaps();
+    var body;
+    if (!gaps.length) {
+      body = '<div class="empty-note">No open gaps right now — nicely done. Keep an eye on the Vendors tab as your date gets closer.</div>';
+    } else {
+      body = '<div class="gap-list">' + gaps.map(function (g) {
+        return '<div class="gap-item ' + g.level + '"><div class="stripe"></div><div class="gap-item-body"><div class="gap-item-title">' + escapeHtml(g.title) + '</div><div class="gap-item-sub">' + escapeHtml(g.sub) + "</div></div></div>";
+      }).join("") + "</div>";
+    }
+    var upcoming = state.checklist
+      .map(function (it) { return { it: it, due: dueDateFor(it) }; })
+      .filter(function (x) { return x.due && !x.it.done && x.due.getTime() >= today().getTime(); })
+      .sort(function (a, b) { return a.due - b.due; })
+      .slice(0, 5);
+    var upcomingHtml = upcoming.length
+      ? '<div class="checklist-group">' + upcoming.map(function (x) {
+          return '<div class="check-row"><input type="checkbox" data-check="' + x.it.id + '" ' + (x.it.done ? "checked" : "") + '/><div><div class="check-title">' + escapeHtml(x.it.title) + '</div><div class="check-due">' + fmtDate(x.due) + "</div></div></div>";
+        }).join("") + "</div>"
+      : '<div class="empty-note">Set your wedding date to see upcoming to-dos here.</div>';
+
+    return panel("overview",
+      '<div class="card"><div class="card-head"><h2>Gaps & alerts</h2></div>' + body + "</div>" +
+      '<div class="grid-2">' +
+      '<div class="card"><h3>Coming up</h3>' + upcomingHtml + "</div>" +
+      '<div class="card"><h3>Budget snapshot</h3>' + renderBudgetBars(true) + "</div>" +
+      "</div>"
+    );
+  }
+
+  function renderColorwayPicker() {
+    var current = (state.settings && state.settings.colorway) || "classic";
+    var options = COLORWAYS.map(function (c) {
+      var active = c.key === current;
+      return '<button type="button" class="colorway-option' + (active ? " active" : "") + '" data-colorway-pick="' + c.key + '" ' + (canWrite ? "" : "disabled") + '>' +
+        '<span class="colorway-swatch"><span style="background:' + c.colors[0] + '"></span><span style="background:' + c.colors[1] + '"></span></span>' +
+        '<span class="colorway-label">' + escapeHtml(c.label) + (active ? " ✓" : "") + '</span>' +
+        '<span class="colorway-sub">' + escapeHtml(c.sub) + "</span>" +
+        "</button>";
+    }).join("");
+    return '<div class="card"><h2>Site colorway</h2><p class="muted">' +
+      (canWrite ? "Pick a palette — it applies for both of you right away." : "The site's current color palette. Ask the owner to change it.") +
+      '</p><div class="colorway-grid">' + options + "</div></div>";
+  }
+
+  function renderProfile() {
+    var p = state.profile;
+    var f = function (id, label, value, type, extra) {
+      type = type || "text";
+      return '<div class="field"><label for="' + id + '">' + label + '</label><input id="' + id + '" type="' + type + '" value="' + escapeHtml(value === null || value === undefined ? "" : value) + '" ' + (extra || "") + (canWrite ? "" : " disabled") + "/></div>";
+    };
+    var profileForm =
+      '<div class="grid-2">' +
+      f("f-names", "Couple's names", p.coupleNames) +
+      f("f-date", "Wedding date", p.weddingDate, "date") +
+      f("f-location", "Location (city, state / country)", p.location) +
+      f("f-guests", "Guest count", p.guestCount, "number", 'min="0"') +
+      f("f-budget", "Total budget (USD)", p.budgetTotal, "number", 'min="0"') +
+      f("f-style", "Style / vibe", p.style) +
+      "</div>" +
+      '<div class="field" style="margin-top:1rem"><label for="f-notes">Notes for planning (traditions, must-haves, anything I should know)</label><textarea id="f-notes" ' + (canWrite ? "" : "disabled") + ">" + escapeHtml(p.notes || "") + "</textarea></div>" +
+      '<div class="save-row"><span class="save-status" id="save-status-badge"></span>' +
+      (canWrite ? '<button class="btn btn-primary" id="save-profile-btn">Save profile</button>' : "") + "</div>";
+
+    var catCards = CATEGORY_META.map(function (c) {
+      var cat = state.categories[c.key];
+      var statusPill = requestStatusPill(cat, c.key);
+      var actionBtn = "";
+      if (canWrite) {
+        if (cat.requestStatus === "none") {
+          actionBtn = '<button class="btn btn-secondary btn-sm" data-request-cat="' + c.key + '">Request vendors</button>';
+        } else if (cat.requestStatus === "pending") {
+          actionBtn = '<button class="btn btn-secondary btn-sm" disabled>Waiting…</button>';
+        } else {
+          actionBtn = '<button class="btn btn-secondary btn-sm" data-request-cat="' + c.key + '">Request more</button>';
+        }
+      }
+      return '<div class="cat-card"><div class="cat-card-head"><h3>' + c.label + "</h3>" + statusPill + "</div>" +
+        '<div class="cat-card-body"><div class="cat-note">' + (cat.vendors.length ? cat.vendors.length + " vendor" + (cat.vendors.length === 1 ? "" : "s") + " on file" : "No vendors researched yet") + "</div>" + actionBtn + "</div></div>";
+    }).join("");
+
+    var adhoc = canWrite ? '<div class="field" style="margin-top:0.5rem"><label for="f-adhoc">Ask for something specific</label><textarea id="f-adhoc" placeholder="e.g. Find 3 more florists near the venue under $2,500, or update the budget now that catering is booked at $9,200"></textarea></div><div class="save-row"><button class="btn btn-primary" id="submit-request-btn">Submit request</button></div>' : "";
+
+    var log = state.requests.slice().reverse().map(function (r) {
+      var statusPill = r.status === "pending"
+        ? '<span class="pill"><span class="dot warning"></span>pending</span>'
+        : '<span class="pill"><span class="dot good"></span>done</span>';
+      return '<div class="request-item"><div class="ri-body"><div class="ri-text">' + escapeHtml(r.text) + "</div><div class=\"ri-meta\">" + (r.category ? categoryLabel(r.category) + " · " : "") + fmtDate(new Date(r.createdAt)) + " " + statusPill + "</div>" +
+        (r.response ? '<div class="ri-response">' + escapeHtml(r.response) + "</div>" : "") +
+        "</div></div>";
+    }).join("") || '<div class="empty-note">No requests yet — request a category above or ask for something specific.</div>';
+
+    var vendorImports = state.fileImports.filter(function (fi) { return (fi.targetHint || "").indexOf("vendor:") === 0; }).slice().reverse();
+    var vendorImportLog = vendorImports.length ? '<div class="import-log">' + vendorImports.map(function (fi) {
+      var catKey = fi.targetHint.split(":")[1];
+      var statusPill = fi.status === "pending" ? '<span class="pill"><span class="dot warning"></span>reading…</span>' : '<span class="pill"><span class="dot good"></span>done</span>';
+      return '<div class="import-item"><div style="flex:1"><div class="imp-name">' + escapeHtml(fi.filename) + "</div><div class=\"imp-meta\">" + categoryLabel(catKey) + " · " + fmtDate(new Date(fi.createdAt)) + " " + statusPill + "</div>" +
+        (fi.response ? '<div class="imp-response">' + escapeHtml(fi.response) + "</div>" : "") + "</div></div>";
+    }).join("") + "</div>" : "";
+
+    var vendorUpload = canWrite ? '<div class="card"><h2>Have a quote or brochure?</h2><p class="muted">Upload a PDF, Word doc, spreadsheet, screenshot — whatever a vendor sent you. It\'s logged here for now; automatic parsing into a comparison row isn\'t wired up yet.</p>' +
+      '<div class="grid-3"><div class="field"><label for="f-vendor-doc-cat">Category</label><select id="f-vendor-doc-cat">' + CATEGORY_META.map(function (c) { return '<option value="' + c.key + '">' + c.label + "</option>"; }).join("") + '</select></div>' +
+      '<div class="field" style="grid-column:span 2"><label for="f-vendor-doc-file">File</label><input type="file" id="f-vendor-doc-file"/></div></div>' +
+      '<div class="field" style="margin-top:0.7rem"><label for="f-vendor-doc-note">Anything I should know? (optional)</label><input type="text" id="f-vendor-doc-note" placeholder="e.g. this is their 2027 peak-season pricing"/></div>' +
+      '<div class="save-row"><button class="btn btn-primary" id="upload-vendor-doc-btn">Upload document</button></div>' + vendorImportLog + "</div>" : (vendorImportLog ? '<div class="card"><h2>Uploaded documents</h2>' + vendorImportLog + "</div>" : "");
+
+    return panel("profile",
+      renderColorwayPicker() +
+      '<div class="card"><h2>Wedding profile</h2><p class="muted">This is what I use to research vendors and build your timeline. Fill it in and save — updates flow back into this dashboard.</p>' + profileForm + "</div>" +
+      '<div class="card"><h2>Vendor categories</h2><p class="muted">Log a research request for any category, or add options yourself on the Vendors tab. Automatic research isn\'t wired up yet — requests just sit logged below until you follow up.</p><div class="grid-3">' + catCards + "</div>" + adhoc + "</div>" +
+      vendorUpload +
+      '<div class="card"><h2>Request log</h2>' + log + "</div>"
+    );
+  }
+
+  function requestStatusPill(cat, key) {
+    if (cat.bookedVendorId) return '<span class="booked-badge">✓ Booked</span>';
+    if (cat.requestStatus === "none") return '<span class="pill"><span class="dot neutral"></span>not started</span>';
+    if (cat.requestStatus === "pending") return '<span class="pill"><span class="dot warning"></span>researching</span>';
+    return '<span class="pill"><span class="dot good"></span>' + cat.vendors.length + ' found</span>';
+  }
+
+  // Labels for the fixed checklist buckets below. On a normal 12+ month
+  // runway these print as-is. On a compressed timeline, the same buckets
+  // (grouped by the item's original, unscaled offset — so items keep a
+  // stable, sensible order) get relabeled with the actual compressed lead
+  // time instead of a now-inaccurate "months before".
+  function fmtLeadLabel(bound, scale) {
+    if (bound === 0) return "Final weeks";
+    if (scale >= 1) {
+      var months = { "-300": "12+ months before", "-270": "9–11 months before", "-180": "6–8 months before", "-90": "3–5 months before", "-30": "1–2 months before" };
+      return months[String(bound)] || (Math.abs(bound) + " days before");
+    }
+    var days = Math.max(1, Math.round(Math.abs(bound) * scale));
+    if (days < 14) return "~" + days + " day" + (days === 1 ? "" : "s") + " before";
+    if (days < 60) { var wks = Math.round(days / 7); return "~" + wks + " week" + (wks === 1 ? "" : "s") + " before"; }
+    var mos = Math.round(days / 30.44);
+    return "~" + mos + " month" + (mos === 1 ? "" : "s") + " before";
+  }
+
+  function renderChecklist() {
+    var scale = checklistOffsetScale();
+    var bounds = [-300, -270, -180, -90, -30, 0];
+    var tests = [
+      function (o) { return o <= -300; },
+      function (o) { return o <= -270 && o > -300; },
+      function (o) { return o <= -180 && o > -270; },
+      function (o) { return o <= -90 && o > -180; },
+      function (o) { return o <= -30 && o > -90; },
+      function (o) { return o > -30; }
+    ];
+    var groups = bounds.map(function (bound, i) { return { label: fmtLeadLabel(bound, scale), test: tests[i] }; });
+    var compressionNote = scale < 1
+      ? '<p class="tiny" style="margin:-0.4rem 0 0.9rem">Your wedding is ' + daysUntil(state.profile.weddingDate) + ' days away — the standard 12-month checklist below has been compressed to fit that timeline. Skip or remove anything that doesn\'t apply.</p>'
+      : "";
+    var items = state.checklist.slice().sort(function (a, b) { return a.offset - b.offset; });
+    var html = groups.map(function (g) {
+      var rows = items.filter(function (it) { return g.test(it.offset); });
+      if (!rows.length) return "";
+      var rowsHtml = rows.map(function (it) {
+        var due = dueDateFor(it);
+        var overdue = due && !it.done && due.getTime() < today().getTime();
+        return '<div class="check-row' + (it.done ? " done" : "") + '"><input type="checkbox" data-check="' + it.id + '" ' + (it.done ? "checked" : "") + (canWrite ? "" : " disabled") + '/><div style="flex:1"><div class="check-title">' + escapeHtml(it.title) + (it.category ? ' <span class="tiny">· ' + categoryLabel(it.category) + "</span>" : "") + '</div><div class="check-due' + (overdue ? " overdue" : "") + '">' + (due ? (overdue ? "Overdue — was due " : "Due ") + fmtDate(due) : "Set a wedding date for a due date") + "</div></div>" +
+          (canWrite && it.custom ? '<button class="btn btn-ghost btn-sm check-remove" data-remove-check="' + it.id + '">Remove</button>' : "") +
+          "</div>";
+      }).join("");
+      return '<div class="checklist-group"><h4>' + g.label + "</h4>" + rowsHtml + "</div>";
+    }).join("");
+
+    var addRow = canWrite ? '<div class="grid-2" style="margin-top:0.5rem"><div class="field"><label for="f-new-check">Add a custom to-do</label><input id="f-new-check" type="text" placeholder="e.g. Order welcome bags"/></div><div class="field"><label for="f-new-check-offset">Due (days before wedding)</label><input id="f-new-check-offset" type="number" placeholder="e.g. 30"/></div></div><div class="save-row"><button class="btn btn-secondary" id="add-check-btn">Add to-do</button><span class="save-status" id="save-status-badge-2"></span><button class="btn btn-primary" id="save-checklist-btn">Save checklist</button></div>' : "";
+
+    return panel("checklist", '<div class="card"><h2>Wedding timeline</h2><p class="muted">Auto-generated from your wedding date, in the order most couples tackle them. Check items off as you go.</p>' + compressionNote + html + addRow + "</div>");
+  }
+
+  function renderBudgetBars(compact) {
+    var rows = CATEGORY_META.map(function (c) {
+      var cat = state.categories[c.key];
+      var alloc = Number(cat.allocated) || 0;
+      var act = Number(cat.actual) || 0;
+      return { key: c.key, label: c.label, alloc: alloc, act: act };
+    }).filter(function (r) { return !compact || r.alloc || r.act; });
+    var max = Math.max(1, Math.max.apply(null, rows.map(function (r) { return Math.max(r.alloc, r.act); }).concat([1])));
+    if (!rows.length) return '<div class="empty-note">Add allocated or actual costs per category to see this chart.</div>';
+    var body = rows.map(function (r) {
+      var allocPct = Math.min(100, (r.alloc / max) * 100);
+      var actPct = Math.min(100, (r.act / max) * 100);
+      return '<div class="barrow"><div class="barlabel">' + r.label + '</div><div class="bartrack"><div class="barfill s1" style="width:' + allocPct + '%"></div><div class="barfill s2" style="width:' + actPct + '%"></div></div><div class="barval">' + fmtMoney(r.act || r.alloc) + "</div></div>";
+    }).join("");
+    return '<div class="barchart">' + body + '</div><div class="legend"><span><i style="background:var(--series-1)"></i>Allocated</span><span><i style="background:var(--series-2)"></i>Actual</span></div>';
+  }
+
+  var budgetView = "recommended";
+
+  function renderRecommendedBudget() {
+    var b = computeBudget();
+    if (!b.total) {
+      return '<div class="card"><h2>Recommended breakdown</h2><div class="empty-note">Add a total budget on the Profile tab to see a recommended split by category.</div></div>';
+    }
+    var rec = computeRecommendedBudget();
+    var rows = CATEGORY_META.map(function (c) {
+      var cat = state.categories[c.key];
+      var r = rec[c.key];
+      return '<tr><td>' + c.label + (r.fromSignal ? ' <span class="tiny muted">(using your vendor research)</span>' : "") + '</td>' +
+        '<td class="num">' + Math.round(r.pct) + '%</td>' +
+        '<td class="num mono">' + fmtMoney(r.amount) + '</td>' +
+        '<td class="num">' + (cat.allocated ? fmtMoney(cat.allocated) : "—") + "</td>" +
+        "<td>" + (canWrite ? '<button class="btn btn-secondary btn-sm" data-rec-use="' + c.key + '">Use ' + fmtMoney(r.amount) + "</button>" : "") + "</td></tr>";
+    }).join("");
+
+    return '<div class="card"><h2>Recommended breakdown</h2>' +
+      '<p class="muted">Typical percentage splits for a ' + fmtMoney(b.total) + ' wedding, nudged by your guest count, style notes, and any vendor quotes you\'ve already gathered. A starting point, not a quote.</p>' +
+      '<div class="table-scroll"><table><thead><tr><th>Category</th><th class="num">Typical %</th><th class="num">Recommended</th><th class="num">Your allocation</th><th></th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
+      (canWrite ? '<div class="save-row"><span class="save-status" id="save-status-badge-3"></span><button class="btn btn-secondary btn-sm" id="apply-recommended-empty-btn">Fill in empty categories</button><button class="btn btn-ghost btn-sm" id="apply-recommended-all-btn" data-armed="0">Overwrite all with recommended</button></div>' : "") +
+      "</div>";
+  }
+
+  function renderYourBudget() {
+    var b = computeBudget();
+    var gc = Number(state.profile.guestCount) || 0;
+    var rows = CATEGORY_META.map(function (c) {
+      var cat = state.categories[c.key];
+      var perGuest = c.key === "catering" && gc && cat.allocated ? '<div class="tiny muted">≈ ' + fmtMoney(Math.round((Number(cat.allocated) / gc) * 100) / 100) + " / guest</div>" : "";
+      return '<tr><td>' + c.label + (cat.bookedVendorId ? ' <span class="booked-badge">✓</span>' : "") + '</td>' +
+        '<td class="num"><input type="number" min="0" data-budget-alloc="' + c.key + '" value="' + (cat.allocated || "") + '" style="max-width:100px" ' + (canWrite ? "" : "disabled") + "/>" + perGuest + "</td>" +
+        '<td class="num"><input type="number" min="0" data-budget-actual="' + c.key + '" value="' + (cat.actual || "") + '" style="max-width:100px" ' + (canWrite ? "" : "disabled") + "/></td>" +
+        '<td class="num">' + (cat.allocated && cat.actual ? fmtMoney(cat.allocated - cat.actual) : "—") + "</td></tr>";
+    }).join("");
+    var predictedNote = b.total
+      ? (b.allocated > b.total
+          ? '<span style="color:var(--critical)">' + fmtMoney(b.allocated - b.total) + " over your " + fmtMoney(b.total) + " budget</span>"
+          : fmtMoney(b.total - b.allocated) + " under your " + fmtMoney(b.total) + " budget")
+      : "Add a total budget on the Profile tab to compare.";
+
+    return '<div class="card"><h2>Your breakdown</h2><p class="muted">Enter what you plan to spend per category — your predicted total is the sum, shown above and compared to your budget here: ' + predictedNote + '</p>' +
+      '<div class="table-scroll"><table><thead><tr><th>Category</th><th class="num">Your plan (allocated)</th><th class="num">Actually spent</th><th class="num">Diff</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
+      '<div class="save-row"><span class="save-status" id="save-status-badge-3"></span>' + (canWrite ? '<button class="btn btn-primary" id="save-budget-btn">Save budget</button>' : "") + '<button class="btn btn-secondary btn-sm" id="export-budget-btn">Export budget (CSV)</button>' + "</div></div>";
+  }
+
+  function renderBudget() {
+    var b = computeBudget();
+    var toggle = '<div class="filter-group" style="margin-bottom:1rem">' +
+      '<button class="filter-btn' + (budgetView === "recommended" ? " active" : "") + '" data-budget-view="recommended">Recommended breakdown</button>' +
+      '<button class="filter-btn' + (budgetView === "yours" ? " active" : "") + '" data-budget-view="yours">Your breakdown</button>' +
+      "</div>";
+
+    return panel("budget",
+      '<div class="card"><h2>Budget overview</h2>' +
+      '<div class="grid-3" style="margin-bottom:1rem">' +
+      '<div><div class="tiny">Total budget</div><div class="mono" style="font-size:1.3rem">' + fmtMoney(b.total || null) + '</div></div>' +
+      '<div><div class="tiny">Predicted total (your plan)</div><div class="mono" style="font-size:1.3rem;' + (b.total && b.allocated > b.total ? "color:var(--critical)" : "") + '">' + (b.allocated ? fmtMoney(b.allocated) : "—") + '</div></div>' +
+      '<div><div class="tiny">Spent so far</div><div class="mono" style="font-size:1.3rem">' + fmtMoney(b.actual) + '</div></div>' +
+      '<div><div class="tiny">Remaining</div><div class="mono" style="font-size:1.3rem;' + (b.total && b.remaining < 0 ? "color:var(--critical)" : "") + '">' + (b.total ? fmtMoney(b.remaining) : "—") + "</div></div>" +
+      "</div>" + renderBudgetBars(false) + "</div>" +
+      toggle +
+      (budgetView === "recommended" ? renderRecommendedBudget() : renderYourBudget())
+    );
+  }
+
+  var expandedVendorScores = {};
+
+  function renderVendorPayment(c, cat) {
+    if (!cat.bookedVendorId) return "";
+    var p = cat.payment || defaultPayment();
+    return '<div class="card" style="margin-top:-0.5rem;margin-bottom:1rem;border-top:none;border-top-left-radius:0;border-top-right-radius:0"><h4 style="margin-top:0">Payments — ' + c.label + '</h4><div class="detail-grid">' +
+      '<div class="field"><label>Deposit amount</label><input type="number" min="0" data-cat-payment="depositAmount|' + c.key + '" value="' + (p.depositAmount || "") + '" ' + (canWrite ? "" : "disabled") + '/></div>' +
+      '<div class="field"><label>Deposit due</label><input type="date" data-cat-payment="depositDueDate|' + c.key + '" value="' + escapeHtml(p.depositDueDate || "") + '" ' + (canWrite ? "" : "disabled") + '/></div>' +
+      '<div class="field"><label style="display:flex;align-items:center;gap:0.4em"><input type="checkbox" data-cat-payment-check="depositPaid|' + c.key + '" ' + (p.depositPaid ? "checked" : "") + (canWrite ? "" : " disabled") + ' style="width:16px;height:16px;accent-color:var(--accent)"/> Deposit paid</label></div>' +
+      '<div class="field"><label>Balance amount</label><input type="number" min="0" data-cat-payment="balanceAmount|' + c.key + '" value="' + (p.balanceAmount || "") + '" ' + (canWrite ? "" : "disabled") + '/></div>' +
+      '<div class="field"><label>Balance due</label><input type="date" data-cat-payment="balanceDueDate|' + c.key + '" value="' + escapeHtml(p.balanceDueDate || "") + '" ' + (canWrite ? "" : "disabled") + '/></div>' +
+      '<div class="field"><label style="display:flex;align-items:center;gap:0.4em"><input type="checkbox" data-cat-payment-check="balancePaid|' + c.key + '" ' + (p.balancePaid ? "checked" : "") + (canWrite ? "" : " disabled") + ' style="width:16px;height:16px;accent-color:var(--accent)"/> Balance paid</label></div>' +
+      "</div></div>";
+  }
+
+  function renderVendors() {
+    var sections = CATEGORY_META.map(function (c) {
+      var cat = state.categories[c.key];
+      var content;
+      if (!cat.vendors.length) {
+        content = '<div class="empty-note">' + (cat.requestStatus === "pending" ? "Research is in progress — check back soon." : "No vendors yet. Request research from the Profile tab.") + "</div>";
+      } else {
+        var maxScore = Math.max.apply(null, cat.vendors.map(function (v) { return vendorScore(v) || 0; }).concat([0]));
+        var rows = cat.vendors.map(function (v) {
+          var isBooked = cat.bookedVendorId === v.id;
+          var sc = vendorScore(v);
+          var isTop = sc !== null && sc === maxScore && maxScore > 0;
+          var scoreKey = c.key + "|" + v.id;
+          var expanded = !!expandedVendorScores[scoreKey];
+          var scoreCell = '<button class="detail-toggle" data-vendor-score-toggle="' + scoreKey + '">' + (sc !== null ? sc.toFixed(1) + " ★" : "Rate") + "</button>";
+          var main = '<tr' + (isBooked ? ' style="background:var(--brass-soft)"' : "") + '><td><strong>' + escapeHtml(v.name) + '</strong>' + (isBooked ? ' <span class="booked-badge">✓ Booked</span>' : "") + (isTop ? ' <span class="booked-badge">★ Top pick</span>' : "") + (v.website ? '<div class="tiny"><a href="' + escapeHtml(v.website) + '" target="_blank" rel="noopener">' + escapeHtml(v.website.replace(/^https?:\/\//, "")) + "</a></div>" : "") + "</td>" +
+            '<td class="num">' + escapeHtml(v.price || "—") + "</td>" +
+            "<td>" + (v.rating ? "★ " + escapeHtml(v.rating) : "—") + "</td>" +
+            "<td>" + escapeHtml(v.highlights || "") + "</td>" +
+            '<td class="num">' + scoreCell + "</td>" +
+            "<td>" + (canWrite ? '<button class="btn btn-secondary btn-sm" data-book="' + c.key + "|" + v.id + '">' + (isBooked ? "Unbook" : "Mark booked") + "</button>" : "") + "</td></tr>";
+          var detail = expanded ? '<tr class="detail-row"><td colspan="6"><div class="detail-grid">' +
+            '<div class="field"><label>Price fit (1–5)</label><input type="number" min="1" max="5" data-vendor-score="scorePrice|' + c.key + "|" + v.id + '" value="' + (v.scorePrice || "") + '" ' + (canWrite ? "" : "disabled") + '/></div>' +
+            '<div class="field"><label>Availability (1–5)</label><input type="number" min="1" max="5" data-vendor-score="scoreAvailability|' + c.key + "|" + v.id + '" value="' + (v.scoreAvailability || "") + '" ' + (canWrite ? "" : "disabled") + '/></div>' +
+            '<div class="field"><label>Overall fit (1–5)</label><input type="number" min="1" max="5" data-vendor-score="scoreFit|' + c.key + "|" + v.id + '" value="' + (v.scoreFit || "") + '" ' + (canWrite ? "" : "disabled") + '/></div>' +
+            "</div></td></tr>" : "";
+          return main + detail;
+        }).join("");
+        content = '<div class="table-scroll"><table><thead><tr><th>Vendor</th><th class="num">Price</th><th>Rating</th><th>Highlights</th><th class="num">Score</th><th></th></tr></thead><tbody>' + rows + "</tbody></table></div>";
+      }
+      var btn = canWrite ? '<button class="btn btn-secondary btn-sm" data-request-cat="' + c.key + '">' + (cat.vendors.length ? "Request more" : "Request vendors") + "</button>" : "";
+      return '<div class="cat-card" style="margin-bottom:1rem"><div class="cat-card-head"><h3>' + c.label + "</h3>" + requestStatusPill(cat, c.key) + '</div><div class="cat-card-body">' + content + '<div style="margin-top:0.6rem">' + btn + "</div></div></div>" + renderVendorPayment(c, cat);
+    }).join("");
+    return panel("vendors", '<div class="card"><h2>Vendor comparisons</h2><p class="muted">Side-by-side options per category. Rate options on price, availability, and fit for a quick score, mark your pick as booked to update the budget automatically, and track deposit/balance payments once booked.</p>' + sections + "</div>");
+  }
+
+  var guestFilterStatus = "all";
+  var guestRsvpFilter = "all";
+  var guestGroupBy = "group";
+  var guestSort = "name";
+  var expandedGuestIds = {};
+  var RSVP_META = [
+    { value: "not_sent", label: "Not sent" },
+    { value: "sent", label: "Sent, waiting" },
+    { value: "attending", label: "Attending" },
+    { value: "declined", label: "Declined" }
+  ];
+  function rsvpLabel(v) { var m = RSVP_META.filter(function (r) { return r.value === v; })[0]; return m ? m.label : "Not sent"; }
+
+  function closenessDot(g) {
+    if (!g.closeness) return "";
+    var m = CLOSENESS_META.filter(function (c) { return c.value === g.closeness; })[0];
+    return '<span class="closeness-dot closeness-' + g.closeness + '" title="' + (m ? escapeHtml(m.label) : "") + '"></span>';
+  }
+
+  function renderGuestList() {
+    var stats = computeGuestStats();
+    var labels = partnerLabels();
+
+    var statTiles = '<div class="guest-stats">' +
+      ["On the list|" + stats.total + "|", "To decide|" + stats.undecided + "|" + (stats.undecided ? "warn" : "good"),
+       "Invited|" + stats.invite + "|good", "Not invited|" + stats.no + "|",
+       "Est. attending|" + stats.estAttending + "|", "Confirmed (RSVP)|" + stats.confirmedAttending + "|good",
+       "Awaiting RSVP|" + stats.awaitingRsvp + "|" + (stats.awaitingRsvp ? "warn" : "good"),
+       "Need hotel|" + stats.needsHotel + "|", "Thank-yous pending|" + stats.thankYouPending + "|" + (stats.thankYouPending ? "warn" : "good")]
+      .map(function (s) {
+        var parts = s.split("|");
+        return '<div class="stat-tile ' + parts[2] + '"><div class="stat-val mono">' + parts[1] + '</div><div class="stat-lbl">' + parts[0] + "</div></div>";
+      }).join("") + "</div>";
+
+    var fallback = copyFallback ? '<div class="copy-fallback"><strong>Downloads aren\'t available here.</strong> Select all and copy this text into a spreadsheet instead (' + escapeHtml(copyFallback.filename) + '):<div class="field" style="margin-top:0.5rem"><textarea readonly id="copy-fallback-text">' + escapeHtml(copyFallback.text) + '</textarea></div><div class="save-row"><button class="btn btn-secondary btn-sm" id="dismiss-fallback-btn">Dismiss</button></div></div>' : "";
+
+    var guestImports = state.fileImports.filter(function (fi) { return fi.targetHint === "guests"; }).slice().reverse();
+    var guestImportLog = guestImports.length ? '<div class="import-log">' + guestImports.map(function (fi) {
+      var statusPill = fi.status === "pending" ? '<span class="pill"><span class="dot warning"></span>reading…</span>' : '<span class="pill"><span class="dot good"></span>done</span>';
+      return '<div class="import-item"><div style="flex:1"><div class="imp-name">' + escapeHtml(fi.filename) + "</div><div class=\"imp-meta\">" + fmtDate(new Date(fi.createdAt)) + " " + statusPill + "</div>" +
+        (fi.response ? '<div class="imp-response">' + escapeHtml(fi.response) + "</div>" : "") + "</div></div>";
+    }).join("") + "</div>" : "";
+
+    var importCard = canWrite ? '<div class="card"><h2>Add your guest list</h2><p class="muted">Upload a spreadsheet (CSV or Excel), a PDF or Word list, a PowerPoint seating plan — really any file — or paste rows straight from Excel or Google Sheets. CSV and pasted text are added instantly; other formats I\'ll read and add within the hour. Columns understood: Name, Side, Group, Plus One, How You Know Them, Last Contact, Closeness, Notes — any optional, or just plain names, one per line.</p>' +
+      fallback +
+      '<div class="file-input-row"><input type="file" id="guest-file-input" /><button class="btn btn-secondary btn-sm" id="download-template-btn">Download CSV template</button>' + (state.guests.length ? '<button class="btn btn-secondary btn-sm" id="export-guests-btn">Export current list</button>' : "") + '</div>' +
+      '<div class="field" style="margin-top:0.9rem"><label for="f-guest-paste">Or paste rows here</label><textarea id="f-guest-paste" placeholder="Jamie Rivera, ' + escapeHtml(labels[0]) + ', College friends, Yes"></textarea></div>' +
+      '<div class="save-row"><button class="btn btn-primary" id="import-paste-btn">Add pasted guests</button></div>' +
+      guestImportLog +
+      "</div>" : (copyFallback || guestImportLog ? '<div class="card">' + fallback + guestImportLog + "</div>" : "");
+
+    var manualAdd = canWrite ? '<div class="card"><h3>Add one guest</h3><div class="grid-3">' +
+      '<div class="field"><label for="f-guest-name">Name</label><input type="text" id="f-guest-name" placeholder="Full name"/></div>' +
+      '<div class="field"><label for="f-guest-side">Side</label><select id="f-guest-side"><option value="">—</option><option value="' + escapeHtml(labels[0]) + '">' + escapeHtml(labels[0]) + '</option><option value="' + escapeHtml(labels[1]) + '">' + escapeHtml(labels[1]) + '</option><option value="Both">Both</option></select></div>' +
+      '<div class="field"><label for="f-guest-group">Group</label><input type="text" id="f-guest-group" placeholder="e.g. College friends"/></div>' +
+      '</div><label style="display:flex;align-items:center;gap:0.5em;margin-top:0.7rem;font-weight:400"><input type="checkbox" id="f-guest-plusone" style="width:16px;height:16px;accent-color:var(--accent)"/> Plus-one allowed</label>' +
+      '<div class="save-row"><button class="btn btn-secondary" id="add-guest-btn">Add guest</button></div></div>' : "";
+
+    var filterBar = state.guests.length ? '<div class="guest-toolbar"><div class="filter-group"><span class="filter-label">Show</span>' +
+      [["all", "All"], ["undecided", "To decide"], ["invite", "Invited"], ["no", "Not invited"]].map(function (f) {
+        return '<button class="filter-btn' + (guestFilterStatus === f[0] ? " active" : "") + '" data-guest-filter="' + f[0] + '">' + f[1] + "</button>";
+      }).join("") + '</div><div class="filter-group"><span class="filter-label">RSVP</span>' +
+      [["all", "All"], ["awaiting", "Awaiting"], ["attending", "Attending"], ["declined", "Declined"]].map(function (f) {
+        return '<button class="filter-btn' + (guestRsvpFilter === f[0] ? " active" : "") + '" data-guest-rsvp-filter="' + f[0] + '">' + f[1] + "</button>";
+      }).join("") + '</div><div class="filter-group"><span class="filter-label">Group by</span>' +
+      [["group", "Group"], ["side", "Side"], ["none", "None"]].map(function (g) {
+        return '<button class="filter-btn' + (guestGroupBy === g[0] ? " active" : "") + '" data-guest-groupby="' + g[0] + '">' + g[1] + "</button>";
+      }).join("") + '</div><div class="filter-group"><span class="filter-label">Sort</span><select class="sort-select" id="guest-sort-select">' +
+      [["name", "Name (A–Z)"], ["lastContact", "Last spoke (longest ago first)"]].map(function (s) {
+        return '<option value="' + s[0] + '"' + (guestSort === s[0] ? " selected" : "") + '>' + s[1] + "</option>";
+      }).join("") + "</select></div></div>" : "";
+
+    var tableHtml = "";
+    if (state.guests.length) {
+      var visible = state.guests.filter(function (g) { return guestFilterStatus === "all" || g.status === guestFilterStatus; });
+      visible = visible.filter(function (g) {
+        if (guestRsvpFilter === "all") return true;
+        if (guestRsvpFilter === "awaiting") return g.rsvp !== "attending" && g.rsvp !== "declined";
+        return g.rsvp === guestRsvpFilter;
+      });
+      if (guestSort === "lastContact") {
+        visible = visible.slice().sort(function (a, b) {
+          var da = parseDate(a.lastContact), db = parseDate(b.lastContact);
+          if (!da && !db) return a.name.localeCompare(b.name);
+          if (!da) return -1;
+          if (!db) return 1;
+          return da - db;
+        });
+      } else {
+        visible = visible.slice().sort(function (a, b) { return a.name.localeCompare(b.name); });
+      }
+      if (!visible.length) {
+        tableHtml = '<div class="empty-note">No guests match this filter.</div>';
+      } else {
+        var buckets;
+        if (guestGroupBy === "none") {
+          buckets = [{ label: null, items: visible }];
+        } else {
+          var byKey = {};
+          var order = [];
+          visible.forEach(function (g) {
+            var key = guestGroupBy === "side" ? (g.side || "Unspecified") : (g.group || "Ungrouped");
+            if (!byKey[key]) { byKey[key] = []; order.push(key); }
+            byKey[key].push(g);
+          });
+          buckets = order.sort().map(function (k) { return { label: k, items: byKey[k] }; });
+        }
+        tableHtml = buckets.map(function (b) {
+          var header = b.label ? '<div class="guest-group-header"><h4>' + escapeHtml(b.label) + " · " + b.items.length + "</h4>" +
+            (canWrite ? '<div class="grp-actions"><button data-guest-bulk="invite|' + escapeHtml(b.label) + '">Invite all</button><button data-guest-bulk="no|' + escapeHtml(b.label) + '">None</button></div>' : "") + "</div>" : "";
+          var rows = b.items.map(function (g) {
+            var expanded = !!expandedGuestIds[g.id];
+            var main = '<tr>' +
+              '<td class="guest-row-name">' + closenessDot(g) + '<input type="text" data-guest-field="name|' + g.id + '" value="' + escapeHtml(g.name) + '" ' + (canWrite ? "" : "disabled") + '/></td>' +
+              '<td class="guest-row-side"><input type="text" data-guest-field="side|' + g.id + '" value="' + escapeHtml(g.side || "") + '" ' + (canWrite ? "" : "disabled") + '/></td>' +
+              '<td class="guest-row-group"><input type="text" data-guest-field="group|' + g.id + '" value="' + escapeHtml(g.group || "") + '" ' + (canWrite ? "" : "disabled") + '/></td>' +
+              '<td class="guest-plus1"><input type="checkbox" data-guest-plusone="' + g.id + '" ' + (g.plusOne ? "checked" : "") + (canWrite ? "" : " disabled") + '/></td>' +
+              '<td>' + (canWrite ? '<div class="status-btn-group">' +
+                ["undecided", "invite", "no"].map(function (s) {
+                  var lbl = s === "undecided" ? "?" : (s === "invite" ? "Invite" : "No");
+                  return '<button class="status-btn' + (g.status === s ? " on " + s : "") + '" data-guest-status="' + s + "|" + g.id + '">' + lbl + "</button>";
+                }).join("") + "</div>" : '<span class="pill"><span class="dot ' + (g.status === "invite" ? "good" : g.status === "no" ? "critical" : "neutral") + '"></span>' + (g.status === "invite" ? "Invited" : g.status === "no" ? "Not invited" : "To decide") + "</span>") + "</td>" +
+              '<td><select data-guest-field="rsvp|' + g.id + '" ' + (canWrite ? "" : "disabled") + '>' + RSVP_META.map(function (r) { return '<option value="' + r.value + '"' + ((g.rsvp || "not_sent") === r.value ? " selected" : "") + '>' + r.label + "</option>"; }).join("") + "</select></td>" +
+              "<td><button class=\"detail-toggle\" data-guest-toggle=\"" + g.id + '">' + (expanded ? "Hide ▾" : "Details ▸") + "</button></td>" +
+              "<td>" + (canWrite ? '<button class="btn btn-ghost btn-sm" data-guest-remove="' + g.id + '">Remove</button>' : "") + "</td>" +
+              "</tr>";
+            var detail = expanded ? '<tr class="detail-row"><td colspan="8"><div class="detail-grid">' +
+              '<div class="field"><label>How you know them</label><input type="text" data-guest-field="howYouKnow|' + g.id + '" value="' + escapeHtml(g.howYouKnow || "") + '" placeholder="e.g. College roommate" ' + (canWrite ? "" : "disabled") + '/></div>' +
+              '<div class="field"><label>Last spoke</label><input type="date" data-guest-field="lastContact|' + g.id + '" value="' + escapeHtml(g.lastContact || "") + '" ' + (canWrite ? "" : "disabled") + '/>' + (g.lastContact ? '<div class="last-contact-ago">' + timeSince(g.lastContact) + "</div>" : "") + "</div>" +
+              '<div class="field"><label>Closeness</label><select data-guest-field="closeness|' + g.id + '" ' + (canWrite ? "" : "disabled") + '><option value="">—</option>' + CLOSENESS_META.map(function (c) { return '<option value="' + c.value + '"' + (g.closeness === c.value ? " selected" : "") + '>' + c.label + "</option>"; }).join("") + "</select></div>" +
+              '<div class="field"><label>Meal choice</label><input type="text" data-guest-field="mealChoice|' + g.id + '" value="' + escapeHtml(g.mealChoice || "") + '" placeholder="e.g. Vegetarian" ' + (canWrite ? "" : "disabled") + '/></div>' +
+              '<div class="field"><label>Plus-one\'s name</label><input type="text" data-guest-field="plusOneName|' + g.id + '" value="' + escapeHtml(g.plusOneName || "") + '" ' + (canWrite ? "" : "disabled") + '/></div>' +
+              '<div class="field"><label style="display:flex;align-items:center;gap:0.4em"><input type="checkbox" data-guest-check="needsHotel|' + g.id + '" ' + (g.needsHotel ? "checked" : "") + (canWrite ? "" : " disabled") + ' style="width:16px;height:16px;accent-color:var(--accent)"/> Needs a hotel room</label></div>' +
+              '<div class="field"><label>Hotel block</label><input type="text" data-guest-field="hotelBlock|' + g.id + '" value="' + escapeHtml(g.hotelBlock || "") + '" ' + (canWrite ? "" : "disabled") + '/></div>' +
+              '<div class="field"><label>Arrival</label><input type="date" data-guest-field="arrival|' + g.id + '" value="' + escapeHtml(g.arrival || "") + '" ' + (canWrite ? "" : "disabled") + '/></div>' +
+              '<div class="field"><label>Departure</label><input type="date" data-guest-field="departure|' + g.id + '" value="' + escapeHtml(g.departure || "") + '" ' + (canWrite ? "" : "disabled") + '/></div>' +
+              '<div class="field"><label style="display:flex;align-items:center;gap:0.4em"><input type="checkbox" data-guest-check="giftReceived|' + g.id + '" ' + (g.giftReceived ? "checked" : "") + (canWrite ? "" : " disabled") + ' style="width:16px;height:16px;accent-color:var(--accent)"/> Gift received</label></div>' +
+              '<div class="field"><label>Gift description</label><input type="text" data-guest-field="giftDescription|' + g.id + '" value="' + escapeHtml(g.giftDescription || "") + '" ' + (canWrite ? "" : "disabled") + '/></div>' +
+              '<div class="field"><label style="display:flex;align-items:center;gap:0.4em"><input type="checkbox" data-guest-check="thankYouSent|' + g.id + '" ' + (g.thankYouSent ? "checked" : "") + (canWrite ? "" : " disabled") + ' style="width:16px;height:16px;accent-color:var(--accent)"/> Thank-you sent</label></div>' +
+              '<div class="field" style="grid-column:1/-1"><label>Notes</label><input type="text" data-guest-field="notes|' + g.id + '" value="' + escapeHtml(g.notes || "") + '" ' + (canWrite ? "" : "disabled") + '/></div>' +
+              "</div></td></tr>" : "";
+            return main + detail;
+          }).join("");
+          return header + '<div class="table-scroll"><table><thead><tr><th>Name</th><th>Side</th><th>Group</th><th>+1</th><th>Status</th><th>RSVP</th><th></th><th></th></tr></thead><tbody>' + rows + "</tbody></table></div>";
+        }).join("");
+      }
+    } else {
+      tableHtml = '<div class="empty-note">No guests yet — upload a file, paste a list, or add someone manually above.</div>';
+    }
+
+    var saveRow = canWrite && state.guests.length ? '<div class="save-row"><span class="save-status" id="save-status-badge-4"></span><button class="btn btn-primary" id="save-guests-btn">Save guest list</button></div>' : "";
+
+    return panel("guests",
+      '<div class="card"><h2>Guest list</h2><p class="muted">Upload or build your list here, then work through it to decide who\'s in. This feeds the headcount and budget gap checks on the Overview tab.</p>' + statTiles + "</div>" +
+      importCard + manualAdd +
+      '<div class="card">' + filterBar + tableHtml + saveRow + "</div>"
+    );
+  }
+
+  function makeTableId() { return "tbl-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7); }
+  function makeTimelineId() { return "tl-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7); }
+
+  function renderTimeline() {
+    var items = state.timeline.slice().sort(function (a, b) {
+      if (!a.time && !b.time) return 0;
+      if (!a.time) return 1;
+      if (!b.time) return -1;
+      return a.time.localeCompare(b.time);
+    });
+    var rows = items.map(function (it) {
+      return '<tr><td class="mono">' + (it.time ? fmtTime(it.time) : "—") + "</td><td>" + escapeHtml(it.title) + "</td><td>" + escapeHtml(it.notes || "") + "</td>" +
+        "<td>" + (canWrite ? '<button class="btn btn-ghost btn-sm" data-timeline-remove="' + it.id + '">Remove</button>' : "") + "</td></tr>";
+    }).join("");
+    var table = items.length ? '<div class="table-scroll"><table><thead><tr><th>Time</th><th>What</th><th>Notes</th><th></th></tr></thead><tbody>' + rows + "</tbody></table></div>" : '<div class="empty-note">No timeline items yet — add the ceremony start, photo blocks, reception cues, whatever the day needs.</div>';
+    var addForm = canWrite ? '<div class="grid-3" style="margin-top:1rem"><div class="field"><label for="f-tl-time">Time</label><input type="time" id="f-tl-time"/></div>' +
+      '<div class="field"><label for="f-tl-title">What</label><input type="text" id="f-tl-title" placeholder="e.g. Ceremony begins"/></div>' +
+      '<div class="field"><label for="f-tl-notes">Notes</label><input type="text" id="f-tl-notes" placeholder="Optional"/></div></div>' +
+      '<div class="save-row"><button class="btn btn-secondary" id="add-timeline-btn">Add to timeline</button></div>' : "";
+    return '<div class="card"><h2>Day-of timeline</h2><p class="muted">The hour-by-hour schedule for the day itself — separate from the long-lead-time checklist.</p>' + table + addForm + "</div>";
+  }
+
+  var seatingView = "visual";
+
+  function seatChipClass(g) {
+    if (!g) return "empty";
+    if (g.rsvp === "attending") return "filled good";
+    if (g.rsvp === "declined") return "filled critical";
+    return "filled neutral";
+  }
+
+  function renderSeatingVisual(invited) {
+    if (!state.tables.length) return '<div class="empty-note">Add a table below to start the seating chart.</div>';
+    var pillWidth = 108, pillGap = 16;
+    var cards = state.tables.map(function (t) {
+      var seated = invited.filter(function (g) { return g.tableId === t.id; });
+      var capacity = Math.max(Number(t.capacity) || 0, seated.length, 1);
+      var over = t.capacity && seated.length > Number(t.capacity);
+      // The table itself grows a little with capacity so bigger tables read
+      // as bigger, and the ring of name pills sits far enough outside it
+      // (based on how many seats have to fit around the circumference)
+      // that neighboring names don't overlap.
+      var tableDiameter = Math.min(150, Math.max(84, capacity * 9));
+      var tableRadius = tableDiameter / 2;
+      var seatRadius = Math.max(tableRadius + 46, (capacity * (pillWidth + pillGap)) / (2 * Math.PI));
+      var size = Math.round(seatRadius * 2 + pillWidth + 24);
+      var center = size / 2;
+      var seats = [];
+      for (var i = 0; i < capacity; i++) {
+        var g = seated[i] || null;
+        var angle = (360 / capacity) * i - 90;
+        var rad = angle * Math.PI / 180;
+        var x = center + seatRadius * Math.cos(rad);
+        var y = center + seatRadius * Math.sin(rad);
+        if (g) {
+          seats.push('<div class="seat-pill ' + seatChipClass(g) + '" style="left:' + x.toFixed(1) + 'px;top:' + y.toFixed(1) + 'px" title="' + escapeHtml(g.name) + (g.rsvp ? " · " + rsvpLabel(g.rsvp) : "") + '"' + (canWrite ? ' data-table-unseat="' + g.id + '"' : "") + ">" + escapeHtml(g.name) + "</div>");
+        } else {
+          seats.push('<div class="seat-dot" style="left:' + x.toFixed(1) + 'px;top:' + y.toFixed(1) + 'px" title="Empty seat"></div>');
+        }
+      }
+      return '<div class="seat-visual-wrap"><div class="seat-visual-stage" style="width:' + size + 'px;height:' + size + 'px">' +
+        '<div class="seat-table-visual' + (over ? " over" : "") + '" style="width:' + tableDiameter + 'px;height:' + tableDiameter + 'px;left:' + center + 'px;top:' + center + 'px">' +
+        '<div class="seat-table-center"><div class="tiny">' + seated.length + " / " + (t.capacity || capacity) + "</div></div>" +
+        "</div>" + seats.join("") + "</div>" +
+        '<div class="seat-visual-name">' + escapeHtml(t.name) + "</div>" +
+        (canWrite ? '<button class="seat-remove-link" data-table-remove="' + t.id + '">Remove table</button>' : "") +
+        "</div>";
+    }).join("");
+    return '<div class="seat-visual-grid">' + cards + "</div><p class=\"tiny\" style=\"margin-top:0.75rem\">Click a name to unseat that guest. Colors follow RSVP: green attending, red declined, gray awaiting a response.</p>";
+  }
+
+  function renderSeatingList(invited) {
+    if (!state.tables.length) return '<div class="empty-note">Add a table below to start the seating chart.</div>';
+    return state.tables.map(function (t) {
+      var seated = invited.filter(function (g) { return g.tableId === t.id; });
+      var over = t.capacity && seated.length > Number(t.capacity);
+      var guestRows = seated.map(function (g) {
+        return '<div class="import-item"><div style="flex:1">' + escapeHtml(g.name) + "</div>" + (canWrite ? '<button class="btn btn-ghost btn-sm" data-table-unseat="' + g.id + '">Unseat</button>' : "") + "</div>";
+      }).join("");
+      return '<div class="cat-card" style="margin-bottom:1rem"><div class="cat-card-head"><h3>' + escapeHtml(t.name) + '</h3><span class="pill"><span class="dot ' + (over ? "critical" : "good") + '"></span>' + seated.length + (t.capacity ? " / " + t.capacity : "") + "</span></div><div class=\"cat-card-body\">" +
+        (guestRows || '<div class="empty-note">No one seated here yet.</div>') +
+        (canWrite ? '<div style="margin-top:0.6rem"><button class="btn btn-ghost btn-sm" data-table-remove="' + t.id + '">Remove table</button></div>' : "") +
+        "</div></div>";
+    }).join("");
+  }
+
+  function renderSeating() {
+    var invited = state.guests.filter(function (g) { return g.status === "invite"; });
+    var unseated = invited.filter(function (g) { return !g.tableId || !state.tables.some(function (t) { return t.id === g.tableId; }); });
+
+    var toggle = '<div class="filter-group" style="margin-bottom:1rem">' +
+      '<button class="filter-btn' + (seatingView === "visual" ? " active" : "") + '" data-seating-view="visual">Visual</button>' +
+      '<button class="filter-btn' + (seatingView === "list" ? " active" : "") + '" data-seating-view="list">List</button>' +
+      "</div>";
+    var tablesBlock = seatingView === "visual" ? renderSeatingVisual(invited) : renderSeatingList(invited);
+
+    var unseatedRows = unseated.length ? '<div class="table-scroll"><table><thead><tr><th>Name</th><th>Assign to table</th></tr></thead><tbody>' +
+      unseated.map(function (g) {
+        return "<tr><td>" + escapeHtml(g.name) + '</td><td><select data-guest-field="tableId|' + g.id + '" ' + (canWrite ? "" : "disabled") + '><option value="">— unseated —</option>' +
+          state.tables.map(function (t) { return '<option value="' + t.id + '">' + escapeHtml(t.name) + "</option>"; }).join("") + "</select></td></tr>";
+      }).join("") + "</tbody></table></div>" : '<div class="empty-note">' + (invited.length ? "Everyone invited has a seat." : "Mark guests Invited on the Guest List tab, then seat them here.") + "</div>";
+
+    var addTableForm = canWrite ? '<div class="grid-3" style="margin-top:1rem"><div class="field"><label for="f-table-name">Table name</label><input type="text" id="f-table-name" placeholder="e.g. Table 1"/></div>' +
+      '<div class="field"><label for="f-table-capacity">Capacity</label><input type="number" min="1" id="f-table-capacity"/></div></div>' +
+      '<div class="save-row"><button class="btn btn-secondary" id="add-table-btn">Add table</button></div>' : "";
+
+    return '<div class="card"><h2>Seating chart</h2><p class="muted">Add tables, then assign each invited guest to one — the visual view updates live from your guest list.</p>' + toggle + tablesBlock + addTableForm + "</div>" +
+      '<div class="card"><h3>Unseated</h3>' + unseatedRows + "</div>";
+  }
+
+  function renderDayOf() {
+    return panel("dayof",
+      renderTimeline() + renderSeating() +
+      '<div class="save-row"><span class="save-status" id="save-status-badge-5"></span>' + (canWrite ? '<button class="btn btn-primary" id="save-dayof-btn">Save day-of details</button>' : "") + "</div>"
+    );
+  }
+
+  function renderFooter() {
+    return '<footer class="note">Everything here is saved to your shared planner as soon as you hit Save — no need to keep this tab open.</footer>';
+  }
+
+  /* ---------- events ---------- */
+
+  function bindEvents() {
+    var root = document.getElementById("app-root");
+
+    var logoutBtn = document.getElementById("logout-btn");
+    if (logoutBtn) logoutBtn.addEventListener("click", function () {
+      fetch("/api/logout", { method: "POST", credentials: "same-origin" }).then(function () {
+        currentUser = null;
+        state = defaultState();
+        render();
+      });
+    });
+
+    root.querySelectorAll(".tab-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        activeTab = btn.getAttribute("data-tab");
+        render();
+      });
+    });
+
+    var saveProfileBtn = document.getElementById("save-profile-btn");
+    if (saveProfileBtn) saveProfileBtn.addEventListener("click", function () {
+      var next = clone(state);
+      next.profile.coupleNames = val("f-names");
+      next.profile.weddingDate = val("f-date");
+      next.profile.location = val("f-location");
+      next.profile.guestCount = numOrNull(val("f-guests"));
+      next.profile.budgetTotal = numOrNull(val("f-budget"));
+      next.profile.style = val("f-style");
+      next.profile.notes = val("f-notes", true);
+      saveState(next, { doneLabel: "Profile saved." });
+    });
+
+    root.querySelectorAll("[data-colorway-pick]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var key = btn.getAttribute("data-colorway-pick");
+        if (key === (state.settings && state.settings.colorway)) return;
+        applyColorway(key); // instant preview, doesn't wait on the save round-trip
+        var next = clone(state);
+        next.settings = Object.assign({}, next.settings, { colorway: key });
+        var picked = COLORWAYS.filter(function (c) { return c.key === key; })[0];
+        saveState(next, { doneLabel: (picked ? picked.label : "Colorway") + " applied." }).then(function () {
+          // If the save failed or hit a conflict, fall back to whatever
+          // colorway the reconciled/reverted state actually has.
+          applyColorway(state.settings && state.settings.colorway);
+        });
+      });
+    });
+
+    root.querySelectorAll("[data-request-cat]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var key = btn.getAttribute("data-request-cat");
+        var next = clone(state);
+        next.categories[key].requestStatus = "pending";
+        next.requests.push({ id: "req-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7), kind: "category", category: key, text: "Find and compare vendors for " + categoryLabel(key) + ".", status: "pending", createdAt: Date.now(), response: null });
+        saveState(next, { doneLabel: "Request sent — researching " + categoryLabel(key) + "." });
+      });
+    });
+
+    var submitReqBtn = document.getElementById("submit-request-btn");
+    if (submitReqBtn) submitReqBtn.addEventListener("click", function () {
+      var text = val("f-adhoc", true).trim();
+      if (!text) return;
+      var next = clone(state);
+      next.requests.push({ id: "req-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7), kind: "adhoc", category: null, text: text, status: "pending", createdAt: Date.now(), response: null });
+      saveState(next, { doneLabel: "Request submitted." });
+    });
+
+    root.querySelectorAll("[data-check]").forEach(function (cb) {
+      cb.addEventListener("change", function () {
+        var id = cb.getAttribute("data-check");
+        var next = clone(state);
+        next.checklist = next.checklist.map(function (it) { return it.id === id ? Object.assign({}, it, { done: cb.checked }) : it; });
+        saveState(next, { doneLabel: "Checklist updated." });
+      });
+    });
+
+    root.querySelectorAll("[data-remove-check]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var id = b.getAttribute("data-remove-check");
+        var next = clone(state);
+        next.checklist = next.checklist.filter(function (it) { return it.id !== id; });
+        saveState(next, { doneLabel: "Removed." });
+      });
+    });
+
+    var addCheckBtn = document.getElementById("add-check-btn");
+    if (addCheckBtn) addCheckBtn.addEventListener("click", function () {
+      var title = val("f-new-check").trim();
+      var offsetVal = val("f-new-check-offset");
+      if (!title) return;
+      var next = clone(state);
+      next.checklist.push({ id: "cl-custom-" + Date.now(), title: title, offset: offsetVal ? -Math.abs(Number(offsetVal)) : -30, category: null, done: false, custom: true });
+      saveState(next, { doneLabel: "Added to checklist." });
+    });
+
+    var saveChecklistBtn = document.getElementById("save-checklist-btn");
+    if (saveChecklistBtn) saveChecklistBtn.addEventListener("click", function () { saveState(clone(state), { doneLabel: "Checklist saved." }); });
+
+    root.querySelectorAll("[data-budget-alloc]").forEach(function (inp) {
+      inp.addEventListener("change", function () {
+        var key = inp.getAttribute("data-budget-alloc");
+        state.categories[key].allocated = numOrNull(inp.value);
+      });
+    });
+    root.querySelectorAll("[data-budget-actual]").forEach(function (inp) {
+      inp.addEventListener("change", function () {
+        var key = inp.getAttribute("data-budget-actual");
+        state.categories[key].actual = numOrNull(inp.value);
+      });
+    });
+    var saveBudgetBtn = document.getElementById("save-budget-btn");
+    if (saveBudgetBtn) saveBudgetBtn.addEventListener("click", function () { saveState(clone(state), { doneLabel: "Budget saved." }); });
+
+    root.querySelectorAll("[data-budget-view]").forEach(function (btn) {
+      btn.addEventListener("click", function () { budgetView = btn.getAttribute("data-budget-view"); render(); });
+    });
+    root.querySelectorAll("[data-rec-use]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var key = btn.getAttribute("data-rec-use");
+        var rec = computeRecommendedBudget();
+        var next = clone(state);
+        next.categories[key].allocated = rec[key].amount;
+        saveState(next, { doneLabel: "Set " + categoryLabel(key) + " to " + fmtMoney(rec[key].amount) + "." });
+      });
+    });
+    var applyEmptyBtn = document.getElementById("apply-recommended-empty-btn");
+    if (applyEmptyBtn) applyEmptyBtn.addEventListener("click", function () {
+      var rec = computeRecommendedBudget();
+      var next = clone(state);
+      var filled = 0;
+      CATEGORY_META.forEach(function (c) { if (!next.categories[c.key].allocated) { next.categories[c.key].allocated = rec[c.key].amount; filled++; } });
+      saveState(next, { doneLabel: filled ? "Filled in " + filled + " empty categor" + (filled === 1 ? "y" : "ies") + "." : "Every category already has a plan." });
+    });
+    var applyAllBtn = document.getElementById("apply-recommended-all-btn");
+    if (applyAllBtn) applyAllBtn.addEventListener("click", function () {
+      if (applyAllBtn.getAttribute("data-armed") !== "1") {
+        applyAllBtn.setAttribute("data-armed", "1");
+        var original = applyAllBtn.textContent;
+        applyAllBtn.textContent = "Click again to overwrite all";
+        setTimeout(function () { if (applyAllBtn.getAttribute("data-armed") === "1") { applyAllBtn.setAttribute("data-armed", "0"); applyAllBtn.textContent = original; } }, 4000);
+        return;
+      }
+      var rec = computeRecommendedBudget();
+      var next = clone(state);
+      CATEGORY_META.forEach(function (c) { next.categories[c.key].allocated = rec[c.key].amount; });
+      saveState(next, { doneLabel: "Every category set to the recommended amount." });
+    });
+
+    root.querySelectorAll("[data-book]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var parts = btn.getAttribute("data-book").split("|");
+        var key = parts[0], vendorId = parts[1];
+        var next = clone(state);
+        var cat = next.categories[key];
+        if (cat.bookedVendorId === vendorId) {
+          cat.bookedVendorId = null;
+        } else {
+          cat.bookedVendorId = vendorId;
+          var v = cat.vendors.filter(function (x) { return x.id === vendorId; })[0];
+          if (v && v.priceValue && !cat.actual) cat.actual = v.priceValue;
+        }
+        saveState(next, { doneLabel: "Updated." });
+      });
+    });
+
+    var exportBudgetBtn = document.getElementById("export-budget-btn");
+    if (exportBudgetBtn) exportBudgetBtn.addEventListener("click", exportBudget);
+
+    root.querySelectorAll("[data-cat-payment]").forEach(function (inp) {
+      inp.addEventListener("change", function () {
+        var parts = inp.getAttribute("data-cat-payment").split("|");
+        var field = parts[0], key = parts[1];
+        var next = clone(state);
+        if (!next.categories[key].payment) next.categories[key].payment = defaultPayment();
+        next.categories[key].payment[field] = field.indexOf("Amount") >= 0 ? numOrNull(inp.value) : inp.value;
+        syncCatActualFromPayments(next.categories[key]);
+        saveState(next, { doneLabel: "Payment info saved." });
+      });
+    });
+    root.querySelectorAll("[data-cat-payment-check]").forEach(function (cb) {
+      cb.addEventListener("change", function () {
+        var parts = cb.getAttribute("data-cat-payment-check").split("|");
+        var field = parts[0], key = parts[1];
+        var next = clone(state);
+        if (!next.categories[key].payment) next.categories[key].payment = defaultPayment();
+        next.categories[key].payment[field] = cb.checked;
+        syncCatActualFromPayments(next.categories[key]);
+        saveState(next, { doneLabel: cb.checked ? "Marked paid." : "Updated." });
+      });
+    });
+
+    root.querySelectorAll("[data-vendor-score-toggle]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var key = btn.getAttribute("data-vendor-score-toggle");
+        expandedVendorScores[key] = !expandedVendorScores[key];
+        render();
+      });
+    });
+    root.querySelectorAll("[data-vendor-score]").forEach(function (inp) {
+      inp.addEventListener("change", function () {
+        var parts = inp.getAttribute("data-vendor-score").split("|");
+        var field = parts[0], catKey = parts[1], vendorId = parts[2];
+        var next = clone(state);
+        var v = next.categories[catKey].vendors.filter(function (x) { return x.id === vendorId; })[0];
+        if (v) v[field] = numOrNull(inp.value);
+        saveState(next, { doneLabel: "Score saved." });
+      });
+    });
+
+    /* guest list */
+
+    var fileInput = document.getElementById("guest-file-input");
+    if (fileInput) fileInput.addEventListener("change", function () {
+      var file = fileInput.files && fileInput.files[0];
+      if (!file) return;
+      if (isTextLikeFile(file)) {
+        var reader = new FileReader();
+        reader.onload = function () { importGuestsFromText(String(reader.result || ""), "file"); };
+        reader.onerror = function () { showToast("Couldn't read that file."); };
+        reader.readAsText(file);
+      } else {
+        queueFileImport(file, "guests", "");
+      }
+      fileInput.value = "";
+    });
+
+    var vendorDocBtn = document.getElementById("upload-vendor-doc-btn");
+    if (vendorDocBtn) vendorDocBtn.addEventListener("click", function () {
+      var fileEl = document.getElementById("f-vendor-doc-file");
+      var file = fileEl && fileEl.files && fileEl.files[0];
+      if (!file) { showToast("Choose a file first."); return; }
+      var catKey = val("f-vendor-doc-cat");
+      var note = val("f-vendor-doc-note").trim();
+      queueFileImport(file, "vendor:" + catKey, note).then(function () { if (fileEl) fileEl.value = ""; });
+    });
+
+    var sortSelect = document.getElementById("guest-sort-select");
+    if (sortSelect) sortSelect.addEventListener("change", function () { guestSort = sortSelect.value; render(); });
+
+    root.querySelectorAll("[data-guest-toggle]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-guest-toggle");
+        expandedGuestIds[id] = !expandedGuestIds[id];
+        render();
+      });
+    });
+
+    var importPasteBtn = document.getElementById("import-paste-btn");
+    if (importPasteBtn) importPasteBtn.addEventListener("click", function () {
+      var text = val("f-guest-paste", true).trim();
+      if (!text) return;
+      importGuestsFromText(text, "pasted list");
+    });
+
+    var addGuestBtn = document.getElementById("add-guest-btn");
+    if (addGuestBtn) addGuestBtn.addEventListener("click", function () {
+      var name = val("f-guest-name").trim();
+      if (!name) return;
+      var sideEl = document.getElementById("f-guest-side");
+      var next = clone(state);
+      next.guests.push({
+        id: makeGuestId(), name: name, side: sideEl ? sideEl.value : "", group: val("f-guest-group").trim(),
+        plusOne: !!(document.getElementById("f-guest-plusone") || {}).checked, status: "undecided",
+        howYouKnow: "", lastContact: "", closeness: "", notes: "",
+        rsvp: "not_sent", mealChoice: "", plusOneName: "", needsHotel: false, hotelBlock: "", arrival: "", departure: "",
+        giftReceived: false, giftDescription: "", thankYouSent: false, tableId: ""
+      });
+      saveState(next, { doneLabel: "Added " + name + "." });
+    });
+
+    var templateBtn = document.getElementById("download-template-btn");
+    if (templateBtn) templateBtn.addEventListener("click", downloadTemplate);
+    var exportBtn = document.getElementById("export-guests-btn");
+    if (exportBtn) exportBtn.addEventListener("click", exportGuests);
+    var dismissFallbackBtn = document.getElementById("dismiss-fallback-btn");
+    if (dismissFallbackBtn) dismissFallbackBtn.addEventListener("click", function () { copyFallback = null; render(); });
+    var fallbackText = document.getElementById("copy-fallback-text");
+    if (fallbackText) fallbackText.addEventListener("click", function () { fallbackText.select(); });
+
+    root.querySelectorAll("[data-guest-filter]").forEach(function (btn) {
+      btn.addEventListener("click", function () { guestFilterStatus = btn.getAttribute("data-guest-filter"); render(); });
+    });
+    root.querySelectorAll("[data-guest-rsvp-filter]").forEach(function (btn) {
+      btn.addEventListener("click", function () { guestRsvpFilter = btn.getAttribute("data-guest-rsvp-filter"); render(); });
+    });
+    root.querySelectorAll("[data-guest-check]").forEach(function (cb) {
+      cb.addEventListener("change", function () {
+        var parts = cb.getAttribute("data-guest-check").split("|");
+        var field = parts[0], id = parts[1];
+        var g = state.guests.filter(function (x) { return x.id === id; })[0];
+        if (g) g[field] = cb.checked;
+      });
+    });
+    root.querySelectorAll("[data-guest-groupby]").forEach(function (btn) {
+      btn.addEventListener("click", function () { guestGroupBy = btn.getAttribute("data-guest-groupby"); render(); });
+    });
+
+    root.querySelectorAll("[data-guest-field]").forEach(function (inp) {
+      inp.addEventListener("change", function () {
+        var parts = inp.getAttribute("data-guest-field").split("|");
+        var field = parts[0], id = parts[1];
+        var g = state.guests.filter(function (x) { return x.id === id; })[0];
+        if (g) g[field] = inp.value;
+      });
+    });
+    root.querySelectorAll("[data-guest-plusone]").forEach(function (cb) {
+      cb.addEventListener("change", function () {
+        var id = cb.getAttribute("data-guest-plusone");
+        var g = state.guests.filter(function (x) { return x.id === id; })[0];
+        if (g) g.plusOne = cb.checked;
+      });
+    });
+    root.querySelectorAll("[data-guest-status]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var parts = btn.getAttribute("data-guest-status").split("|");
+        var status = parts[0], id = parts[1];
+        var g = state.guests.filter(function (x) { return x.id === id; })[0];
+        if (g) g.status = status;
+        render();
+      });
+    });
+    root.querySelectorAll("[data-guest-remove]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-guest-remove");
+        state.guests = state.guests.filter(function (x) { return x.id !== id; });
+        render();
+      });
+    });
+    root.querySelectorAll("[data-guest-bulk]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var parts = btn.getAttribute("data-guest-bulk").split("|");
+        var status = parts[0], groupLabel = parts[1];
+        state.guests.forEach(function (g) {
+          var key = guestGroupBy === "side" ? (g.side || "Unspecified") : (g.group || "Ungrouped");
+          if (key === groupLabel) g.status = status;
+        });
+        render();
+      });
+    });
+
+    var saveGuestsBtn = document.getElementById("save-guests-btn");
+    if (saveGuestsBtn) saveGuestsBtn.addEventListener("click", function () { saveState(clone(state), { doneLabel: "Guest list saved." }); });
+
+    /* day-of: timeline + seating */
+
+    var addTimelineBtn = document.getElementById("add-timeline-btn");
+    if (addTimelineBtn) addTimelineBtn.addEventListener("click", function () {
+      var title = val("f-tl-title").trim();
+      if (!title) return;
+      var next = clone(state);
+      next.timeline.push({ id: makeTimelineId(), time: val("f-tl-time"), title: title, notes: val("f-tl-notes").trim() });
+      saveState(next, { doneLabel: "Added to the timeline." });
+    });
+    root.querySelectorAll("[data-timeline-remove]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-timeline-remove");
+        state.timeline = state.timeline.filter(function (it) { return it.id !== id; });
+        render();
+      });
+    });
+
+    root.querySelectorAll("[data-seating-view]").forEach(function (btn) {
+      btn.addEventListener("click", function () { seatingView = btn.getAttribute("data-seating-view"); render(); });
+    });
+
+    var addTableBtn = document.getElementById("add-table-btn");
+    if (addTableBtn) addTableBtn.addEventListener("click", function () {
+      var name = val("f-table-name").trim();
+      if (!name) return;
+      var next = clone(state);
+      next.tables.push({ id: makeTableId(), name: name, capacity: numOrNull(val("f-table-capacity")) });
+      saveState(next, { doneLabel: "Added " + name + "." });
+    });
+    root.querySelectorAll("[data-table-remove]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-table-remove");
+        state.tables = state.tables.filter(function (t) { return t.id !== id; });
+        state.guests.forEach(function (g) { if (g.tableId === id) g.tableId = ""; });
+        render();
+      });
+    });
+    root.querySelectorAll("[data-table-unseat]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-table-unseat");
+        var g = state.guests.filter(function (x) { return x.id === id; })[0];
+        if (g) g.tableId = "";
+        render();
+      });
+    });
+
+    var saveDayOfBtn = document.getElementById("save-dayof-btn");
+    if (saveDayOfBtn) saveDayOfBtn.addEventListener("click", function () { saveState(clone(state), { doneLabel: "Day-of details saved." }); });
+  }
+
+  function val(id, isTextarea) { var el = document.getElementById(id); return el ? el.value : ""; }
+  function numOrNull(v) { if (v === "" || v === null || v === undefined) return null; var n = Number(v); return isNaN(n) ? null : n; }
+  function clone(obj) { return JSON.parse(JSON.stringify(obj)); }
+
+  /* ---------- boot ---------- */
+
+  function loadStateAndRender() {
+    fetch("/api/state", { credentials: "same-origin" }).then(function (res) {
+      if (res.status === 401) { currentUser = null; render(); return null; }
+      return res.json();
+    }).then(function (data) {
+      if (!data) return;
+      applyLoadedState(data.state);
+      state._rev = data.rev;
+      render();
+    }).catch(function (err) {
+      console.error(err);
+      setSaveStatus("Could not load your data. Refresh to try again.", "err");
+    });
+  }
+
+  function boot() {
+    fetch("/api/me", { credentials: "same-origin" }).then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (data && data.authenticated) {
+          currentUser = data.user;
+          loadStateAndRender();
+        } else {
+          render();
+        }
+      }).catch(function () {
+        render();
+      });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+})();
+</script>
+</body>
+</html>
