@@ -90,6 +90,135 @@
     --series-2: #d95926;
     --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
   }
+
+  /* ---------- colorways ----------
+     "Classic" (unscoped :root above) stays the default until a couple
+     picks one of these on the Profile tab. Each colorway restyles --accent
+     (primary) and --brass (secondary — kept as the variable name so every
+     existing rule that references it, like the masthead rule and pills,
+     just works) plus the neutral paper/ink tones so the whole page reads
+     as one cohesive palette, not just a swapped button color. --good/
+     --warning/--critical are intentionally left alone in every colorway:
+     they're functional status colors (RSVP, budget), not brand colors,
+     and changing their meaning per-theme would make the app harder to
+     read, not nicer to look at. */
+
+  :root[data-colorway="sage"] {
+    --paper: #f3f1ea; --paper-2: #ece8dd; --surface: #fbfaf6;
+    --ink: #2f3a2c; --ink-2: #5c6b57; --ink-muted: #8a9384;
+    --line: #ddd9c9; --line-strong: #c7c2ad;
+    --accent: #6b7f5e; --accent-ink: #ffffff; --accent-soft: #e2e8db;
+    --brass: #c98fa0; --brass-soft: #f7e3e8; --brass-ink: #6b3345;
+    --series-1: #6b7f5e; --series-2: #c98fa0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-colorway="sage"]:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #171a15; --paper-2: #1c2018; --surface: #20241c;
+      --ink: #e7ece2; --ink-2: #aab5a3; --ink-muted: #7c8778;
+      --line: #333c2c; --line-strong: #445039;
+      --accent: #9db98c; --accent-ink: #142012; --accent-soft: #263320;
+      --brass: #e3a8b8; --brass-soft: #3a2229; --brass-ink: #f6d7de;
+      --series-1: #9db98c; --series-2: #e3a8b8;
+    }
+  }
+  :root[data-colorway="sage"][data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #171a15; --paper-2: #1c2018; --surface: #20241c;
+    --ink: #e7ece2; --ink-2: #aab5a3; --ink-muted: #7c8778;
+    --line: #333c2c; --line-strong: #445039;
+    --accent: #9db98c; --accent-ink: #142012; --accent-soft: #263320;
+    --brass: #e3a8b8; --brass-soft: #3a2229; --brass-ink: #f6d7de;
+    --series-1: #9db98c; --series-2: #e3a8b8;
+  }
+
+  :root[data-colorway="emerald"] {
+    --paper: #f0efe9; --paper-2: #e8e6dc; --surface: #fbfaf6;
+    --ink: #22201b; --ink-2: #5a544a; --ink-muted: #8c8578;
+    --line: #dbd7c8; --line-strong: #c4bfab;
+    --accent: #0f5c46; --accent-ink: #ffffff; --accent-soft: #dcece5;
+    --brass: #8a6a52; --brass-soft: #ece2d6; --brass-ink: #4a382a;
+    --series-1: #0f5c46; --series-2: #8a6a52;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-colorway="emerald"]:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #121815; --paper-2: #171e1a; --surface: #1b2320;
+      --ink: #e6ece8; --ink-2: #a6b3ac; --ink-muted: #77857e;
+      --line: #2b3733; --line-strong: #3a4a43;
+      --accent: #4fbf9a; --accent-ink: #0c211a; --accent-soft: #1e3931;
+      --brass: #c6a483; --brass-soft: #3a2c1f; --brass-ink: #eeddc7;
+      --series-1: #4fbf9a; --series-2: #c6a483;
+    }
+  }
+  :root[data-colorway="emerald"][data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #121815; --paper-2: #171e1a; --surface: #1b2320;
+    --ink: #e6ece8; --ink-2: #a6b3ac; --ink-muted: #77857e;
+    --line: #2b3733; --line-strong: #3a4a43;
+    --accent: #4fbf9a; --accent-ink: #0c211a; --accent-soft: #1e3931;
+    --brass: #c6a483; --brass-soft: #3a2c1f; --brass-ink: #eeddc7;
+    --series-1: #4fbf9a; --series-2: #c6a483;
+  }
+
+  :root[data-colorway="chocolate"] {
+    --paper: #f4ede8; --paper-2: #ede2da; --surface: #fcf8f5;
+    --ink: #3a2418; --ink-2: #6b5142; --ink-muted: #9a8474;
+    --line: #e0d0c5; --line-strong: #cbb5a5;
+    --accent: #5c3a21; --accent-ink: #ffffff; --accent-soft: #ecdfd4;
+    --brass: #d98aa0; --brass-soft: #f9e3ea; --brass-ink: #7a2f45;
+    --series-1: #5c3a21; --series-2: #d98aa0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-colorway="chocolate"]:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #1a1310; --paper-2: #201814; --surface: #251c17;
+      --ink: #f0e5dc; --ink-2: #c2ab9a; --ink-muted: #93796a;
+      --line: #3a2c22; --line-strong: #4d3b2d;
+      --accent: #c08a5e; --accent-ink: #211307; --accent-soft: #3a2a1c;
+      --brass: #eb9fb4; --brass-soft: #3d2129; --brass-ink: #f8d6e0;
+      --series-1: #c08a5e; --series-2: #eb9fb4;
+    }
+  }
+  :root[data-colorway="chocolate"][data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #1a1310; --paper-2: #201814; --surface: #251c17;
+    --ink: #f0e5dc; --ink-2: #c2ab9a; --ink-muted: #93796a;
+    --line: #3a2c22; --line-strong: #4d3b2d;
+    --accent: #c08a5e; --accent-ink: #211307; --accent-soft: #3a2a1c;
+    --brass: #eb9fb4; --brass-soft: #3d2129; --brass-ink: #f8d6e0;
+    --series-1: #c08a5e; --series-2: #eb9fb4;
+  }
+
+  :root[data-colorway="mocha"] {
+    --paper: #f2ede6; --paper-2: #eae2d6; --surface: #fbf8f4;
+    --ink: #332a20; --ink-2: #635243; --ink-muted: #948473;
+    --line: #ddd2c0; --line-strong: #c7b9a3;
+    --accent: #7a5c46; --accent-ink: #ffffff; --accent-soft: #ece3d8;
+    --brass: #8fa583; --brass-soft: #e6ebe1; --brass-ink: #3d4a35;
+    --series-1: #7a5c46; --series-2: #8fa583;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-colorway="mocha"]:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #17130f; --paper-2: #1c1712; --surface: #221c16;
+      --ink: #ede4d9; --ink-2: #b8a996; --ink-muted: #87796a;
+      --line: #362c22; --line-strong: #493c2d;
+      --accent: #b6906c; --accent-ink: #241a10; --accent-soft: #3c2d1e;
+      --brass: #a9c19a; --brass-soft: #253022; --brass-ink: #dcebd3;
+      --series-1: #b6906c; --series-2: #a9c19a;
+    }
+  }
+  :root[data-colorway="mocha"][data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #17130f; --paper-2: #1c1712; --surface: #221c16;
+    --ink: #ede4d9; --ink-2: #b8a996; --ink-muted: #87796a;
+    --line: #362c22; --line-strong: #493c2d;
+    --accent: #b6906c; --accent-ink: #241a10; --accent-soft: #3c2d1e;
+    --brass: #a9c19a; --brass-soft: #253022; --brass-ink: #dcebd3;
+    --series-1: #b6906c; --series-2: #a9c19a;
+  }
+
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
   body {
@@ -139,7 +268,7 @@
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .btn-sm { padding: 0.4em 0.8em; font-size: 0.8rem; }
 
-  .shell { max-width: 1080px; margin: 0 auto; padding: 2rem 1.25rem 6rem; }
+  .shell { max-width: 1320px; margin: 0 auto; padding: 2rem 1.25rem 6rem; }
 
   .masthead {
     display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1.5rem;
@@ -211,6 +340,22 @@
   .gap-item-title { font-weight: 600; font-size: 0.92rem; }
   .gap-item-sub { font-size: 0.82rem; color: var(--ink-2); margin-top: 0.15rem; }
   .empty-note { text-align: center; padding: 1.5rem 1rem; color: var(--ink-2); font-size: 0.9rem; }
+
+  .colorway-grid { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.75rem; }
+  .colorway-option {
+    display: flex; flex-direction: column; align-items: center; gap: 0.35rem; width: 108px;
+    background: none; border: 1px solid transparent; border-radius: 12px; padding: 0.6rem 0.5rem 0.7rem; cursor: pointer;
+  }
+  .colorway-option:hover:not(:disabled) { background: var(--paper-2); }
+  .colorway-option:disabled { cursor: default; }
+  .colorway-option.active { border-color: var(--line-strong); background: var(--paper-2); }
+  .colorway-swatch { width: 46px; height: 46px; border-radius: 50%; border: 2px solid var(--line-strong); position: relative; overflow: hidden; box-shadow: var(--shadow); }
+  .colorway-swatch span { position: absolute; inset: 0; }
+  .colorway-swatch span:first-child { clip-path: polygon(0 0, 100% 0, 0 100%); }
+  .colorway-swatch span:last-child { clip-path: polygon(100% 0, 100% 100%, 0 100%); }
+  .colorway-option.active .colorway-swatch { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .colorway-label { font-size: 0.78rem; font-weight: 700; text-align: center; color: var(--ink); }
+  .colorway-sub { font-size: 0.68rem; color: var(--ink-muted); text-align: center; }
 
   .cat-card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
   .cat-card-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem 0.75rem; padding: 0.9rem 1rem; }
@@ -325,21 +470,23 @@
 
   .sort-select { width: auto; font-size: 0.8rem; padding: 0.35em 0.6em; }
 
-  .seat-visual-grid { display: flex; flex-wrap: wrap; gap: 0.5rem 1.75rem; }
+  .seat-visual-grid { display: flex; flex-wrap: wrap; gap: 1.5rem 2rem; }
   .seat-visual-wrap { text-align: center; padding-bottom: 0.5rem; }
-  .seat-visual-wrap .seat-visual-name { font-weight: 700; font-size: 0.85rem; margin-top: 0.4rem; }
-  .seat-table-visual { position: relative; border-radius: 50%; border: 2px dashed var(--line-strong); background: var(--paper-2); margin: 0 auto; }
+  .seat-visual-wrap .seat-visual-name { font-weight: 700; font-size: 0.85rem; margin-top: 0.5rem; }
+  .seat-visual-stage { position: relative; margin: 0 auto; }
+  .seat-table-visual { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; border: 2px dashed var(--line-strong); background: var(--paper-2); }
   .seat-table-visual.over { border-color: var(--critical); }
   .seat-table-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 70%; }
-  .seat-chip {
-    position: absolute; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    font-size: 0.66rem; font-weight: 700; border: 2px solid var(--line-strong); background: var(--surface); color: var(--ink-2);
+  .seat-pill {
+    position: absolute; transform: translate(-50%, -50%); max-width: 118px; padding: 0.28rem 0.65rem; border-radius: 999px;
+    font-size: 0.7rem; font-weight: 700; border: 2px solid var(--line-strong); background: var(--surface); color: var(--ink-2);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .seat-chip.empty { border-style: dashed; color: var(--ink-muted); }
-  .seat-chip.filled { cursor: pointer; }
-  .seat-chip.good { border-color: var(--good); background: var(--good-soft); color: var(--good); }
-  .seat-chip.critical { border-color: var(--critical); background: var(--critical-soft); color: var(--critical); }
-  .seat-chip.neutral { border-color: var(--ink-muted); background: var(--paper-2); color: var(--ink-2); }
+  .seat-pill.filled { cursor: pointer; }
+  .seat-pill.good { border-color: var(--good); background: var(--good-soft); color: var(--good); }
+  .seat-pill.critical { border-color: var(--critical); background: var(--critical-soft); color: var(--critical); }
+  .seat-pill.neutral { border-color: var(--ink-muted); background: var(--paper-2); color: var(--ink-2); }
+  .seat-dot { position: absolute; transform: translate(-50%, -50%); width: 12px; height: 12px; border-radius: 50%; border: 2px dashed var(--line-strong); background: var(--paper-2); }
   .seat-remove-link { background: none; border: none; color: var(--accent); font-size: 0.75rem; font-weight: 600; cursor: pointer; margin-top: 0.35rem; }
 
   .login-shell { max-width: 380px; margin: 4.5rem auto; padding: 0 1.25rem; }
@@ -422,6 +569,26 @@
 
   var DAY_MS = 86400000;
 
+  // Swatch colors are each colorway's light-mode --accent / --brass so the
+  // picker looks the same regardless of which colorway (or light/dark
+  // mode) happens to be active while you're choosing.
+  var COLORWAYS = [
+    { key: "classic", label: "Classic", sub: "Navy & Brass", colors: ["#33406b", "#a8843d"] },
+    { key: "sage", label: "Sage & Blush", sub: "Green + pink", colors: ["#6b7f5e", "#c98fa0"] },
+    { key: "emerald", label: "Emerald & Mocha", sub: "Green + brown", colors: ["#0f5c46", "#8a6a52"] },
+    { key: "chocolate", label: "Cocoa & Blush", sub: "Brown + pink", colors: ["#5c3a21", "#d98aa0"] },
+    { key: "mocha", label: "Mocha & Sage", sub: "Brown + green", colors: ["#7a5c46", "#8fa583"] }
+  ];
+
+  function applyColorway(key) {
+    var known = COLORWAYS.some(function (c) { return c.key === key; });
+    if (!known || key === "classic") {
+      document.documentElement.removeAttribute("data-colorway");
+    } else {
+      document.documentElement.setAttribute("data-colorway", key);
+    }
+  }
+
   function defaultPayment() {
     return { depositAmount: null, depositPaid: false, depositDueDate: "", balanceAmount: null, balancePaid: false, balanceDueDate: "" };
   }
@@ -442,6 +609,7 @@
       fileImports: [],
       timeline: [],
       tables: [],
+      settings: { colorway: "classic" },
       writable: true,
       _rev: 0
     };
@@ -471,8 +639,10 @@
   function applyLoadedState(parsed) {
     state = Object.assign(defaultState(), parsed, {
       profile: Object.assign(defaultState().profile, parsed.profile || {}),
-      categories: mergeCategories(parsed.categories)
+      categories: mergeCategories(parsed.categories),
+      settings: Object.assign(defaultState().settings, parsed.settings || {})
     });
+    applyColorway(state.settings.colorway);
   }
 
   function mergeCategories(saved) {
@@ -523,6 +693,7 @@
       return res.json().then(function (data) {
         state = nextState;
         state._rev = data.rev;
+        render();
         setSaveStatus(opts.doneLabel || "Saved.", "ok");
       });
     }).catch(function (err) {
@@ -533,11 +704,16 @@
   }
 
   function setSaveStatus(text, cls) {
-    var el = document.getElementById("save-status-badge");
-    if (el) {
+    // Every tab renders its own save-status span with its own id
+    // (save-status-badge, save-status-badge-3, -4, -5, …) since each tab's
+    // Save button is independent. Update whichever one(s) currently exist
+    // in the DOM rather than only the first tab's, so the "Saved." /
+    // "Saving…" confirmation actually shows up next to the button someone
+    // clicked, not just on the Profile tab.
+    document.querySelectorAll(".save-status").forEach(function (el) {
       el.textContent = text;
       el.className = "save-status " + (cls || "");
-    }
+    });
     showToast(text);
   }
 
@@ -571,10 +747,28 @@
     return Math.round((d.getTime() - today().getTime()) / DAY_MS);
   }
 
+  // The built-in checklist offsets assume a 12-month (365-day) runway. When
+  // the wedding is sooner than that, scale every default offset down
+  // proportionally so the whole plan compresses into the time actually
+  // available instead of showing most of the checklist as already overdue.
+  // Offset 0 (wedding day) and offsets near it barely move; the earliest
+  // items (offset -365) land right around today. Custom to-dos the couple
+  // added themselves are left alone — those "days before" values were
+  // typed in on purpose and already mean what they say.
+  var CHECKLIST_BASELINE_DAYS = 365;
+  function checklistOffsetScale() {
+    var du = daysUntil(state.profile.weddingDate);
+    if (du === null || du <= 0) return 1;
+    if (du >= CHECKLIST_BASELINE_DAYS) return 1;
+    return du / CHECKLIST_BASELINE_DAYS;
+  }
+
   function dueDateFor(item) {
     var wd = parseDate(state.profile.weddingDate);
     if (!wd) return null;
-    return new Date(wd.getTime() + item.offset * DAY_MS);
+    var offset = item.offset;
+    if (!item.custom) offset = Math.round(offset * checklistOffsetScale());
+    return new Date(wd.getTime() + offset * DAY_MS);
   }
 
   function fmtDate(d) {
@@ -1179,6 +1373,21 @@
     );
   }
 
+  function renderColorwayPicker() {
+    var current = (state.settings && state.settings.colorway) || "classic";
+    var options = COLORWAYS.map(function (c) {
+      var active = c.key === current;
+      return '<button type="button" class="colorway-option' + (active ? " active" : "") + '" data-colorway-pick="' + c.key + '" ' + (canWrite ? "" : "disabled") + '>' +
+        '<span class="colorway-swatch"><span style="background:' + c.colors[0] + '"></span><span style="background:' + c.colors[1] + '"></span></span>' +
+        '<span class="colorway-label">' + escapeHtml(c.label) + (active ? " ✓" : "") + '</span>' +
+        '<span class="colorway-sub">' + escapeHtml(c.sub) + "</span>" +
+        "</button>";
+    }).join("");
+    return '<div class="card"><h2>Site colorway</h2><p class="muted">' +
+      (canWrite ? "Pick a palette — it applies for both of you right away." : "The site's current color palette. Ask the owner to change it.") +
+      '</p><div class="colorway-grid">' + options + "</div></div>";
+  }
+
   function renderProfile() {
     var p = state.profile;
     var f = function (id, label, value, type, extra) {
@@ -1241,6 +1450,7 @@
       '<div class="save-row"><button class="btn btn-primary" id="upload-vendor-doc-btn">Upload document</button></div>' + vendorImportLog + "</div>" : (vendorImportLog ? '<div class="card"><h2>Uploaded documents</h2>' + vendorImportLog + "</div>" : "");
 
     return panel("profile",
+      renderColorwayPicker() +
       '<div class="card"><h2>Wedding profile</h2><p class="muted">This is what I use to research vendors and build your timeline. Fill it in and save — updates flow back into this dashboard.</p>' + profileForm + "</div>" +
       '<div class="card"><h2>Vendor categories</h2><p class="muted">Log a research request for any category, or add options yourself on the Vendors tab. Automatic research isn\'t wired up yet — requests just sit logged below until you follow up.</p><div class="grid-3">' + catCards + "</div>" + adhoc + "</div>" +
       vendorUpload +
@@ -1255,15 +1465,39 @@
     return '<span class="pill"><span class="dot good"></span>' + cat.vendors.length + ' found</span>';
   }
 
+  // Labels for the fixed checklist buckets below. On a normal 12+ month
+  // runway these print as-is. On a compressed timeline, the same buckets
+  // (grouped by the item's original, unscaled offset — so items keep a
+  // stable, sensible order) get relabeled with the actual compressed lead
+  // time instead of a now-inaccurate "months before".
+  function fmtLeadLabel(bound, scale) {
+    if (bound === 0) return "Final weeks";
+    if (scale >= 1) {
+      var months = { "-300": "12+ months before", "-270": "9–11 months before", "-180": "6–8 months before", "-90": "3–5 months before", "-30": "1–2 months before" };
+      return months[String(bound)] || (Math.abs(bound) + " days before");
+    }
+    var days = Math.max(1, Math.round(Math.abs(bound) * scale));
+    if (days < 14) return "~" + days + " day" + (days === 1 ? "" : "s") + " before";
+    if (days < 60) { var wks = Math.round(days / 7); return "~" + wks + " week" + (wks === 1 ? "" : "s") + " before"; }
+    var mos = Math.round(days / 30.44);
+    return "~" + mos + " month" + (mos === 1 ? "" : "s") + " before";
+  }
+
   function renderChecklist() {
-    var groups = [
-      { label: "12+ months before", test: function (o) { return o <= -300; } },
-      { label: "9–11 months before", test: function (o) { return o <= -270 && o > -300; } },
-      { label: "6–8 months before", test: function (o) { return o <= -180 && o > -270; } },
-      { label: "3–5 months before", test: function (o) { return o <= -90 && o > -180; } },
-      { label: "1–2 months before", test: function (o) { return o <= -30 && o > -90; } },
-      { label: "Final weeks", test: function (o) { return o > -30; } }
+    var scale = checklistOffsetScale();
+    var bounds = [-300, -270, -180, -90, -30, 0];
+    var tests = [
+      function (o) { return o <= -300; },
+      function (o) { return o <= -270 && o > -300; },
+      function (o) { return o <= -180 && o > -270; },
+      function (o) { return o <= -90 && o > -180; },
+      function (o) { return o <= -30 && o > -90; },
+      function (o) { return o > -30; }
     ];
+    var groups = bounds.map(function (bound, i) { return { label: fmtLeadLabel(bound, scale), test: tests[i] }; });
+    var compressionNote = scale < 1
+      ? '<p class="tiny" style="margin:-0.4rem 0 0.9rem">Your wedding is ' + daysUntil(state.profile.weddingDate) + ' days away — the standard 12-month checklist below has been compressed to fit that timeline. Skip or remove anything that doesn\'t apply.</p>'
+      : "";
     var items = state.checklist.slice().sort(function (a, b) { return a.offset - b.offset; });
     var html = groups.map(function (g) {
       var rows = items.filter(function (it) { return g.test(it.offset); });
@@ -1280,7 +1514,7 @@
 
     var addRow = canWrite ? '<div class="grid-2" style="margin-top:0.5rem"><div class="field"><label for="f-new-check">Add a custom to-do</label><input id="f-new-check" type="text" placeholder="e.g. Order welcome bags"/></div><div class="field"><label for="f-new-check-offset">Due (days before wedding)</label><input id="f-new-check-offset" type="number" placeholder="e.g. 30"/></div></div><div class="save-row"><button class="btn btn-secondary" id="add-check-btn">Add to-do</button><span class="save-status" id="save-status-badge-2"></span><button class="btn btn-primary" id="save-checklist-btn">Save checklist</button></div>' : "";
 
-    return panel("checklist", '<div class="card"><h2>Wedding timeline</h2><p class="muted">Auto-generated from your wedding date, in the order most couples tackle them. Check items off as you go.</p>' + html + addRow + "</div>");
+    return panel("checklist", '<div class="card"><h2>Wedding timeline</h2><p class="muted">Auto-generated from your wedding date, in the order most couples tackle them. Check items off as you go.</p>' + compressionNote + html + addRow + "</div>");
   }
 
   function renderBudgetBars(compact) {
@@ -1608,34 +1842,44 @@
     return "filled neutral";
   }
 
-  function guestInitials(name) {
-    return (name || "").split(/\s+/).filter(Boolean).map(function (p) { return p[0]; }).slice(0, 2).join("").toUpperCase();
-  }
-
   function renderSeatingVisual(invited) {
     if (!state.tables.length) return '<div class="empty-note">Add a table below to start the seating chart.</div>';
+    var pillWidth = 108, pillGap = 16;
     var cards = state.tables.map(function (t) {
       var seated = invited.filter(function (g) { return g.tableId === t.id; });
       var capacity = Math.max(Number(t.capacity) || 0, seated.length, 1);
-      var size = 190, radius = 76, chip = 34, center = size / 2;
       var over = t.capacity && seated.length > Number(t.capacity);
+      // The table itself grows a little with capacity so bigger tables read
+      // as bigger, and the ring of name pills sits far enough outside it
+      // (based on how many seats have to fit around the circumference)
+      // that neighboring names don't overlap.
+      var tableDiameter = Math.min(150, Math.max(84, capacity * 9));
+      var tableRadius = tableDiameter / 2;
+      var seatRadius = Math.max(tableRadius + 46, (capacity * (pillWidth + pillGap)) / (2 * Math.PI));
+      var size = Math.round(seatRadius * 2 + pillWidth + 24);
+      var center = size / 2;
       var seats = [];
       for (var i = 0; i < capacity; i++) {
         var g = seated[i] || null;
         var angle = (360 / capacity) * i - 90;
         var rad = angle * Math.PI / 180;
-        var x = center + radius * Math.cos(rad) - chip / 2;
-        var y = center + radius * Math.sin(rad) - chip / 2;
-        seats.push('<div class="seat-chip ' + seatChipClass(g) + '" style="left:' + x.toFixed(1) + 'px;top:' + y.toFixed(1) + 'px" title="' + (g ? escapeHtml(g.name) + (g.rsvp ? " · " + rsvpLabel(g.rsvp) : "") : "Empty seat") + '"' + (g && canWrite ? ' data-table-unseat="' + g.id + '"' : "") + ">" + (g ? escapeHtml(guestInitials(g.name)) : "") + "</div>");
+        var x = center + seatRadius * Math.cos(rad);
+        var y = center + seatRadius * Math.sin(rad);
+        if (g) {
+          seats.push('<div class="seat-pill ' + seatChipClass(g) + '" style="left:' + x.toFixed(1) + 'px;top:' + y.toFixed(1) + 'px" title="' + escapeHtml(g.name) + (g.rsvp ? " · " + rsvpLabel(g.rsvp) : "") + '"' + (canWrite ? ' data-table-unseat="' + g.id + '"' : "") + ">" + escapeHtml(g.name) + "</div>");
+        } else {
+          seats.push('<div class="seat-dot" style="left:' + x.toFixed(1) + 'px;top:' + y.toFixed(1) + 'px" title="Empty seat"></div>');
+        }
       }
-      return '<div class="seat-visual-wrap"><div class="seat-table-visual' + (over ? " over" : "") + '" style="width:' + size + 'px;height:' + size + 'px">' +
+      return '<div class="seat-visual-wrap"><div class="seat-visual-stage" style="width:' + size + 'px;height:' + size + 'px">' +
+        '<div class="seat-table-visual' + (over ? " over" : "") + '" style="width:' + tableDiameter + 'px;height:' + tableDiameter + 'px;left:' + center + 'px;top:' + center + 'px">' +
         '<div class="seat-table-center"><div class="tiny">' + seated.length + " / " + (t.capacity || capacity) + "</div></div>" +
-        seats.join("") + "</div>" +
+        "</div>" + seats.join("") + "</div>" +
         '<div class="seat-visual-name">' + escapeHtml(t.name) + "</div>" +
         (canWrite ? '<button class="seat-remove-link" data-table-remove="' + t.id + '">Remove table</button>' : "") +
         "</div>";
     }).join("");
-    return '<div class="seat-visual-grid">' + cards + "</div><p class=\"tiny\" style=\"margin-top:0.75rem\">Click a filled seat to unseat that guest. Colors follow RSVP: green attending, red declined, gray awaiting a response.</p>";
+    return '<div class="seat-visual-grid">' + cards + "</div><p class=\"tiny\" style=\"margin-top:0.75rem\">Click a name to unseat that guest. Colors follow RSVP: green attending, red declined, gray awaiting a response.</p>";
   }
 
   function renderSeatingList(invited) {
@@ -1720,6 +1964,22 @@
       next.profile.style = val("f-style");
       next.profile.notes = val("f-notes", true);
       saveState(next, { doneLabel: "Profile saved." });
+    });
+
+    root.querySelectorAll("[data-colorway-pick]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var key = btn.getAttribute("data-colorway-pick");
+        if (key === (state.settings && state.settings.colorway)) return;
+        applyColorway(key); // instant preview, doesn't wait on the save round-trip
+        var next = clone(state);
+        next.settings = Object.assign({}, next.settings, { colorway: key });
+        var picked = COLORWAYS.filter(function (c) { return c.key === key; })[0];
+        saveState(next, { doneLabel: (picked ? picked.label : "Colorway") + " applied." }).then(function () {
+          // If the save failed or hit a conflict, fall back to whatever
+          // colorway the reconciled/reverted state actually has.
+          applyColorway(state.settings && state.settings.colorway);
+        });
+      });
     });
 
     root.querySelectorAll("[data-request-cat]").forEach(function (btn) {
