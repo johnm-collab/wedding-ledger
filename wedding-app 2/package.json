@@ -1,0 +1,20 @@
+{
+  "name": "wedding-ledger",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The Wedding Ledger — a private, two-account wedding planning app.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "hash-password": "node scripts/hash-password.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.2.0",
+    "pg": "^8.11.5"
+  }
+}
