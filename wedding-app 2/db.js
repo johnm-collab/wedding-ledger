@@ -62,6 +62,7 @@ function defaultState() {
     fileImports: [],
     timeline: [],
     tables: [],
+    settings: { colorway: "classic" },
     writable: true,
     _rev: 0
   };
