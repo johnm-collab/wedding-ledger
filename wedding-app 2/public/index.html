@@ -1001,7 +1001,7 @@
       registryLinks: [],
       messageLog: [],
       simulations: [],
-      settings: { colorway: "classic", onboardingComplete: false },
+      settings: { colorway: "classic", onboardingComplete: false, rsvpDeadline: "" },
       writable: true,
       _rev: 0
     };
@@ -2940,6 +2940,81 @@
       linksHtml + giftsHtml + "</div>";
   }
 
+  // A hand-off-ready meal count for the caterer: only confirmed ("Attending")
+  // guests count, grouped by whatever they put in the Meal Choice field —
+  // which already doubles as the place to note allergies/dietary needs.
+  function renderCatererReportCard() {
+    var attending = state.guests.filter(function (g) { return g.rsvp === "attending"; });
+    if (!attending.length) {
+      return '<div class="card"><h2>Caterer &amp; dietary report</h2><p class="muted">A meal-choice headcount for your caterer, grouped by whatever guests noted (allergies and dietary needs included).</p><div class="empty-note">No confirmed RSVPs yet — this fills in as guests respond "Attending".</div></div>';
+    }
+    var byMeal = {};
+    var order = [];
+    var totalHeads = 0;
+    attending.forEach(function (g) {
+      var key = (g.mealChoice && g.mealChoice.trim()) || "No meal choice noted";
+      if (!byMeal[key]) { byMeal[key] = []; order.push(key); }
+      byMeal[key].push(g.name);
+      totalHeads++;
+      if (g.plusOneName) { byMeal[key].push(g.plusOneName + " (plus-one)"); totalHeads++; }
+    });
+    var sortedKeys = order.slice().sort(function (a, b) {
+      if (a === "No meal choice noted") return 1;
+      if (b === "No meal choice noted") return -1;
+      return a.localeCompare(b);
+    });
+    var rows = sortedKeys.map(function (k) {
+      return '<tr><td>' + escapeHtml(k) + '</td><td class="num">' + byMeal[k].length + '</td><td class="tiny">' + escapeHtml(byMeal[k].join(", ")) + '</td></tr>';
+    }).join("");
+    return '<div class="card"><h2>Caterer &amp; dietary report</h2><p class="muted">' + totalHeads + ' confirmed head' + (totalHeads === 1 ? "" : "s") + ' across ' + sortedKeys.length + ' meal choice' + (sortedKeys.length === 1 ? "" : "s") + ' — hand this straight to your caterer.</p>' +
+      '<div class="table-scroll"><table><thead><tr><th>Meal choice</th><th class="num">Count</th><th>Guests</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
+      '<div class="save-row" style="margin-top:0.8rem"><button class="btn btn-secondary btn-sm" id="export-caterer-btn">Export CSV</button></div>' +
+      "</div>";
+  }
+
+  // The hotel/arrival/departure fields already exist per-guest (Details ▸
+  // on each row); this pulls them into one sorted, exportable summary
+  // instead of making you open every guest one at a time.
+  function renderTravelLodgingCard() {
+    var travelers = state.guests.filter(function (g) { return g.needsHotel; });
+    if (!travelers.length) {
+      return '<div class="card"><h2>Travel &amp; lodging</h2><p class="muted">A consolidated view of who needs a hotel room, sorted by arrival date.</p><div class="empty-note">No one\'s marked "Needs a hotel room" yet — that checkbox lives in each guest\'s Details ▸ panel.</div></div>';
+    }
+    var sorted = travelers.slice().sort(function (a, b) {
+      var da = parseDate(a.arrival), db = parseDate(b.arrival);
+      if (!da && !db) return a.name.localeCompare(b.name);
+      if (!da) return 1;
+      if (!db) return -1;
+      return da - db;
+    });
+    var rows = sorted.map(function (g) {
+      return '<tr><td>' + escapeHtml(g.name) + '</td><td>' + escapeHtml(g.hotelBlock || "—") + '</td><td>' + (g.arrival ? fmtDate(parseDate(g.arrival)) : "—") + '</td><td>' + (g.departure ? fmtDate(parseDate(g.departure)) : "—") + "</td></tr>";
+    }).join("");
+    return '<div class="card"><h2>Travel &amp; lodging</h2><p class="muted">' + travelers.length + ' guest' + (travelers.length === 1 ? "" : "s") + ' need' + (travelers.length === 1 ? "s" : "") + ' a hotel room, sorted by arrival.</p>' +
+      '<div class="table-scroll"><table><thead><tr><th>Guest</th><th>Hotel block</th><th>Arrival</th><th>Departure</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
+      '<div class="save-row" style="margin-top:0.8rem"><button class="btn btn-secondary btn-sm" id="export-travel-btn">Export CSV</button></div>' +
+      "</div>";
+  }
+
+  function exportCatererReport() {
+    var attending = state.guests.filter(function (g) { return g.rsvp === "attending"; });
+    var rows = [["Guest", "Meal Choice"]];
+    attending.forEach(function (g) {
+      rows.push([g.name, g.mealChoice || ""]);
+      if (g.plusOneName) rows.push([g.plusOneName + " (plus-one)", g.mealChoice || ""]);
+    });
+    var csv = rows.map(function (r) { return r.map(csvEscapeField).join(","); }).join("\n");
+    offerDownload("caterer-dietary-report.csv", csv);
+  }
+
+  function exportTravelLodging() {
+    var travelers = state.guests.filter(function (g) { return g.needsHotel; });
+    var rows = [["Guest", "Hotel Block", "Arrival", "Departure"]];
+    travelers.forEach(function (g) { rows.push([g.name, g.hotelBlock || "", g.arrival || "", g.departure || ""]); });
+    var csv = rows.map(function (r) { return r.map(csvEscapeField).join(","); }).join("\n");
+    offerDownload("travel-lodging.csv", csv);
+  }
+
   function renderGuestList() {
     var stats = computeGuestStats();
     var labels = partnerLabels();
@@ -3104,11 +3179,33 @@
 
     var saveRow = canWrite && state.guests.length ? '<div class="save-row"><span class="save-status" id="save-status-badge-4"></span><button class="btn btn-primary" id="save-guests-btn">Save guest list</button></div>' : "";
 
+    var deadlineStr = state.settings && state.settings.rsvpDeadline;
+    var deadlineIndicator = "";
+    if (deadlineStr) {
+      var dl = parseDate(deadlineStr);
+      if (dl) {
+        var today0 = new Date(); today0.setHours(0, 0, 0, 0);
+        var daysLeft = Math.round((dl - today0) / 86400000);
+        var dlClass = daysLeft < 0 ? "critical" : (daysLeft <= 7 ? "warning" : "good");
+        var daysLabel = daysLeft < 0 ? Math.abs(daysLeft) + " day" + (Math.abs(daysLeft) === 1 ? "" : "s") + " past deadline"
+          : daysLeft === 0 ? "Deadline is today"
+          : daysLeft + " day" + (daysLeft === 1 ? "" : "s") + " left";
+        deadlineIndicator = '<div class="pill"><span class="dot ' + dlClass + '"></span>' + daysLabel + "</div>" +
+          (stats.awaitingRsvp ? ' <span class="tiny muted">' + stats.awaitingRsvp + " guest" + (stats.awaitingRsvp === 1 ? "" : "s") + " still need" + (stats.awaitingRsvp === 1 ? "s" : "") + " to respond.</span>"
+            : ' <span class="tiny muted">Everyone invited has responded.</span>');
+      }
+    }
+    var deadlineCard = '<div class="card"><h3>RSVP deadline</h3><p class="muted">Set a date to see a countdown here — and, if you turn on the optional reminder email cron job (see README), guests who haven\'t responded yet get an automatic nudge.</p>' +
+      '<div class="grid-3"><div class="field"><label for="f-rsvp-deadline">Deadline</label><input type="date" id="f-rsvp-deadline" value="' + escapeHtml(deadlineStr || "") + '" ' + (canWrite ? "" : "disabled") + '/></div></div>' +
+      (deadlineIndicator ? '<div data-rsvp-deadline-status style="margin-top:0.8rem;display:flex;align-items:center;gap:0.5em;flex-wrap:wrap">' + deadlineIndicator + "</div>" : "") +
+      "</div>";
+
     return panel("guests",
       '<div class="card"><h2>Guest list</h2><p class="muted">Upload or build your list here, then work through it to decide who\'s in. This feeds the headcount and budget gap checks on the Overview tab.</p>' + statTiles + "</div>" +
+      deadlineCard +
       importCard + householdsCard + manualAdd +
       '<div class="card">' + filterBar + tableHtml + saveRow + "</div>" +
-      renderRegistryGiftsCard()
+      renderRegistryGiftsCard() + renderCatererReportCard() + renderTravelLodgingCard()
     );
   }
 
@@ -4424,6 +4521,18 @@
 
     var saveGuestsBtn = document.getElementById("save-guests-btn");
     if (saveGuestsBtn) saveGuestsBtn.addEventListener("click", function () { saveState(clone(state), { doneLabel: "Guest list saved." }); });
+
+    var rsvpDeadlineInput = document.getElementById("f-rsvp-deadline");
+    if (rsvpDeadlineInput) rsvpDeadlineInput.addEventListener("change", function () {
+      var next = clone(state);
+      next.settings = Object.assign({}, next.settings, { rsvpDeadline: rsvpDeadlineInput.value });
+      saveState(next, { doneLabel: rsvpDeadlineInput.value ? "RSVP deadline set." : "RSVP deadline cleared." });
+    });
+
+    var exportCatererBtn = document.getElementById("export-caterer-btn");
+    if (exportCatererBtn) exportCatererBtn.addEventListener("click", exportCatererReport);
+    var exportTravelBtn = document.getElementById("export-travel-btn");
+    if (exportTravelBtn) exportTravelBtn.addEventListener("click", exportTravelLodging);
 
     /* households */
 
