@@ -19,13 +19,7 @@ const { chromium } = require("playwright");
   await page.fill("#login-email", "you@example.com");
   await page.fill("#login-password", "correcthorse");
   await page.click("#login-form button[type=submit]");
-  // First-run setup wizard gate: finish (not skip) it here so it persists
-  // server-side and every later reload in this test sees the dashboard.
-  await page.waitForSelector(".masthead-title, #wizard-finish-btn", { timeout: 5000 });
-  if (await page.$("#wizard-finish-btn")) {
-    await page.click("#wizard-finish-btn");
-    await page.waitForSelector(".masthead-title", { timeout: 5000 });
-  }
+  await page.waitForSelector(".masthead-title", { timeout: 5000 });
 
   // Add a couple of guests and mark them invited so they're eligible to be seated
   await page.click('[data-tab="guests"]');
