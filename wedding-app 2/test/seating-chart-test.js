@@ -38,6 +38,15 @@ const { chromium } = require("playwright");
     await inviteButtons.nth(i).click();
   }
 
+  // Seating eligibility is driven by RSVP, not just invite status — set
+  // both guests to "Attending" so they show up on the Seating tab (this is
+  // the "click Attending -> guest becomes seatable" behavior).
+  const rsvpSelects = page.locator('select[data-guest-field^="rsvp|"]');
+  const rsvpCount = await rsvpSelects.count();
+  for (let i = 0; i < rsvpCount; i++) {
+    await rsvpSelects.nth(i).selectOption("attending");
+  }
+
   // Seating now has its own tab, separate from Day-of
   await page.click('[data-tab="seating"]');
   await page.waitForSelector('[data-panel="seating"]', { timeout: 5000 });
@@ -87,13 +96,15 @@ const { chromium } = require("playwright");
   await page.click('[data-seating-view="visual"]', { timeout: 5000 });
   await page.waitForSelector(".seat-table-visual", { timeout: 5000 });
 
-  // Full names, not initials, should now be visible directly on the seating chart
+  // Pills show a shortened "First L." label (crowded tables are hard to
+  // read with full names), but the full name is still available via the
+  // title tooltip.
   await page.waitForFunction(() => {
     const pills = Array.from(document.querySelectorAll(".seat-pill"));
-    return pills.some((p) => p.textContent.includes("Priyanka Subramaniam")) &&
-      pills.some((p) => p.textContent.includes("Alex Chen"));
+    return pills.some((p) => p.textContent.trim() === "Priyanka S." && p.title.includes("Priyanka Subramaniam")) &&
+      pills.some((p) => p.textContent.trim() === "Alex C." && p.title.includes("Alex Chen"));
   }, { timeout: 5000 });
-  console.log("PASS: full guest names appear as pills directly on the seating chart (not just initials)");
+  console.log("PASS: pills show a shortened first-name-plus-last-initial label, full name still in the tooltip");
 
   // Unfilled seats: Table 1 has 6 capacity / 2 seated (4 empty), Head Table
   // has 8 capacity / 0 seated (8 empty) = 12 empty-seat dots total
@@ -114,9 +125,9 @@ const { chromium } = require("playwright");
   console.log("PASS: all seats (filled and empty), on both table shapes, are positioned around their table, not stacked at the center");
 
   // Clicking a filled name pill should unseat that guest immediately
-  const pill = page.locator(".seat-pill", { hasText: "Alex Chen" }).first();
+  const pill = page.locator('.seat-pill[title*="Alex Chen"]').first();
   await pill.click();
-  await page.waitForFunction(() => !Array.from(document.querySelectorAll(".seat-pill")).some((p) => p.textContent.includes("Alex Chen")), { timeout: 5000 });
+  await page.waitForFunction(() => !Array.from(document.querySelectorAll(".seat-pill")).some((p) => p.title.includes("Alex Chen")), { timeout: 5000 });
   console.log("PASS: clicking a name pill unseats that guest immediately");
 
   // Table names now render inside the table shape itself, not in a label
