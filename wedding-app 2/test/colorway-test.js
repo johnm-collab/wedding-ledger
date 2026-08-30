@@ -16,21 +16,30 @@ const { chromium } = require("playwright");
   await page.fill("#login-email", "you@example.com");
   await page.fill("#login-password", "correcthorse");
   await page.click("#login-form button[type=submit]");
-  await page.waitForSelector(".masthead-title", { timeout: 5000 });
+  // First-run setup wizard gate: finish it here (leaving the theme on its
+  // default, Ivory & Plum) so it persists server-side and every later
+  // reload in this test sees the dashboard, not the wizard again.
+  await page.waitForSelector(".masthead-title, #wizard-finish-btn", { timeout: 5000 });
+  if (await page.$("#wizard-finish-btn")) {
+    await page.click("#wizard-finish-btn");
+    await page.waitForSelector(".masthead-title", { timeout: 5000 });
+  }
 
   const initialAttr = await page.evaluate(() => document.documentElement.getAttribute("data-colorway"));
-  if (initialAttr !== null) throw new Error("expected no data-colorway attribute for the default Classic colorway, got: " + initialAttr);
-  console.log("PASS: defaults to Classic (no data-colorway attribute) for a brand-new planner");
+  if (initialAttr !== null) throw new Error("expected no data-colorway attribute for the default Ivory & Plum colorway, got: " + initialAttr);
+  console.log("PASS: defaults to Ivory & Plum (no data-colorway attribute) for a brand-new planner");
 
+  await page.click("#nav-toggle-btn");
+  await page.waitForSelector(".nav-drawer.open", { timeout: 5000 });
   await page.click('[data-tab="profile"]');
   await page.waitForSelector('.tab-panel.active[data-panel="profile"]', { timeout: 5000 });
   await page.waitForSelector(".colorway-option", { timeout: 5000 });
   const optionCount = await page.locator(".colorway-option").count();
   if (optionCount !== 10) throw new Error("expected 10 colorway options, found " + optionCount);
-  console.log("PASS: all 10 colorway options render (Classic, Sage & Blush, Emerald & Mocha, Cocoa & Blush, Mocha & Sage, Dusty Blue & Rust, Plum & Gold, Charcoal & Ivory, Terracotta & Olive, Burgundy & Champagne)");
+  console.log("PASS: all 10 colorway options render (Ivory & Plum, Sage & Blush, Emerald & Mocha, Cocoa & Blush, Mocha & Sage, Dusty Blue & Rust, Plum & Gold, Charcoal & Ivory, Terracotta & Olive, Burgundy & Champagne)");
 
   const activeBefore = await page.locator(".colorway-option.active .colorway-label").textContent();
-  if (!/Classic/.test(activeBefore)) throw new Error("expected Classic to start active, got: " + activeBefore);
+  if (!/Ivory & Plum/.test(activeBefore)) throw new Error("expected Ivory & Plum (the boutique default, formerly \"Classic\") to start active, got: " + activeBefore);
 
   // Click Emerald & Mocha and confirm the attribute + a real computed color
   // change instantly, before waiting for the save to round-trip

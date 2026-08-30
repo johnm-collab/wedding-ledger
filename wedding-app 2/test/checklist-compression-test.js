@@ -19,24 +19,40 @@ function fmtISO(d) { return d.toISOString().slice(0, 10); }
   await page.fill("#login-email", "you@example.com");
   await page.fill("#login-password", "correcthorse");
   await page.click("#login-form button[type=submit]");
-  await page.waitForSelector(".masthead-title", { timeout: 5000 });
+  // First-run setup wizard gate: finish (not skip) it here so it persists
+  // server-side and every later reload in this test sees the dashboard.
+  await page.waitForSelector(".masthead-title, #wizard-finish-btn", { timeout: 5000 });
+  if (await page.$("#wizard-finish-btn")) {
+    await page.click("#wizard-finish-btn");
+    await page.waitForSelector(".masthead-title", { timeout: 5000 });
+  }
 
   const today = new Date();
 
   // --- Long runway (400 days): behavior must be identical to before ---
   const farDate = new Date(today.getTime() + 400 * 86400000);
+  await page.click("#nav-toggle-btn");
+  await page.waitForSelector(".nav-drawer.open", { timeout: 5000 });
   await page.click('[data-tab="profile"]');
   await page.fill("#f-date", fmtISO(farDate));
   await page.click("#save-profile-btn");
   await page.waitForFunction(() => /saved/i.test(document.getElementById("save-status-badge")?.textContent || ""), { timeout: 5000 });
 
+  await page.click("#nav-toggle-btn");
+  await page.waitForSelector(".nav-drawer.open", { timeout: 5000 });
   await page.click('[data-tab="checklist"]');
   await page.waitForSelector('.tab-panel.active[data-panel="checklist"]', { timeout: 5000 });
-  const farLabels = await page.$$eval(".checklist-group h4", (els) => els.map((e) => e.textContent));
-  if (!farLabels.includes("12+ months before")) throw new Error("long runway should keep the original label, got: " + JSON.stringify(farLabels));
+  // The checklist is grouped into four narrative phases (Dreaming, Booking,
+  // Polishing, Executing) rather than lead-time buckets now — phase names
+  // are stable regardless of runway length, so this just confirms all four
+  // still render on a normal 12+ month runway.
+  const farPhases = await page.$$eval(".phase-tile h4", (els) => els.map((e) => e.textContent));
+  ["Dreaming", "Booking", "Polishing", "Executing"].forEach((p) => {
+    if (!farPhases.includes(p)) throw new Error("expected phase '" + p + "' on a long runway, got: " + JSON.stringify(farPhases));
+  });
   const compressionNoteFar = await page.locator('.tab-panel.active[data-panel="checklist"] p.tiny').count();
   if (compressionNoteFar !== 0) throw new Error("no compression note should show on a 400-day runway");
-  console.log("PASS: 400-day runway keeps original checklist labels, no compression note");
+  console.log("PASS: 400-day runway shows all four phases, no compression note");
 
   // Check the exact due date of the very first (furthest-out) item matches wd - 365 days unscaled
   const firstDue = await page.locator(".tab-panel.active .check-row .check-due").first().textContent();
@@ -47,11 +63,15 @@ function fmtISO(d) { return d.toISOString().slice(0, 10); }
 
   // --- Short runway (60 days): compression kicks in ---
   const nearDate = new Date(today.getTime() + 60 * 86400000);
+  await page.click("#nav-toggle-btn");
+  await page.waitForSelector(".nav-drawer.open", { timeout: 5000 });
   await page.click('[data-tab="profile"]');
   await page.fill("#f-date", fmtISO(nearDate));
   await page.click("#save-profile-btn");
   await page.waitForFunction(() => /saved/i.test(document.getElementById("save-status-badge")?.textContent || ""), { timeout: 5000 });
 
+  await page.click("#nav-toggle-btn");
+  await page.waitForSelector(".nav-drawer.open", { timeout: 5000 });
   await page.click('[data-tab="checklist"]');
   await page.waitForSelector('.tab-panel.active[data-panel="checklist"]', { timeout: 5000 });
 
@@ -59,9 +79,14 @@ function fmtISO(d) { return d.toISOString().slice(0, 10); }
   if (!/60 days away/.test(noteText)) throw new Error("expected compression note mentioning 60 days, got: " + noteText);
   console.log("PASS: compression note appears and states the correct runway");
 
-  const nearLabels = await page.$$eval(".checklist-group h4", (els) => els.map((e) => e.textContent));
-  if (nearLabels.includes("12+ months before")) throw new Error("short runway must not still say '12+ months before', got: " + JSON.stringify(nearLabels));
-  console.log("PASS: short runway relabels buckets away from the stale '12+ months' text: " + JSON.stringify(nearLabels));
+  // Phase membership is based on each item's raw, unscaled offset (so items
+  // keep a stable order regardless of runway), so all four phases should
+  // still show up even on a compressed 60-day plan.
+  const nearPhases = await page.$$eval(".phase-tile h4", (els) => els.map((e) => e.textContent));
+  ["Dreaming", "Booking", "Polishing", "Executing"].forEach((p) => {
+    if (!nearPhases.includes(p)) throw new Error("expected phase '" + p + "' on a short runway too, got: " + JSON.stringify(nearPhases));
+  });
+  console.log("PASS: short runway still shows all four phases: " + JSON.stringify(nearPhases));
 
   // Every non-custom checklist item's due date must fall between today and the wedding date
   const dueTexts = await page.$$eval(".tab-panel.active .check-row .check-due", (els) => els.map((e) => e.textContent));

@@ -28,12 +28,20 @@ const { chromium } = require("playwright");
   await page.fill("#login-email", "you@example.com");
   await page.fill("#login-password", "correcthorse");
   await page.click("#login-form button[type=submit]");
-  await page.waitForSelector(".masthead-title", { timeout: 5000 });
+  // First-run setup wizard gate: finish (not skip) it here so it persists
+  // server-side and every later reload in this test sees the dashboard.
+  await page.waitForSelector(".masthead-title, #wizard-finish-btn", { timeout: 5000 });
+  if (await page.$("#wizard-finish-btn")) {
+    await page.click("#wizard-finish-btn");
+    await page.waitForSelector(".masthead-title", { timeout: 5000 });
+  }
   const title = await page.textContent(".masthead-title");
   if (title.trim() !== "Our Wedding") throw new Error("expected default masthead title, got: " + title);
   console.log("PASS: correct login loads the app shell");
 
   // Fill in profile and save
+  await page.click("#nav-toggle-btn");
+  await page.waitForSelector(".nav-drawer.open", { timeout: 5000 });
   await page.click('[data-tab="profile"]');
   await page.fill("#f-names", "Jordan & Casey");
   await page.fill("#f-date", "2027-06-12");
@@ -53,11 +61,15 @@ const { chromium } = require("playwright");
   console.log("PASS: session + saved state survive a page reload");
 
   // Budget tab renders recommendation engine output without errors
+  await page.click("#nav-toggle-btn");
+  await page.waitForSelector(".nav-drawer.open", { timeout: 5000 });
   await page.click('[data-tab="budget"]');
   await page.waitForSelector(".tab-panel.active .card h2", { timeout: 5000 });
 
   // Vendors, guests, checklist, seating, dayof tabs all render without throwing
   for (const tab of ["vendors", "guests", "checklist", "seating", "dayof", "overview"]) {
+    await page.click("#nav-toggle-btn");
+    await page.waitForSelector(".nav-drawer.open", { timeout: 5000 });
     await page.click('[data-tab="' + tab + '"]');
     await page.waitForSelector('.tab-panel.active[data-panel="' + tab + '"]', { timeout: 5000 });
   }

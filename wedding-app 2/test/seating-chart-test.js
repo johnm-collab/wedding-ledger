@@ -19,9 +19,17 @@ const { chromium } = require("playwright");
   await page.fill("#login-email", "you@example.com");
   await page.fill("#login-password", "correcthorse");
   await page.click("#login-form button[type=submit]");
-  await page.waitForSelector(".masthead-title", { timeout: 5000 });
+  // First-run setup wizard gate: finish (not skip) it here so it persists
+  // server-side and every later reload in this test sees the dashboard.
+  await page.waitForSelector(".masthead-title, #wizard-finish-btn", { timeout: 5000 });
+  if (await page.$("#wizard-finish-btn")) {
+    await page.click("#wizard-finish-btn");
+    await page.waitForSelector(".masthead-title", { timeout: 5000 });
+  }
 
   // Add a couple of guests and mark them invited so they're eligible to be seated
+  await page.click("#nav-toggle-btn");
+  await page.waitForSelector(".nav-drawer.open", { timeout: 5000 });
   await page.click('[data-tab="guests"]');
   await page.waitForSelector('.tab-panel.active[data-panel="guests"]', { timeout: 5000 });
   await page.fill("#f-guest-name", "Priyanka Subramaniam");
@@ -48,6 +56,8 @@ const { chromium } = require("playwright");
   }
 
   // Seating now has its own tab, separate from Day-of
+  await page.click("#nav-toggle-btn");
+  await page.waitForSelector(".nav-drawer.open", { timeout: 5000 });
   await page.click('[data-tab="seating"]');
   await page.waitForSelector('[data-panel="seating"]', { timeout: 5000 });
 
@@ -198,6 +208,8 @@ const { chromium } = require("playwright");
   await page.waitForFunction(() => /saved/i.test(document.getElementById("save-status-badge-6")?.textContent || ""), { timeout: 5000 });
   await page.reload({ waitUntil: "networkidle" });
   await page.waitForSelector(".masthead-title", { timeout: 5000 });
+  await page.click("#nav-toggle-btn");
+  await page.waitForSelector(".nav-drawer.open", { timeout: 5000 });
   await page.click('[data-tab="seating"]');
   await page.waitForSelector('[data-panel="seating"]', { timeout: 5000 });
   const afterReloadPct = await readPct(page.locator('.floor-table', { has: page.locator('.seat-table-name', { hasText: "Table 1" }) }));

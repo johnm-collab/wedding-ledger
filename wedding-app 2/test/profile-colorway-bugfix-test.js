@@ -26,6 +26,8 @@ async function run() {
     await page.waitForSelector(".masthead-title", { timeout: 5000 });
   }
 
+  await page.click("#nav-toggle-btn");
+  await page.waitForSelector(".nav-drawer.open", { timeout: 5000 });
   await page.click('[data-tab="profile"]');
   await page.waitForSelector('.tab-panel.active[data-panel="profile"]', { timeout: 5000 });
 
@@ -49,6 +51,8 @@ async function run() {
   await page.waitForFunction(() => /saved/i.test(document.getElementById("save-status-badge")?.textContent || ""), { timeout: 5000 });
   await page.reload({ waitUntil: "networkidle" });
   await page.waitForSelector(".masthead-title", { timeout: 5000 });
+  await page.click("#nav-toggle-btn");
+  await page.waitForSelector(".nav-drawer.open", { timeout: 5000 });
   await page.click('[data-tab="profile"]');
   await page.waitForSelector('.tab-panel.active[data-panel="profile"]', { timeout: 5000 });
   const namesAfterReload = await page.inputValue("#f-names");
