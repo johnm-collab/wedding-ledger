@@ -21,10 +21,14 @@ const PORT = process.env.PORT || 3000;
 app.set("trust proxy", 1);
 
 app.disable("x-powered-by");
-// 15mb, not 10mb: an 8MB vendor-quote PDF/photo (the client-side cap — see
+// 25mb: an 8MB vendor-quote PDF/photo (the client-side cap — see
 // MAX_IMPORT_BYTES in public/index.html) becomes ~11MB once base64-encoded
-// for the /api/analyze-vendor-doc request body.
-app.use(express.json({ limit: "15mb" }));
+// for the /api/analyze-vendor-doc request body. Separately, /api/state
+// saves the *entire* planner state on every write (story photos, and now
+// per-vendor attached contracts, all travel along as base64 inside it), so
+// this needs enough headroom for several of those at once — bounded on the
+// other end by the per-field and combined-total caps enforced below.
+app.use(express.json({ limit: "25mb" }));
 app.use(cookieParser());
 
 const loginLimiter = rateLimit({
@@ -273,6 +277,31 @@ app.put("/api/state", auth.requireAuth, async (req, res) => {
       if (oversized) {
         return res.status(400).json({ error: "One of your story photos is too large — try a smaller image." });
       }
+    }
+    // Vendor contracts are attached files persisted straight in the state
+    // blob (see public/index.html's data-vendor-contract-upload handler),
+    // so they get the same per-file cap as story photos, plus a combined
+    // cap across every vendor so a handful of attachments can't quietly
+    // balloon every future save's request body toward the 25mb limit above.
+    const MAX_CONTRACT_BYTES = 3 * 1024 * 1024;
+    const MAX_CONTRACTS_TOTAL_BYTES = 15 * 1024 * 1024;
+    let contractBytesTotal = 0;
+    if (state.categories && typeof state.categories === "object") {
+      for (const catKey of Object.keys(state.categories)) {
+        const vendors = state.categories[catKey] && state.categories[catKey].vendors;
+        if (!Array.isArray(vendors)) continue;
+        for (const v of vendors) {
+          const data = v && v.contractFile && v.contractFile.data;
+          if (typeof data !== "string") continue;
+          if (data.length > MAX_CONTRACT_BYTES) {
+            return res.status(400).json({ error: `The contract for "${v.name || "a vendor"}" is too large — 3MB max.` });
+          }
+          contractBytesTotal += data.length;
+        }
+      }
+    }
+    if (contractBytesTotal > MAX_CONTRACTS_TOTAL_BYTES) {
+      return res.status(400).json({ error: "Too many vendor contracts attached at once — remove one and try again." });
     }
     const result = await db.saveState(state, expectedRev, req.user.email);
     if (result.conflict) {

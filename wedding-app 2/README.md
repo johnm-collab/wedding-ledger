@@ -6,6 +6,14 @@ public Claude Artifact link. Same design and the same planning features you
 already had — budget recommendations, vendor tracking, guest list, seating
 chart, checklist, day-of timeline — just self-hosted with a password gate.
 
+The Vendors tab is manual-entry plus AI-assisted: add options yourself, or
+upload a quote (PDF or photo) for Claude to read and pre-fill from — nothing
+saves until you approve it. Each vendor can also carry a running notes log
+and one attached contract file. The Simulations tab lets you save a few
+named "what-if" scenarios (a different vendor pick per category, optionally
+a different guest count) and compare them side by side with charts against
+your budget.
+
 Guests never get a login: from the Guest List tab you can generate a
 private, unguessable RSVP link per guest (or one shared link per household,
 for families who should get a single invite) at `/rsvp/<token>` — it shows
@@ -136,17 +144,6 @@ npm start
 ```
 
 Then visit `http://localhost:3000`.
-
-## What didn't come across yet
-
-The old "upload a vendor quote and I'll read it" / "request vendor research
-and I'll find real options" features are still present in the UI as a
-request log, but nothing automatically processes them anymore — that
-depended on Claude's Artifact tooling reading and republishing the page,
-which doesn't apply to a standalone server. Wiring that back up (e.g. a
-scheduled job that calls an admin API endpoint on this app, does the
-research, and writes the results back to Postgres) is a separate follow-up
-if you want it — just ask.
 
 ## Security notes
 
