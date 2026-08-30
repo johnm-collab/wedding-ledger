@@ -6,89 +6,100 @@
 <title>The Wedding Ledger</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     color-scheme: light;
-    --paper: #eeeef2;
-    --paper-2: #e7e7ee;
-    --surface: #fbfbfd;
-    --ink: #23253a;
-    --ink-2: #5b5e72;
-    --ink-muted: #898c9e;
-    --line: #d9d9e2;
-    --line-strong: #c3c3d1;
-    --accent: #33406b;
-    --accent-ink: #ffffff;
-    --accent-soft: #e3e6f0;
-    --brass: #a8843d;
-    --brass-soft: #f1e7d2;
-    --brass-ink: #4a3a13;
-    --good: #0ca30c;
-    --good-soft: #e3f4e0;
-    --warning: #b8790a;
-    --warning-soft: #fbeed3;
-    --critical: #b23a3a;
-    --critical-soft: #f8e2e0;
-    --series-1: #2a78d6;
-    --series-2: #eb6834;
-    --shadow: 0 1px 2px rgba(35,37,58,0.06), 0 8px 24px -12px rgba(35,37,58,0.18);
-    --radius: 10px;
+    --paper: #fbf9f6;
+    --paper-2: #f3efe8;
+    --surface: #fffefc;
+    --ink: #2b2620;
+    --ink-2: #6b6156;
+    --ink-muted: #a89d8d;
+    --line: #e6ded0;
+    --line-strong: #d8cbb3;
+    --accent: #5c3a4e;
+    --accent-ink: #fffefc;
+    --accent-soft: #efe3e9;
+    --brass: #b08d57;
+    --brass-soft: #f3ead9;
+    --brass-ink: #4a3719;
+    --good: #5b7a5b;
+    --good-soft: #e7ede4;
+    --warning: #b98a3d;
+    --warning-soft: #f6ecd8;
+    --critical: #a6503c;
+    --critical-soft: #f5e3dd;
+    --series-1: #b08d57;
+    --series-2: #7d5064;
+    --shadow: 0 1px 2px rgba(43,38,32,0.05), 0 10px 28px -14px rgba(43,38,32,0.22);
+    --radius: 4px;
     font-size: 16px;
+    /* The "theme" a couple picks packages a colorway with a matching
+       background — built entirely from that colorway's own --accent-soft /
+       --brass-soft / --paper tokens (which already change per colorway and
+       per light/dark mode above), so every theme gets a distinct, on-brand
+       background wash for free, with no separate image assets needed. Used
+       on guest-facing pages (RSVP portal) and the first-run setup wizard —
+       never on the couple's own working dashboard. */
+    --theme-bg: radial-gradient(circle at 12% -10%, var(--accent-soft) 0%, transparent 48%),
+                radial-gradient(circle at 92% 8%, var(--brass-soft) 0%, transparent 42%),
+                radial-gradient(circle at 50% 115%, var(--accent-soft) 0%, transparent 55%),
+                linear-gradient(165deg, var(--paper) 0%, var(--paper-2) 100%);
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       color-scheme: dark;
-      --paper: #15161f;
-      --paper-2: #1a1b26;
-      --surface: #1e1f2b;
-      --ink: #e9e9f2;
-      --ink-2: #a7a9c0;
-      --ink-muted: #7d7f97;
-      --line: #34364c;
-      --line-strong: #454863;
-      --accent: #8b9bd6;
-      --accent-ink: #171a2b;
-      --accent-soft: #262c47;
-      --brass: #d2ae6b;
-      --brass-soft: #362c17;
-      --brass-ink: #ecd8a8;
-      --good: #4fbe4f;
-      --good-soft: #1c3320;
-      --warning: #e0a930;
-      --warning-soft: #3a2e13;
-      --critical: #e37b7b;
-      --critical-soft: #3a2020;
-      --series-1: #3987e5;
-      --series-2: #d95926;
-      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+      --paper: #221e1a;
+      --paper-2: #1b1815;
+      --surface: #2a2521;
+      --ink: #f1ece2;
+      --ink-2: #c4b9a8;
+      --ink-muted: #8a7f6d;
+      --line: #3c342b;
+      --line-strong: #4d4234;
+      --accent: #caa0b8;
+      --accent-ink: #2b1b24;
+      --accent-soft: #3a2a34;
+      --brass: #d9b979;
+      --brass-soft: #3a301f;
+      --brass-ink: #f3e2bd;
+      --good: #9dbb9a;
+      --good-soft: #293227;
+      --warning: #e0bb6d;
+      --warning-soft: #362c1c;
+      --critical: #e2937d;
+      --critical-soft: #3a251f;
+      --series-1: #d9b979;
+      --series-2: #caa0b8;
+      --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 14px 34px -16px rgba(0,0,0,0.6);
     }
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
-    --paper: #15161f;
-    --paper-2: #1a1b26;
-    --surface: #1e1f2b;
-    --ink: #e9e9f2;
-    --ink-2: #a7a9c0;
-    --ink-muted: #7d7f97;
-    --line: #34364c;
-    --line-strong: #454863;
-    --accent: #8b9bd6;
-    --accent-ink: #171a2b;
-    --accent-soft: #262c47;
-    --brass: #d2ae6b;
-    --brass-soft: #362c17;
-    --brass-ink: #ecd8a8;
-    --good: #4fbe4f;
-    --good-soft: #1c3320;
-    --warning: #e0a930;
-    --warning-soft: #3a2e13;
-    --critical: #e37b7b;
-    --critical-soft: #3a2020;
-    --series-1: #3987e5;
-    --series-2: #d95926;
-    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+    --paper: #221e1a;
+    --paper-2: #1b1815;
+    --surface: #2a2521;
+    --ink: #f1ece2;
+    --ink-2: #c4b9a8;
+    --ink-muted: #8a7f6d;
+    --line: #3c342b;
+    --line-strong: #4d4234;
+    --accent: #caa0b8;
+    --accent-ink: #2b1b24;
+    --accent-soft: #3a2a34;
+    --brass: #d9b979;
+    --brass-soft: #3a301f;
+    --brass-ink: #f3e2bd;
+    --good: #9dbb9a;
+    --good-soft: #293227;
+    --warning: #e0bb6d;
+    --warning-soft: #362c1c;
+    --critical: #e2937d;
+    --critical-soft: #3a251f;
+    --series-1: #d9b979;
+    --series-2: #caa0b8;
+    --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 14px 34px -16px rgba(0,0,0,0.6);
   }
 
   /* ---------- colorways ----------
@@ -369,7 +380,7 @@
   body {
     background: var(--paper);
     color: var(--ink);
-    font-family: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-family: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
   }
@@ -377,8 +388,8 @@
     * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
   }
   a { color: var(--accent); }
-  h1, h2, h3 { font-family: "Fraunces", Georgia, serif; text-wrap: balance; margin: 0; }
-  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  h1, h2, h3, h4 { font-family: "Playfair Display", Georgia, serif; font-weight: 600; text-wrap: balance; margin: 0; }
+  .mono { font-family: "Manrope", ui-sans-serif, sans-serif; font-variant-numeric: tabular-nums; font-weight: 700; }
   button { font-family: inherit; }
   input, textarea, select {
     font-family: inherit;
@@ -399,19 +410,21 @@
 
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 0.5em;
-    padding: 0.6em 1.1em; border-radius: 7px; border: 1px solid transparent;
-    font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: filter 0.12s ease, transform 0.05s ease;
+    padding: 0.65em 1.25em; border-radius: 2px; border: 1px solid transparent;
+    font-weight: 700; font-size: 0.85rem; letter-spacing: 0.01em; cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
     white-space: nowrap;
   }
   .btn:active { transform: translateY(1px); }
   .btn-primary { background: var(--accent); color: var(--accent-ink); }
-  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-primary:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
   .btn-secondary { background: var(--surface); color: var(--ink); border-color: var(--line-strong); }
-  .btn-secondary:hover { background: var(--accent-soft); }
+  .btn-secondary:hover { background: var(--accent-soft); border-color: var(--accent); }
   .btn-ghost { background: transparent; color: var(--accent); border-color: transparent; padding: 0.6em 0.8em; }
   .btn-ghost:hover { background: var(--accent-soft); }
-  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .btn-sm { padding: 0.4em 0.8em; font-size: 0.8rem; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
+  .btn-sm { padding: 0.42em 0.85em; font-size: 0.78rem; }
 
   .shell { max-width: 1320px; margin: 0 auto; padding: 2rem 1.25rem 6rem; }
 
@@ -420,40 +433,63 @@
     padding-bottom: 1.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid var(--brass);
     position: relative;
   }
-  .masthead-title { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 500; }
+  .masthead-left { display: flex; align-items: center; gap: 1rem; }
+  .masthead-title { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 600; }
   .masthead-sub { color: var(--ink-2); font-size: 0.95rem; margin-top: 0.35rem; }
   .masthead-count { text-align: right; }
-  .masthead-count .num { font-family: "IBM Plex Mono", monospace; font-size: 2.1rem; font-weight: 500; color: var(--accent); line-height: 1; }
+  .masthead-count .num { font-family: "Manrope", sans-serif; font-variant-numeric: tabular-nums; font-size: 2.1rem; font-weight: 800; color: var(--accent); line-height: 1; }
   .masthead-count .lbl { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-muted); margin-top: 0.3rem; }
 
   .stat-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; margin-bottom: 1.75rem; }
   .stat-tile { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.9rem 1rem; box-shadow: var(--shadow); }
-  .stat-tile .stat-val { font-family: "IBM Plex Mono", monospace; font-size: 1.5rem; font-weight: 500; }
+  .stat-tile .stat-val { font-family: "Manrope", sans-serif; font-variant-numeric: tabular-nums; font-size: 1.5rem; font-weight: 800; }
   .stat-tile .stat-lbl { font-size: 0.75rem; color: var(--ink-2); margin-top: 0.15rem; }
   .stat-tile.warn .stat-val { color: var(--warning); }
   .stat-tile.critical .stat-val { color: var(--critical); }
   .stat-tile.good .stat-val { color: var(--good); }
 
-  .app-shell { display: flex; gap: 1.75rem; align-items: flex-start; }
-  .sidebar { display: flex; flex-direction: column; gap: 0.2rem; width: 196px; flex: none; position: sticky; top: 1.25rem; }
-  .main-content { flex: 1; min-width: 0; }
-  .tab-btn {
-    background: none; border: none; border-radius: 8px; padding: 0.65em 0.9em; font-weight: 600; font-size: 0.87rem;
-    color: var(--ink-2); cursor: pointer; text-align: left; white-space: nowrap;
-  }
-  .sidebar .tab-btn { white-space: normal; }
-  .tab-btn:hover { color: var(--ink); background: var(--accent-soft); }
-  .tab-btn.active { color: var(--accent-ink); background: var(--accent); }
-  .tab-btn.active:hover { color: var(--accent-ink); background: var(--accent); }
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; animation: fadein 0.15s ease; }
-  @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+  .app-shell { display: block; }
+  .main-content { min-width: 0; }
 
-  @media (max-width: 760px) {
-    .app-shell { flex-direction: column; }
-    .sidebar { flex-direction: row; width: 100%; overflow-x: auto; position: static; border-bottom: 1px solid var(--line); padding-bottom: 0.6rem; margin-bottom: 0.25rem; }
-    .sidebar .tab-btn { white-space: nowrap; flex: none; }
+  /* Hamburger menu — a slide-out drawer replaces the old always-visible
+     sidebar, so the working area reads as one calm column (closer to a
+     magazine page) instead of a permanent app-chrome rail. */
+  .hamburger-btn {
+    display: flex; flex-direction: column; justify-content: center; gap: 4px; width: 38px; height: 38px;
+    border: 1px solid var(--line-strong); border-radius: 2px; background: var(--surface); cursor: pointer;
+    padding: 0 8px; flex-shrink: 0; transition: border-color 0.15s ease, background 0.15s ease;
   }
+  .hamburger-btn span { display: block; height: 1.5px; background: var(--ink); border-radius: 1px; }
+  .hamburger-btn:hover { border-color: var(--accent); background: var(--accent-soft); }
+  .hamburger-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
+
+  .nav-backdrop {
+    position: fixed; inset: 0; background: rgba(43,38,32,0.35); opacity: 0; pointer-events: none;
+    transition: opacity 0.2s ease; z-index: 60;
+  }
+  .nav-backdrop.open { opacity: 1; pointer-events: auto; }
+
+  .nav-drawer {
+    position: fixed; top: 0; left: 0; bottom: 0; width: 280px; max-width: 82vw; background: var(--surface);
+    border-right: 1px solid var(--line); box-shadow: var(--shadow); z-index: 61;
+    transform: translateX(-100%); transition: transform 0.25s cubic-bezier(.4,0,.2,1);
+    display: flex; flex-direction: column; padding: 1.5rem 1rem;
+  }
+  .nav-drawer.open { transform: translateX(0); }
+  .nav-drawer-head { display: flex; align-items: center; justify-content: space-between; padding: 0 0.6rem 1.1rem; margin-bottom: 0.6rem; border-bottom: 1px solid var(--line); }
+  .nav-drawer-head h4 { font-size: 1.1rem; }
+  .nav-close-btn { background: none; border: none; font-size: 1.4rem; line-height: 1; color: var(--ink-muted); cursor: pointer; padding: 0.2rem; }
+  .nav-close-btn:hover { color: var(--ink); }
+
+  .tab-btn {
+    background: none; border: none; border-radius: 2px; padding: 0.75em 0.9em; font-weight: 600; font-size: 0.92rem;
+    color: var(--ink-2); cursor: pointer; text-align: left; white-space: normal; width: 100%;
+  }
+  .tab-btn:hover { color: var(--ink); background: var(--accent-soft); }
+  .tab-btn.active { color: var(--accent); background: var(--accent-soft); font-weight: 700; box-shadow: inset 2px 0 0 var(--accent); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: fadein 0.2s ease; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
   .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow); margin-bottom: 1.25rem; }
   .card h2 { font-size: 1.15rem; margin-bottom: 0.9rem; }
@@ -504,7 +540,7 @@
 
   .cat-card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
   .cat-card-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem 0.75rem; padding: 0.9rem 1rem; }
-  .cat-card-head h3 { margin: 0; font-size: 0.98rem; font-family: "Public Sans", sans-serif; font-weight: 700; min-width: 0; }
+  .cat-card-head h3 { margin: 0; font-size: 0.98rem; font-family: "Manrope", sans-serif; font-weight: 700; min-width: 0; }
   .cat-card-body { padding: 0 1rem 1rem; }
   .cat-note { font-size: 0.82rem; color: var(--ink-2); margin: 0.4rem 0 0.7rem; }
 
@@ -513,18 +549,40 @@
   td { padding: 0.65em 0.6em; border-bottom: 1px solid var(--line); vertical-align: top; }
   tr:last-child td { border-bottom: none; }
   .table-scroll { overflow-x: auto; }
-  td.num, th.num { text-align: right; font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+  td.num, th.num { text-align: right; font-family: "Manrope", sans-serif; font-variant-numeric: tabular-nums; font-weight: 600; }
 
   .checklist-group { margin-bottom: 1.1rem; }
   .checklist-group h4 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); margin: 0 0 0.5rem; }
   .check-row { display: flex; align-items: flex-start; gap: 0.65rem; padding: 0.5rem 0.2rem; border-bottom: 1px solid var(--line); }
   .check-row:last-child { border-bottom: none; }
   .check-row input[type="checkbox"] { width: 18px; height: 18px; margin-top: 0.15rem; accent-color: var(--accent); flex: none; }
-  .check-row.done .check-title { text-decoration: line-through; color: var(--ink-muted); }
-  .check-title { font-size: 0.92rem; }
+  .check-title { font-size: 0.92rem; position: relative; display: inline-block; transition: color 0.4s ease; }
+  .check-title::after { content: ""; position: absolute; left: 0; top: 0.68em; height: 1px; width: 0; background: var(--ink-muted); transition: width 0.45s cubic-bezier(.4,0,.2,1); }
+  .check-row.done .check-title { color: var(--ink-muted); }
+  .check-row.done .check-title::after { width: 100%; }
   .check-due { font-size: 0.76rem; color: var(--ink-muted); margin-top: 0.1rem; }
   .check-due.overdue { color: var(--critical); font-weight: 600; }
   .check-remove { margin-left: auto; }
+
+  /* ---- Phase rail: progress-by-phase header on the checklist tab ---- */
+  .phase-rail { display: flex; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--surface); box-shadow: var(--shadow); margin-bottom: 1.1rem; flex-wrap: wrap; }
+  .phase-tile { flex: 1 1 200px; padding: 1.1rem 1.25rem 1.2rem; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); cursor: pointer; background: none; text-align: left; font: inherit; color: inherit; }
+  .phase-tile:last-child { border-right: none; }
+  .phase-tile .p-eyebrow { font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-muted); font-weight: 700; }
+  .phase-tile h4 { font-size: 1.02rem; margin: 0.35rem 0 0.45rem; font-family: "Playfair Display", serif; font-weight: 600; }
+  .phase-tile .p-count { font-size: 0.78rem; color: var(--ink-2); margin-bottom: 0.7rem; }
+  .phase-tile .p-fill { height: 3px; background: var(--line); border-radius: 2px; overflow: hidden; }
+  .phase-tile .p-fill i { display: block; height: 100%; background: var(--brass); transition: width 0.4s ease; }
+  .phase-tile.current { background: var(--accent-soft); }
+  .phase-tile.current .p-eyebrow { color: var(--accent); }
+  .phase-tile.phase-done .p-fill i { background: var(--good); }
+  .checklist-phase-group { margin-bottom: 0.6rem; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .phase-toggle { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0.75rem 1rem; background: var(--paper-2); border: none; font: inherit; cursor: pointer; text-align: left; color: var(--ink); }
+  .phase-toggle .pt-title { font-family: "Playfair Display", serif; font-weight: 600; font-size: 0.98rem; }
+  .phase-toggle .pt-meta { font-size: 0.78rem; color: var(--ink-muted); display: flex; align-items: center; gap: 0.6rem; }
+  .phase-toggle .pt-chevron { transition: transform 0.25s ease; display: inline-block; }
+  .checklist-phase-group.open .phase-toggle .pt-chevron { transform: rotate(90deg); }
+  .checklist-phase-body { padding: 0.4rem 1rem 0.7rem; }
 
   .barchart { display: flex; flex-direction: column; gap: 0.55rem; }
   .barrow { display: grid; grid-template-columns: 130px 1fr 90px; align-items: center; gap: 0.6rem; }
@@ -533,10 +591,32 @@
   .barfill { position: absolute; top: 0; left: 0; height: 100%; border-radius: 4px; }
   .barfill.s1 { background: var(--series-1); }
   .barfill.s2 { background: var(--series-2); opacity: 0.55; height: 8px; top: 6px; }
-  .barrow .barval { font-size: 0.78rem; text-align: right; font-family: "IBM Plex Mono", monospace; }
+  .barrow .barval { font-size: 0.78rem; text-align: right; font-family: "Manrope", sans-serif; font-variant-numeric: tabular-nums; font-weight: 700; }
   .legend { display: flex; gap: 1.2rem; margin-top: 0.6rem; font-size: 0.78rem; color: var(--ink-2); }
   .legend span { display: inline-flex; align-items: center; gap: 0.4em; }
   .legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+
+  /* ---- Fluid budget sliders: proportional-redistribution allocation ---- */
+  .fluid-row { padding: 0.85rem 0; border-bottom: 1px solid var(--line); }
+  .fluid-row:last-child { border-bottom: none; }
+  .fluid-row-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.55rem; gap: 0.6rem; }
+  .fluid-row-head .fr-cat { font-weight: 700; font-size: 0.9rem; }
+  .fluid-row-head .fr-cat .booked-badge { font-weight: 500; }
+  .fluid-row-head .fr-amt { font-family: "Manrope", sans-serif; font-variant-numeric: tabular-nums; font-weight: 800; font-size: 0.95rem; }
+  .fluid-row-head .fr-pct { font-size: 0.74rem; color: var(--ink-muted); margin-left: 0.35em; font-weight: 500; }
+  .fluid-slider { position: relative; height: 6px; border-radius: 4px; background: var(--line); }
+  .fluid-slider .fill { position: absolute; inset: 0; border-radius: 4px; background: var(--brass); width: 0%; transition: background 0.2s ease; pointer-events: none; }
+  .fluid-slider input[type="range"] { -webkit-appearance: none; appearance: none; position: absolute; inset: -9px 0; width: 100%; height: 24px; background: transparent; margin: 0; cursor: grab; }
+  .fluid-slider input[type="range"]:active { cursor: grabbing; }
+  .fluid-slider input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 17px; height: 17px; border-radius: 50%; background: var(--surface); border: 2.5px solid var(--accent); margin-top: 0; box-shadow: var(--shadow); transition: transform 0.15s ease, box-shadow 0.15s ease; }
+  .fluid-slider input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px var(--accent-soft); }
+  .fluid-slider input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.15); }
+  .fluid-slider input[type="range"]::-moz-range-thumb { width: 17px; height: 17px; border-radius: 50%; background: var(--surface); border: 2.5px solid var(--accent); box-shadow: var(--shadow); }
+  .fluid-actual-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; font-size: 0.78rem; color: var(--ink-2); flex-wrap: wrap; }
+  .fluid-actual-row label { flex: none; }
+  .fluid-actual-row input { max-width: 100px; }
+  .fluid-hint { font-size: 0.78rem; color: var(--ink-muted); margin: -0.3rem 0 1rem; }
+  .fluid-budget-list { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); padding: 0.15rem 1.15rem; }
 
   textarea { min-height: 4.5em; resize: vertical; }
   .save-row { display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 0.9rem; align-items: center; }
@@ -567,7 +647,7 @@
   .file-input-row input[type="file"] { width: auto; flex: 1; min-width: 200px; font-size: 0.85rem; padding: 0.4em 0; border: none; background: none; }
 
   .copy-fallback { border: 1px solid var(--warning); background: var(--warning-soft); border-radius: 8px; padding: 0.9rem; margin-bottom: 1rem; }
-  .copy-fallback textarea { min-height: 6em; font-family: "IBM Plex Mono", monospace; font-size: 0.78rem; }
+  .copy-fallback textarea { min-height: 6em; font-family: "Manrope", sans-serif; font-size: 0.78rem; }
   .copy-fallback .save-row { margin-top: 0.6rem; }
 
   .guest-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 1rem; }
@@ -660,13 +740,91 @@
   .portal-card h2 { font-size: 1.05rem; margin-bottom: 0.75rem; }
   .portal-schedule-item { padding: 0.55rem 0; border-bottom: 1px solid var(--line); }
   .portal-schedule-item:last-child { border-bottom: none; }
-  .portal-schedule-item .ps-time { font-family: "IBM Plex Mono", monospace; font-size: 0.8rem; color: var(--ink-2); }
+  .portal-schedule-item .ps-time { font-family: "Manrope", sans-serif; font-variant-numeric: tabular-nums; font-weight: 700; font-size: 0.8rem; color: var(--ink-2); }
   .portal-member { border: 1px solid var(--line); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
-  .portal-member h3 { font-size: 1rem; margin-bottom: 0.7rem; }
   .portal-member .field { margin-bottom: 0.8rem; }
-  .portal-rsvp-choices { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-  .portal-rsvp-choices label { display: flex; align-items: center; gap: 0.4em; font-weight: 400; border: 1px solid var(--line-strong); border-radius: 7px; padding: 0.45em 0.8em; cursor: pointer; color: var(--ink); }
-  .portal-rsvp-choices input { width: auto; }
+  .portal-attend-row { display: flex; align-items: center; gap: 0.65em; cursor: pointer; margin-bottom: 0.7rem; }
+  .portal-attend-row input { width: 20px; height: 20px; accent-color: var(--accent); flex: none; }
+  .portal-member-name { font-family: "Playfair Display", Georgia, serif; font-size: 1.05rem; font-weight: 600; }
+  .portal-eyebrow { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--brass-ink, var(--ink-2)); font-weight: 700; margin-bottom: 0.5rem; }
+  .portal-shell { border-top: 3px solid var(--brass); padding-top: 1.75rem; }
+  .household-members-select { min-height: 90px; }
+
+  /* Themed pages — the RSVP portal and the first-run setup wizard. Never
+     used on the couple's own working dashboard. */
+  .themed-page { background: var(--theme-bg); min-height: 100vh; }
+  .couple-photo-frame {
+    display: block; width: 140px; height: 140px; margin: 0 auto 1rem; border-radius: 50%;
+    border: 4px solid var(--brass); box-shadow: var(--shadow); object-fit: cover; background: var(--surface);
+  }
+  .portal-search-shell, .wizard-shell { max-width: 480px; margin: 0 auto; padding: 3.5rem 1.25rem 4rem; text-align: center; }
+  .portal-search-shell h1, .wizard-shell h1 { font-size: 1.6rem; margin-bottom: 0.35rem; }
+  .portal-search-shell .portal-sub, .wizard-shell .wizard-sub { color: var(--ink-2); font-size: 0.95rem; margin-bottom: 1.75rem; }
+  .portal-search-shell .field, .portal-found-name { text-align: left; }
+  .portal-match-list { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 1rem; }
+  .portal-match-btn {
+    text-align: left; padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid var(--line); background: var(--surface);
+    cursor: pointer; font-size: 0.95rem; font-weight: 600; color: var(--ink);
+  }
+  .portal-match-btn:hover { border-color: var(--accent); }
+  .portal-addition-row { display: flex; gap: 0.6rem; margin-top: 0.75rem; align-items: flex-end; }
+  .portal-addition-row .field { flex: 1; margin-bottom: 0; }
+  .portal-addition-list { display: flex; flex-direction: column; gap: 0.4rem; margin: 0.75rem 0; }
+  .portal-addition-chip {
+    display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.5rem 0.75rem;
+    border-radius: 8px; background: var(--accent-soft); font-size: 0.85rem;
+  }
+  .portal-addition-chip button { background: none; border: none; color: var(--ink-muted); cursor: pointer; font-size: 0.8rem; text-decoration: underline; }
+  .pending-approval-badge {
+    display: inline-block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--warning); background: var(--warning-soft); border-radius: 999px; padding: 0.15em 0.55em; margin-left: 0.4em; vertical-align: middle;
+  }
+
+  /* Guest site: wedding party, FAQ, registry links */
+  .party-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-top: 0.5rem; }
+  .party-card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 1rem; text-align: center; }
+  .party-photo, .party-photo-empty {
+    display: block; width: 96px; height: 96px; margin: 0 auto 0.5rem; border-radius: 50%;
+    border: 3px solid var(--brass); object-fit: cover; background: var(--bg-soft, var(--surface));
+  }
+  .party-photo-empty { display: flex; align-items: center; justify-content: center; }
+  .party-photo-input { display: block; margin: 0 auto 0.75rem; font-size: 0.78rem; }
+  .party-card .field { text-align: left; margin-bottom: 0.6rem; }
+  .faq-row, .registry-row {
+    border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface);
+    padding: 1rem; margin-bottom: 0.75rem;
+  }
+  .faq-row .field { margin-bottom: 0.6rem; }
+  .registry-row.grid-3 { align-items: end; }
+  .portal-story { white-space: pre-wrap; line-height: 1.6; }
+  .portal-map { width: 100%; height: 220px; border: 0; border-radius: 10px; margin-top: 0.75rem; }
+  .portal-countdown {
+    display: inline-flex; align-items: baseline; gap: 0.4em; margin-top: 0.5rem; font-weight: 700;
+    color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 0.35em 0.9em; font-size: 0.85rem;
+  }
+  .portal-countdown .num { font-size: 1.1em; font-variant-numeric: tabular-nums; }
+  .portal-registry-links { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.5rem; }
+  .portal-registry-link {
+    display: inline-block; padding: 0.6em 1.1em; border-radius: 999px; border: 1px solid var(--line);
+    background: var(--surface); color: var(--ink); font-weight: 600; font-size: 0.9rem; text-decoration: none;
+  }
+  .portal-registry-link:hover { border-color: var(--accent); }
+  .portal-party-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1.25rem; margin-top: 0.75rem; text-align: center; }
+  .portal-party-photo, .portal-party-photo-empty { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; margin: 0 auto 0.5rem; border: 3px solid var(--brass); background: var(--surface); }
+  .portal-party-name { font-weight: 700; font-size: 0.92rem; }
+  .portal-party-role { font-size: 0.78rem; color: var(--ink-2); margin-bottom: 0.3rem; }
+  .portal-party-blurb { font-size: 0.82rem; color: var(--ink-2); }
+  .portal-faq-item { margin-bottom: 1rem; }
+  .portal-faq-item:last-child { margin-bottom: 0; }
+  .portal-faq-item .q { font-weight: 700; margin-bottom: 0.25rem; }
+  .portal-faq-item .a { color: var(--ink-2); }
+
+  /* First-run setup wizard */
+  .wizard-shell { text-align: left; max-width: 640px; }
+  .wizard-shell .card { margin-bottom: 1.25rem; }
+  .wizard-photo-upload { text-align: center; margin-bottom: 1rem; }
+  .wizard-photo-upload input[type=file] { display: block; margin: 0.6rem auto 0; }
+  .wizard-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; }
   .login-links { display: flex; justify-content: space-between; margin-top: 0.9rem; }
   .link-btn { background: none; border: none; color: var(--accent); font-size: 0.82rem; font-weight: 600; cursor: pointer; text-decoration: underline; padding: 0; }
   .masthead-account { display: flex; align-items: center; gap: 0.75rem; }
@@ -682,7 +840,7 @@
   .print-run-sheet .prs-table ul { margin: 0; padding-left: 1.2rem; }
   @media print {
     .sidebar, .masthead-count, .stat-strip, .tab-btn, .save-row, .guest-toolbar,
-    .seating-toolbar, .floor-plan-canvas, .readonly-banner, footer.note, .btn { display: none !important; }
+    .seating-toolbar, .floor-plan-canvas, .readonly-banner, footer.note, .btn, .hamburger-btn, .nav-drawer, .nav-backdrop { display: none !important; }
     .print-run-sheet { display: block !important; }
     .app-shell { display: block !important; }
     .card { box-shadow: none; border: none; padding: 0; }
@@ -752,10 +910,12 @@
   var TABS = [
     { key: "overview", label: "Overview" },
     { key: "profile", label: "Profile & Requests" },
+    { key: "guestsite", label: "Guest Site" },
     { key: "checklist", label: "Checklist" },
     { key: "budget", label: "Budget" },
     { key: "vendors", label: "Vendors" },
     { key: "guests", label: "Guest List" },
+    { key: "message", label: "Message Guests" },
     { key: "seating", label: "Seating" },
     { key: "dayof", label: "Day-of" }
   ];
@@ -766,7 +926,7 @@
   // picker looks the same regardless of which colorway (or light/dark
   // mode) happens to be active while you're choosing.
   var COLORWAYS = [
-    { key: "classic", label: "Classic", sub: "Navy & Brass", colors: ["#33406b", "#a8843d"] },
+    { key: "classic", label: "Ivory & Plum", sub: "The boutique default", colors: ["#5c3a4e", "#b08d57"] },
     { key: "sage", label: "Sage & Blush", sub: "Green + pink", colors: ["#6b7f5e", "#c98fa0"] },
     { key: "emerald", label: "Emerald & Mocha", sub: "Green + brown", colors: ["#0f5c46", "#8a6a52"] },
     { key: "chocolate", label: "Cocoa & Blush", sub: "Brown + pink", colors: ["#5c3a21", "#d98aa0"] },
@@ -797,7 +957,7 @@
       cats[c.key] = { requestStatus: "none", requestNote: "", vendors: [], bookedVendorId: null, allocated: null, actual: null, payment: defaultPayment() };
     });
     return {
-      profile: { coupleNames: "", weddingDate: "", location: "", address: "", guestCount: null, budgetTotal: null, style: "", notes: "" },
+      profile: { coupleNames: "", weddingDate: "", location: "", address: "", guestCount: null, budgetTotal: null, style: "", notes: "", couplePhoto: "", story: "" },
       categories: cats,
       checklist: CHECKLIST_DEFAULTS.map(function (d) {
         return { id: d.id, title: d.title, offset: d.offset, category: d.category || null, done: false, custom: false };
@@ -808,7 +968,11 @@
       fileImports: [],
       timeline: [],
       tables: [],
-      settings: { colorway: "classic" },
+      weddingParty: [],
+      faq: [],
+      registryLinks: [],
+      messageLog: [],
+      settings: { colorway: "classic", onboardingComplete: false },
       writable: true,
       _rev: 0
     };
@@ -832,6 +996,7 @@
 
   var state = defaultState();
   var activeTab = "overview";
+  var navOpen = false;
   var canWrite = true;
   var currentUser = null;
 
@@ -847,6 +1012,20 @@
   var resetErr = "";
   var changePasswordMsg = "";
   var changePasswordErr = "";
+
+  // First-run setup wizard — shown once, right after a couple's first
+  // sign-in, before they ever see the normal dashboard (state.settings.
+  // onboardingComplete gates it). "Skip for now" only dismisses it for the
+  // current session (onboardingSkipped); it comes back next sign-in until
+  // Finish is clicked. wizardDraft/wizardColorway/wizardPhoto are a local
+  // scratch copy — nothing here touches the couple's real profile until
+  // "Finish setup" saves it, same pattern as the RSVP portal's own _draft.
+  var onboardingSkipped = false;
+  var wizardDraft = null;
+  var wizardColorway = null;
+  var wizardPhoto = "";
+  var wizardError = "";
+  var photoError = ""; // upload error for the Theme card's photo control (Profile tab, post-onboarding)
 
   function applyLoadedState(parsed) {
     state = Object.assign(defaultState(), parsed, {
@@ -1223,6 +1402,7 @@
     var declined = state.guests.filter(function (g) { return g.rsvp === "declined"; }).length;
     var awaitingRsvp = state.guests.filter(function (g) { return g.status === "invite" && g.rsvp !== "attending" && g.rsvp !== "declined"; }).length;
     var needsHotel = state.guests.filter(function (g) { return g.needsHotel; }).length;
+    var giftsReceived = state.guests.filter(function (g) { return g.giftReceived; }).length;
     var thankYouPending = state.guests.filter(function (g) { return g.giftReceived && !g.thankYouSent; }).length;
     var seated = state.guests.filter(function (g) { return g.tableId; }).length;
 
@@ -1245,7 +1425,7 @@
     return {
       total: total, invite: invite, no: no, undecided: undecided, plusOnes: plusOnes, estAttending: invite + plusOnes,
       confirmedAttending: confirmedAttending, declined: declined, awaitingRsvp: awaitingRsvp,
-      needsHotel: needsHotel, thankYouPending: thankYouPending, seated: seated, invitesToSend: invitesToSend
+      needsHotel: needsHotel, giftsReceived: giftsReceived, thankYouPending: thankYouPending, seated: seated, invitesToSend: invitesToSend
     };
   }
 
@@ -1514,10 +1694,18 @@
       }
       return;
     }
+    if (canWrite && state.settings && !state.settings.onboardingComplete && !onboardingSkipped) {
+      root.innerHTML = renderOnboardingWizard();
+      bindOnboardingWizardEvents();
+      return;
+    }
+    // Whatever the wizard (or anything else) left previewed on <html>, the
+    // dashboard always reflects the couple's actually-saved colorway.
+    applyColorway(state.settings && state.settings.colorway);
     root.innerHTML = renderMasthead() + renderReadonlyBanner() + renderStatStrip() +
       '<div class="app-shell">' + renderTabs() +
       '<div class="main-content"><div class="tab-panels">' +
-      renderOverview() + renderProfile() + renderChecklist() + renderBudget() + renderVendors() + renderGuestList() + renderSeatingTab() + renderDayOf() +
+      renderOverview() + renderProfile() + renderGuestSite() + renderChecklist() + renderBudget() + renderVendors() + renderGuestList() + renderMessaging() + renderSeatingTab() + renderDayOf() +
       "</div></div></div>" + renderFooter();
     bindEvents();
   }
@@ -1685,9 +1873,10 @@
       countBlock = '<div class="masthead-count"><div class="num mono">' + num + '</div><div class="lbl">' + lbl + "</div></div>";
     }
     var account = '<div class="masthead-account"><span class="tiny">' + (currentUser ? escapeHtml(currentUser.email) : "") + '</span><button class="logout-link" id="logout-btn" type="button">Log out</button></div>';
-    return '<div class="masthead"><div><h1 class="masthead-title">' + title + "</h1>" +
+    var navToggle = '<button class="hamburger-btn" id="nav-toggle-btn" type="button" aria-label="Open menu" aria-expanded="' + (navOpen ? "true" : "false") + '"><span></span><span></span><span></span></button>';
+    return '<div class="masthead"><div class="masthead-left">' + navToggle + '<div><h1 class="masthead-title">' + title + "</h1>" +
       (sub.length ? '<div class="masthead-sub">' + sub.join(" · ") + "</div>" : '<div class="masthead-sub">Fill in your profile to get started</div>') +
-      account + "</div>" + countBlock + "</div>";
+      account + "</div></div>" + countBlock + "</div>";
   }
 
   function renderStatStrip() {
@@ -1710,9 +1899,13 @@
   }
 
   function renderTabs() {
-    return '<div class="sidebar" role="tablist">' + TABS.map(function (t) {
+    var items = TABS.map(function (t) {
       return '<button class="tab-btn' + (t.key === activeTab ? " active" : "") + '" data-tab="' + t.key + '" role="tab">' + t.label + "</button>";
-    }).join("") + "</div>";
+    }).join("");
+    return '<div class="nav-backdrop' + (navOpen ? " open" : "") + '" id="nav-backdrop"></div>' +
+      '<div class="nav-drawer' + (navOpen ? " open" : "") + '" role="tablist" aria-hidden="' + (navOpen ? "false" : "true") + '">' +
+      '<div class="nav-drawer-head"><h4>Menu</h4><button class="nav-close-btn" id="nav-close-btn" type="button" aria-label="Close menu">&times;</button></div>' +
+      items + "</div>";
   }
 
   function panel(key, html) {
@@ -1760,6 +1953,143 @@
     );
   }
 
+  // Reads an <input type=file> image, downscales it on a canvas, and
+  // resolves a compressed JPEG data URL — kept well under the server's
+  // couplePhoto size cap without needing any external image storage; the
+  // photo just rides along in the same JSON state blob as everything else.
+  function readAndResizeImage(file, maxDim, quality) {
+    maxDim = maxDim || 900;
+    quality = quality || 0.82;
+    return new Promise(function (resolve, reject) {
+      if (!file) { reject(new Error("No file chosen.")); return; }
+      if (!/^image\//.test(file.type)) { reject(new Error("Please choose an image file.")); return; }
+      var reader = new FileReader();
+      reader.onerror = function () { reject(new Error("Could not read that file.")); };
+      reader.onload = function () {
+        var img = new Image();
+        img.onerror = function () { reject(new Error("Could not read that image.")); };
+        img.onload = function () {
+          var scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+          var w = Math.max(1, Math.round(img.width * scale));
+          var h = Math.max(1, Math.round(img.height * scale));
+          var canvas = document.createElement("canvas");
+          canvas.width = w; canvas.height = h;
+          var ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL("image/jpeg", quality));
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  /* ---------- first-run setup wizard ---------- */
+
+  function wizardProfileFromForm(base) {
+    if (!document.getElementById("w-names")) return base;
+    return Object.assign({}, base, {
+      coupleNames: val("w-names"),
+      weddingDate: val("w-date"),
+      location: val("w-location"),
+      address: val("w-address"),
+      guestCount: numOrNull(val("w-guests")),
+      budgetTotal: numOrNull(val("w-budget")),
+      style: val("w-style"),
+      notes: val("w-notes", true)
+    });
+  }
+
+  function renderOnboardingWizard() {
+    if (!wizardDraft) wizardDraft = Object.assign({}, state.profile);
+    if (!wizardColorway) wizardColorway = (state.settings && state.settings.colorway) || "classic";
+    applyColorway(wizardColorway); // live preview while choosing
+    var d = wizardDraft;
+    var f = function (id, label, value, type, extra) {
+      type = type || "text";
+      return '<div class="field"><label for="' + id + '">' + label + '</label><input id="' + id + '" type="' + type + '" value="' + escapeHtml(value === null || value === undefined ? "" : value) + '" ' + (extra || "") + "/></div>";
+    };
+    var profileFields = '<div class="grid-2">' +
+      f("w-names", "Couple's names", d.coupleNames, "text", 'placeholder="e.g. Maya & Devon"') +
+      f("w-date", "Wedding date", d.weddingDate, "date") +
+      f("w-location", "Location (city, state / country)", d.location) +
+      f("w-address", "Address (venue or general area)", d.address) +
+      f("w-guests", "Guest count", d.guestCount, "number", 'min="0"') +
+      f("w-budget", "Total budget (USD)", d.budgetTotal, "number", 'min="0"') +
+      f("w-style", "Style / vibe", d.style) +
+      "</div>" +
+      '<div class="field" style="margin-top:1rem"><label for="w-notes">Notes for planning</label><textarea id="w-notes">' + escapeHtml(d.notes || "") + "</textarea></div>";
+
+    var themeOptions = COLORWAYS.map(function (c) {
+      var active = c.key === wizardColorway;
+      return '<button type="button" class="colorway-option' + (active ? " active" : "") + '" data-wizard-colorway="' + c.key + '">' +
+        '<span class="colorway-swatch"><span style="background:' + c.colors[0] + '"></span><span style="background:' + c.colors[1] + '"></span></span>' +
+        '<span class="colorway-label">' + escapeHtml(c.label) + (active ? " ✓" : "") + '</span>' +
+        '<span class="colorway-sub">' + escapeHtml(c.sub) + "</span>" +
+        "</button>";
+    }).join("");
+
+    var photoSrc = wizardPhoto || d.couplePhoto || "";
+    var photoPreview = photoSrc
+      ? '<img class="couple-photo-frame" src="' + photoSrc + '" alt="The couple" />'
+      : '<div class="couple-photo-frame" style="display:flex;align-items:center;justify-content:center;color:var(--ink-muted);font-size:0.72rem;text-align:center;padding:0.5rem">Add a photo</div>';
+
+    return '<div class="themed-page"><div class="wizard-shell">' +
+      '<h1 style="text-align:center">Welcome to The Wedding Ledger</h1>' +
+      '<div class="wizard-sub" style="text-align:center">Let’s set up your wedding site — takes about a minute, and you can change any of this later from the Profile tab.</div>' +
+      (wizardError ? '<div class="login-error">' + escapeHtml(wizardError) + "</div>" : "") +
+      '<div class="card"><h2>A photo of the two of you</h2><p class="muted">Optional — shown on your RSVP page as part of your theme.</p><div class="wizard-photo-upload">' + photoPreview + '<input type="file" id="w-photo-input" accept="image/*"/></div></div>' +
+      '<div class="card"><h2>Pick a theme</h2><p class="muted">Colors and a matching background — this is what your guests will see on the RSVP page.</p><div class="colorway-grid">' + themeOptions + "</div></div>" +
+      '<div class="card"><h2>Your details</h2>' + profileFields + "</div>" +
+      '<div class="wizard-actions"><button type="button" class="link-btn" id="wizard-skip-btn">Skip for now</button>' +
+      '<span class="save-status" id="wizard-save-status"></span>' +
+      '<button class="btn btn-primary" id="wizard-finish-btn"' + (saving ? " disabled" : "") + ">" + (saving ? "Saving…" : "Finish setup") + "</button></div>" +
+      "</div></div>";
+  }
+
+  function bindOnboardingWizardEvents() {
+    var root = document.getElementById("app-root");
+    root.querySelectorAll("[data-wizard-colorway]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        wizardDraft = wizardProfileFromForm(wizardDraft);
+        wizardColorway = btn.getAttribute("data-wizard-colorway");
+        applyColorway(wizardColorway);
+        render();
+      });
+    });
+    var photoInput = document.getElementById("w-photo-input");
+    if (photoInput) photoInput.addEventListener("change", function () {
+      var file = photoInput.files && photoInput.files[0];
+      if (!file) return;
+      readAndResizeImage(file).then(function (dataUrl) {
+        wizardDraft = wizardProfileFromForm(wizardDraft);
+        wizardPhoto = dataUrl;
+        wizardError = "";
+        render();
+      }).catch(function (e) {
+        wizardDraft = wizardProfileFromForm(wizardDraft);
+        wizardError = e.message || "Could not use that photo.";
+        render();
+      });
+    });
+    var skipBtn = document.getElementById("wizard-skip-btn");
+    if (skipBtn) skipBtn.addEventListener("click", function () {
+      onboardingSkipped = true;
+      applyColorway(state.settings && state.settings.colorway);
+      render();
+    });
+    var finishBtn = document.getElementById("wizard-finish-btn");
+    if (finishBtn) finishBtn.addEventListener("click", function () {
+      wizardDraft = wizardProfileFromForm(wizardDraft);
+      var next = clone(state);
+      next.profile = Object.assign({}, next.profile, wizardDraft, { couplePhoto: wizardPhoto || next.profile.couplePhoto || "" });
+      next.settings = Object.assign({}, next.settings, { colorway: wizardColorway, onboardingComplete: true });
+      saveState(next, { doneLabel: "All set — welcome!" }).then(function () {
+        wizardDraft = null; wizardColorway = null; wizardPhoto = ""; wizardError = "";
+      });
+    });
+  }
+
   function renderColorwayPicker() {
     var current = (state.settings && state.settings.colorway) || "classic";
     var options = COLORWAYS.map(function (c) {
@@ -1770,9 +2100,20 @@
         '<span class="colorway-sub">' + escapeHtml(c.sub) + "</span>" +
         "</button>";
     }).join("");
-    return '<div class="card"><h2>Site colorway</h2><p class="muted">' +
-      (canWrite ? "Pick a palette — it applies for both of you right away." : "The site's current color palette. Ask the owner to change it.") +
-      '</p><div class="colorway-grid">' + options + "</div></div>";
+    var photo = state.profile.couplePhoto || "";
+    var photoPreview = photo
+      ? '<img class="couple-photo-frame" src="' + photo + '" alt="The couple" />'
+      : '<div class="couple-photo-frame" style="display:flex;align-items:center;justify-content:center;color:var(--ink-muted);font-size:0.72rem;text-align:center;padding:0.5rem">No photo yet</div>';
+    var photoSection = canWrite
+      ? '<div style="margin-top:1.25rem;text-align:center">' + photoPreview +
+        '<input type="file" id="f-couple-photo" accept="image/*" style="display:block;margin:0.6rem auto 0"/>' +
+        (photo ? '<button type="button" class="link-btn" id="remove-couple-photo-btn" style="margin-top:0.5rem">Remove photo</button>' : "") +
+        (photoError ? '<div class="login-error" style="margin-top:0.6rem">' + escapeHtml(photoError) + "</div>" : "") +
+        "</div>"
+      : (photo ? '<div style="margin-top:1.25rem;text-align:center">' + photoPreview + "</div>" : "");
+    return '<div class="card"><h2>Theme</h2><p class="muted">' +
+      (canWrite ? "Colors, a matching background, and your photo — this is what guests see on your RSVP page. Applies for both of you right away." : "The site's current theme. Ask the owner to change it.") +
+      '</p><div class="colorway-grid">' + options + "</div>" + photoSection + "</div>";
   }
 
   function renderProfile() {
@@ -1847,6 +2188,118 @@
     );
   }
 
+  function makePartyId() { return "party-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7); }
+  function makeFaqId() { return "faq-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7); }
+  function makeRegistryId() { return "reg-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7); }
+
+  var REGISTRY_TYPES = [
+    { value: "store", label: "Store registry" },
+    { value: "fund", label: "Cash / honeymoon fund" },
+    { value: "other", label: "Other" }
+  ];
+
+  // Everything on this tab is guest-facing "wedding website" content — it
+  // shares one Save button rather than one per card, and (like the Profile
+  // tab's own fields) reads whatever's currently typed straight from the
+  // DOM at save time instead of saving on every keystroke, so a render
+  // triggered by an unrelated action (adding another row, say) never wipes
+  // out something typed but not yet saved.
+  function guestSiteFieldsFromForm(next) {
+    var storyEl = document.getElementById("f-story");
+    if (storyEl) next.profile = Object.assign({}, next.profile, { story: val("f-story", true) });
+
+    if (document.getElementById("guestsite-party-list")) {
+      next.weddingParty = (next.weddingParty || []).map(function (p) {
+        var nameEl = document.querySelector('[data-party-field="name|' + p.id + '"]');
+        if (!nameEl) return p;
+        return Object.assign({}, p, {
+          name: document.querySelector('[data-party-field="name|' + p.id + '"]').value,
+          role: document.querySelector('[data-party-field="role|' + p.id + '"]').value,
+          blurb: document.querySelector('[data-party-field="blurb|' + p.id + '"]').value
+        });
+      });
+    }
+    if (document.getElementById("guestsite-faq-list")) {
+      next.faq = (next.faq || []).map(function (q) {
+        var qEl = document.querySelector('[data-faq-field="question|' + q.id + '"]');
+        if (!qEl) return q;
+        return Object.assign({}, q, {
+          question: qEl.value,
+          answer: document.querySelector('[data-faq-field="answer|' + q.id + '"]').value
+        });
+      });
+    }
+    if (document.getElementById("guestsite-registry-list")) {
+      next.registryLinks = (next.registryLinks || []).map(function (r) {
+        var lEl = document.querySelector('[data-registry-field="label|' + r.id + '"]');
+        if (!lEl) return r;
+        return Object.assign({}, r, {
+          label: lEl.value,
+          url: document.querySelector('[data-registry-field="url|' + r.id + '"]').value,
+          type: document.querySelector('[data-registry-field="type|' + r.id + '"]').value
+        });
+      });
+    }
+    return next;
+  }
+
+  function renderGuestSite() {
+    var storyCard = '<div class="card"><h2>Your story</h2><p class="muted">A little background for guests who want it — shown on your guest RSVP page.</p>' +
+      '<div class="field"><label for="f-story">Couple\'s story</label><textarea id="f-story" placeholder="How you met, the proposal, whatever you want to share…" ' + (canWrite ? "" : "disabled") + '>' + escapeHtml(state.profile.story || "") + "</textarea></div></div>";
+
+    var partyCards = (state.weddingParty || []).map(function (p) {
+      var photo = p.photo ? '<img class="party-photo" src="' + p.photo + '" alt="' + escapeHtml(p.name || "") + '"/>' : '<div class="party-photo party-photo-empty"></div>';
+      return '<div class="party-card">' + photo +
+        (canWrite ? '<input type="file" accept="image/*" data-party-photo="' + p.id + '" class="party-photo-input"/>' : "") +
+        '<div class="field"><label>Name</label><input type="text" data-party-field="name|' + p.id + '" value="' + escapeHtml(p.name || "") + '" placeholder="Full name" ' + (canWrite ? "" : "disabled") + '/></div>' +
+        '<div class="field"><label>Role</label><input type="text" data-party-field="role|' + p.id + '" value="' + escapeHtml(p.role || "") + '" placeholder="e.g. Maid of honor" ' + (canWrite ? "" : "disabled") + '/></div>' +
+        '<div class="field"><label>About them</label><textarea data-party-field="blurb|' + p.id + '" placeholder="How you know them, an inside joke, whatever fits" ' + (canWrite ? "" : "disabled") + '>' + escapeHtml(p.blurb || "") + "</textarea></div>" +
+        (canWrite ? '<button class="btn btn-ghost btn-sm" data-party-remove="' + p.id + '">Remove</button>' : "") +
+        "</div>";
+    }).join("");
+    var partyCard = '<div class="card"><h2>Wedding party</h2><p class="muted">Introduce your bridesmaids, groomsmen, or however your wedding party is organized — shown on your guest RSVP page.</p>' +
+      '<div id="guestsite-party-list" class="party-grid">' + partyCards + "</div>" +
+      (partyCards ? "" : '<div class="empty-note">No one added yet.</div>') +
+      (canWrite ? '<div class="save-row" style="margin-top:1rem"><button class="btn btn-secondary" id="add-party-btn">Add a person</button></div>' : "") +
+      "</div>";
+
+    var faqRows = (state.faq || []).map(function (q) {
+      return '<div class="faq-row">' +
+        '<div class="field"><label>Question</label><input type="text" data-faq-field="question|' + q.id + '" value="' + escapeHtml(q.question || "") + '" placeholder="e.g. Is there a dress code?" ' + (canWrite ? "" : "disabled") + '/></div>' +
+        '<div class="field"><label>Answer</label><textarea data-faq-field="answer|' + q.id + '" placeholder="Your answer" ' + (canWrite ? "" : "disabled") + '>' + escapeHtml(q.answer || "") + "</textarea></div>" +
+        (canWrite ? '<button class="btn btn-ghost btn-sm" data-faq-remove="' + q.id + '">Remove</button>' : "") +
+        "</div>";
+    }).join("");
+    var faqCard = '<div class="card"><h2>FAQ</h2><p class="muted">Answer the questions guests always ask — dress code, kids, plus-ones, parking — shown on your guest RSVP page.</p>' +
+      '<div id="guestsite-faq-list">' + faqRows + "</div>" +
+      (faqRows ? "" : '<div class="empty-note">No questions added yet.</div>') +
+      (canWrite ? '<div class="save-row" style="margin-top:1rem"><button class="btn btn-secondary" id="add-faq-btn">Add a question</button></div>' : "") +
+      "</div>";
+
+    var registryRows = (state.registryLinks || []).map(function (r) {
+      return '<div class="registry-row grid-3">' +
+        '<div class="field"><label>Label</label><input type="text" data-registry-field="label|' + r.id + '" value="' + escapeHtml(r.label || "") + '" placeholder="e.g. Our Amazon registry" ' + (canWrite ? "" : "disabled") + '/></div>' +
+        '<div class="field"><label>Link</label><input type="url" data-registry-field="url|' + r.id + '" value="' + escapeHtml(r.url || "") + '" placeholder="https://…" ' + (canWrite ? "" : "disabled") + '/></div>' +
+        '<div class="field"><label>Type</label><select data-registry-field="type|' + r.id + '" ' + (canWrite ? "" : "disabled") + '>' + REGISTRY_TYPES.map(function (t) { return '<option value="' + t.value + '"' + ((r.type || "other") === t.value ? " selected" : "") + '>' + t.label + "</option>"; }).join("") + "</select></div>" +
+        (canWrite ? '<button class="btn btn-ghost btn-sm" data-registry-remove="' + r.id + '">Remove</button>' : "") +
+        "</div>";
+    }).join("");
+    var registryCard = '<div class="card"><h2>Registry &amp; gift links</h2><p class="muted">Link out to real registries or a cash/honeymoon fund — shown on your guest RSVP page. Track who\'s actually sent a gift on the Guest List tab.</p>' +
+      '<div id="guestsite-registry-list">' + registryRows + "</div>" +
+      (registryRows ? "" : '<div class="empty-note">No links added yet.</div>') +
+      (canWrite ? '<div class="save-row" style="margin-top:1rem"><button class="btn btn-secondary" id="add-registry-btn">Add a link</button></div>' : "") +
+      "</div>";
+
+    var previewLink = state.guests.length || (state.households || []).length
+      ? '<p class="tiny">Preview: open any guest\'s RSVP link from the Guest List tab — this content shows there.</p>' : "";
+
+    return panel("guestsite",
+      '<div class="card"><h2>Guest site</h2><p class="muted">Everything here shows up on your guest RSVP page, alongside the schedule and the RSVP form itself.</p>' + previewLink + "</div>" +
+      storyCard + partyCard + faqCard + registryCard +
+      (canWrite ? '<div class="save-row"><span class="save-status" id="save-status-badge-8"></span><button class="btn btn-primary" id="save-guestsite-btn">Save guest site</button></div>' : "")
+    );
+  }
+
   function renderAccountSecurity() {
     return '<div class="card"><h2>Account security</h2><p class="muted">Change the password for ' + escapeHtml(currentUser ? currentUser.email : "your account") + ".</p>" +
       (changePasswordMsg ? '<div class="login-notice">' + escapeHtml(changePasswordMsg) + "</div>" : "") +
@@ -1884,38 +2337,67 @@
     return "~" + mos + " month" + (mos === 1 ? "" : "s") + " before";
   }
 
+  // Four narrative phases (per the "stress-free mental model" IA) instead
+  // of six flat lead-time buckets. Boundaries were chosen by walking every
+  // CHECKLIST_DEFAULTS item's offset so each lands somewhere sensible —
+  // e.g. "Give caterer final headcount" at -21 correctly falls in
+  // Executing, not Polishing.
+  var CHECKLIST_PHASES = [
+    { key: "dreaming", label: "Dreaming", blurb: "The big-picture decisions — budget, guest count, the people you want by your side.", test: function (o) { return o < -300; } },
+    { key: "booking", label: "Booking", blurb: "Lock in the venue and the vendors that book up first.", test: function (o) { return o < -100 && o >= -300; } },
+    { key: "polishing", label: "Polishing", blurb: "The details that make it yours — stationery, cake, final fittings.", test: function (o) { return o < -25 && o >= -100; } },
+    { key: "executing", label: "Executing", blurb: "Final counts, final payments, and the day itself.", test: function (o) { return o >= -25; } }
+  ];
+  var checklistPhaseOverride = {};
+
   function renderChecklist() {
     var scale = checklistOffsetScale();
-    var bounds = [-300, -270, -180, -90, -30, 0];
-    var tests = [
-      function (o) { return o <= -300; },
-      function (o) { return o <= -270 && o > -300; },
-      function (o) { return o <= -180 && o > -270; },
-      function (o) { return o <= -90 && o > -180; },
-      function (o) { return o <= -30 && o > -90; },
-      function (o) { return o > -30; }
-    ];
-    var groups = bounds.map(function (bound, i) { return { label: fmtLeadLabel(bound, scale), test: tests[i] }; });
     var compressionNote = scale < 1
       ? '<p class="tiny" style="margin:-0.4rem 0 0.9rem">Your wedding is ' + daysUntil(state.profile.weddingDate) + ' days away — the standard 12-month checklist below has been compressed to fit that timeline. Skip or remove anything that doesn\'t apply.</p>'
       : "";
     var items = state.checklist.slice().sort(function (a, b) { return a.offset - b.offset; });
-    var html = groups.map(function (g) {
-      var rows = items.filter(function (it) { return g.test(it.offset); });
-      if (!rows.length) return "";
-      var rowsHtml = rows.map(function (it) {
+
+    var phaseData = CHECKLIST_PHASES.map(function (p) {
+      var rows = items.filter(function (it) { return p.test(it.offset); });
+      var doneCount = rows.filter(function (it) { return it.done; }).length;
+      return { phase: p, rows: rows, doneCount: doneCount, total: rows.length, pct: rows.length ? Math.round((doneCount / rows.length) * 100) : 0 };
+    }).filter(function (pd) { return pd.total > 0; });
+
+    var currentKey = null;
+    for (var i = 0; i < phaseData.length; i++) {
+      if (phaseData[i].doneCount < phaseData[i].total) { currentKey = phaseData[i].phase.key; break; }
+    }
+    if (!currentKey && phaseData.length) currentKey = phaseData[phaseData.length - 1].phase.key;
+
+    var rail = '<div class="phase-rail">' + phaseData.map(function (pd) {
+      var isCurrent = pd.phase.key === currentKey;
+      var isDone = pd.doneCount === pd.total;
+      return '<button type="button" class="phase-tile' + (isCurrent ? " current" : "") + (isDone ? " phase-done" : "") + '" data-phase-jump="' + pd.phase.key + '">' +
+        '<div class="p-eyebrow">' + (isCurrent ? "Now" : (isDone ? "Done" : "Ahead")) + '</div>' +
+        '<h4>' + escapeHtml(pd.phase.label) + '</h4>' +
+        '<div class="p-count">' + pd.doneCount + ' of ' + pd.total + ' done</div>' +
+        '<div class="p-fill"><i style="width:' + pd.pct + '%"></i></div>' +
+        "</button>";
+    }).join("") + "</div>";
+
+    var html = phaseData.map(function (pd) {
+      var isOpen = checklistPhaseOverride.hasOwnProperty(pd.phase.key) ? checklistPhaseOverride[pd.phase.key] : (pd.phase.key === currentKey);
+      var rowsHtml = pd.rows.map(function (it) {
         var due = dueDateFor(it);
         var overdue = due && !it.done && due.getTime() < today().getTime();
         return '<div class="check-row' + (it.done ? " done" : "") + '"><input type="checkbox" data-check="' + it.id + '" ' + (it.done ? "checked" : "") + (canWrite ? "" : " disabled") + '/><div style="flex:1"><div class="check-title">' + escapeHtml(it.title) + (it.category ? ' <span class="tiny">· ' + categoryLabel(it.category) + "</span>" : "") + '</div><div class="check-due' + (overdue ? " overdue" : "") + '">' + (due ? (overdue ? "Overdue — was due " : "Due ") + fmtDate(due) : "Set a wedding date for a due date") + "</div></div>" +
           (canWrite && it.custom ? '<button class="btn btn-ghost btn-sm check-remove" data-remove-check="' + it.id + '">Remove</button>' : "") +
           "</div>";
       }).join("");
-      return '<div class="checklist-group"><h4>' + g.label + "</h4>" + rowsHtml + "</div>";
+      return '<div class="checklist-phase-group' + (isOpen ? " open" : "") + '">' +
+        '<button type="button" class="phase-toggle" data-phase-toggle="' + pd.phase.key + '"><span><span class="pt-title">' + escapeHtml(pd.phase.label) + '</span> · <span class="tiny">' + escapeHtml(pd.phase.blurb) + '</span></span><span class="pt-meta">' + pd.doneCount + '/' + pd.total + ' <span class="pt-chevron">›</span></span></button>' +
+        (isOpen ? '<div class="checklist-phase-body">' + rowsHtml + "</div>" : "") +
+        "</div>";
     }).join("");
 
     var addRow = canWrite ? '<div class="grid-2" style="margin-top:0.5rem"><div class="field"><label for="f-new-check">Add a custom to-do</label><input id="f-new-check" type="text" placeholder="e.g. Order welcome bags"/></div><div class="field"><label for="f-new-check-offset">Due (days before wedding)</label><input id="f-new-check-offset" type="number" placeholder="e.g. 30"/></div></div><div class="save-row"><button class="btn btn-secondary" id="add-check-btn">Add to-do</button><span class="save-status" id="save-status-badge-2"></span><button class="btn btn-primary" id="save-checklist-btn">Save checklist</button></div>' : "";
 
-    return panel("checklist", '<div class="card"><h2>Wedding timeline</h2><p class="muted">Auto-generated from your wedding date, in the order most couples tackle them. Check items off as you go.</p>' + compressionNote + html + addRow + "</div>");
+    return panel("checklist", '<div class="card"><h2>Wedding timeline</h2><p class="muted">Grouped into four phases, in the order most couples tackle them — the phase you\'re in stays open, the rest tuck away until you need them. Check items off as you go.</p>' + compressionNote + rail + html + addRow + "</div>");
   }
 
   function renderBudgetBars(compact) {
@@ -1963,13 +2445,25 @@
   function renderYourBudget() {
     var b = computeBudget();
     var gc = Number(state.profile.guestCount) || 0;
+    var allocSum = CATEGORY_META.reduce(function (s, c) { return s + (Number(state.categories[c.key].allocated) || 0); }, 0);
+    var sliderMax = Math.max(b.total || 0, allocSum, 1000);
+    sliderMax = Math.ceil(sliderMax / 500) * 500;
+
     var rows = CATEGORY_META.map(function (c) {
       var cat = state.categories[c.key];
-      var perGuest = c.key === "catering" && gc && cat.allocated ? '<div class="tiny muted">≈ ' + fmtMoney(Math.round((Number(cat.allocated) / gc) * 100) / 100) + " / guest</div>" : "";
-      return '<tr><td>' + c.label + (cat.bookedVendorId ? ' <span class="booked-badge">✓</span>' : "") + '</td>' +
-        '<td class="num"><input type="number" min="0" data-budget-alloc="' + c.key + '" value="' + (cat.allocated || "") + '" style="max-width:100px" ' + (canWrite ? "" : "disabled") + "/>" + perGuest + "</td>" +
-        '<td class="num"><input type="number" min="0" data-budget-actual="' + c.key + '" value="' + (cat.actual || "") + '" style="max-width:100px" ' + (canWrite ? "" : "disabled") + "/></td>" +
-        '<td class="num">' + (cat.allocated && cat.actual ? fmtMoney(cat.allocated - cat.actual) : "—") + "</td></tr>";
+      var alloc = Number(cat.allocated) || 0;
+      var pct = allocSum ? Math.round((alloc / allocSum) * 100) : 0;
+      var fillPct = sliderMax ? Math.min(100, (alloc / sliderMax) * 100) : 0;
+      var perGuest = c.key === "catering" && gc && cat.allocated ? '<span class="tiny">≈ ' + fmtMoney(Math.round((Number(cat.allocated) / gc) * 100) / 100) + " / guest</span>" : "";
+      return '<div class="fluid-row" data-key="' + c.key + '">' +
+        '<div class="fluid-row-head"><span class="fr-cat">' + c.label + (cat.bookedVendorId ? ' <span class="booked-badge">✓</span>' : "") + '</span>' +
+        '<span><span class="fr-amt" data-fr-amt>' + fmtMoney(alloc) + '</span>' + (allocSum ? '<span class="fr-pct" data-fr-pct> · ' + pct + '% of your plan</span>' : "") + '</span></div>' +
+        '<div class="fluid-slider"><div class="fill" data-fill style="width:' + fillPct + '%"></div>' +
+        '<input type="range" min="0" max="' + sliderMax + '" step="25" value="' + alloc + '" data-budget-slider="' + c.key + '" data-prev="' + alloc + '" ' + (canWrite ? "" : "disabled") + ' aria-label="' + escapeHtml(c.label) + ' allocated budget"/></div>' +
+        '<div class="fluid-actual-row"><label for="alloc-' + c.key + '">Allocated</label><input id="alloc-' + c.key + '" type="number" min="0" data-budget-alloc="' + c.key + '" value="' + (cat.allocated || "") + '" ' + (canWrite ? "" : "disabled") + "/>" + perGuest +
+        '<label for="actual-' + c.key + '">Spent</label><input id="actual-' + c.key + '" type="number" min="0" data-budget-actual="' + c.key + '" value="' + (cat.actual || "") + '" ' + (canWrite ? "" : "disabled") + "/>" +
+        (cat.allocated && cat.actual ? '<span class="tiny">Diff ' + fmtMoney(cat.allocated - cat.actual) + '</span>' : "") +
+        "</div></div>";
     }).join("");
     var predictedNote = b.total
       ? (b.allocated > b.total
@@ -1977,8 +2471,8 @@
           : fmtMoney(b.total - b.allocated) + " under your " + fmtMoney(b.total) + " budget")
       : "Add a total budget on the Profile tab to compare.";
 
-    return '<div class="card"><h2>Your breakdown</h2><p class="muted">Enter what you plan to spend per category — your predicted total is the sum, shown above and compared to your budget here: ' + predictedNote + '</p>' +
-      '<div class="table-scroll"><table><thead><tr><th>Category</th><th class="num">Your plan (allocated)</th><th class="num">Actually spent</th><th class="num">Diff</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
+    return '<div class="card"><h2>Your breakdown</h2><p class="muted">Drag a slider and the rest rebalance to match, proportionally — the total you\'ve placed never drifts on its own. Your predicted total is the sum, compared to your budget here: ' + predictedNote + '</p>' +
+      '<div class="fluid-budget-list">' + rows + "</div>" +
       '<div class="save-row"><span class="save-status" id="save-status-badge-3"></span>' + (canWrite ? '<button class="btn btn-primary" id="save-budget-btn">Save budget</button>' : "") + '<button class="btn btn-secondary btn-sm" id="export-budget-btn">Export budget (CSV)</button>' + "</div></div>";
   }
 
@@ -2072,6 +2566,35 @@
     return '<span class="closeness-dot closeness-' + g.closeness + '" title="' + (m ? escapeHtml(m.label) : "") + '"></span>';
   }
 
+  // A dedicated gifts-tracking view, pulled together from data that
+  // otherwise only shows up one guest at a time (their expanded detail
+  // row) or on a different tab entirely (registry links, on Guest Site) —
+  // so there's one place to see who's given what and who still needs a
+  // thank-you.
+  function renderRegistryGiftsCard() {
+    var links = state.registryLinks || [];
+    var linksHtml = links.length
+      ? '<div class="portal-registry-links" style="margin-bottom:1rem">' + links.map(function (r) {
+          return '<a class="portal-registry-link" href="' + escapeHtml(r.url || "#") + '" target="_blank" rel="noopener">' + escapeHtml(r.label || "Registry") + "</a>";
+        }).join("") + "</div>"
+      : '<p class="tiny muted" style="margin:-0.3rem 0 1rem">No registry links yet — add some on the Guest Site tab and they\'ll show up here and on your guest RSVP page.</p>';
+
+    var givers = state.guests.filter(function (g) { return g.giftReceived; });
+    var giftsHtml;
+    if (!givers.length) {
+      giftsHtml = '<div class="empty-note">No gifts logged yet — mark "Gift received" on a guest\'s detail row (Details ▸ below) and they\'ll show up here.</div>';
+    } else {
+      var rows = givers.map(function (g) {
+        return '<tr><td>' + escapeHtml(g.name || "") + '</td><td>' + escapeHtml(g.giftDescription || "—") + '</td>' +
+          '<td>' + (canWrite ? '<label style="display:flex;align-items:center;gap:0.4em"><input type="checkbox" data-gift-thankyou="' + g.id + '" ' + (g.thankYouSent ? "checked" : "") + ' style="width:16px;height:16px;accent-color:var(--accent)"/> Sent</label>' : (g.thankYouSent ? '<span class="pill"><span class="dot good"></span>Sent</span>' : '<span class="pill"><span class="dot warning"></span>Pending</span>')) + "</td></tr>";
+      }).join("");
+      giftsHtml = '<div class="table-scroll"><table><thead><tr><th>Guest</th><th>Gift</th><th>Thank-you</th></tr></thead><tbody>' + rows + "</tbody></table></div>";
+    }
+
+    return '<div class="card"><h2>Registry &amp; gifts</h2><p class="muted">Your registry links, and a running list of who\'s given a gift and who still needs a thank-you note.</p>' +
+      linksHtml + giftsHtml + "</div>";
+  }
+
   function renderGuestList() {
     var stats = computeGuestStats();
     var labels = partnerLabels();
@@ -2105,13 +2628,20 @@
       guestImportLog +
       "</div>" : (copyFallback || guestImportLog ? '<div class="card">' + fallback + guestImportLog + "</div>" : "");
 
-    var householdsCard = state.guests.length ? '<div class="card"><h3>Households</h3><p class="muted">Group family members who should share one invitation and one RSVP link — set who\'s in which household from a guest\'s Details panel below. Everyone else counts, and RSVPs, on their own.</p>' +
+    var householdsCard = state.guests.length ? '<div class="card"><h3>Households</h3><p class="muted">Group family members who should share one invitation and one RSVP link — ctrl/cmd-click (or tap, on mobile) to select everyone in a household from the Members list below.</p>' +
       ((state.households || []).length ? '<div class="table-scroll"><table><thead><tr><th>Household</th><th>Members</th><th>Invite</th><th>RSVP link</th><th></th></tr></thead><tbody>' +
         state.households.map(function (h) {
-          var members = state.guests.filter(function (g) { return g.householdId === h.id; });
+          var memberIds = {};
+          state.guests.forEach(function (g) { if (g.householdId === h.id) memberIds[g.id] = true; });
           var link = h.rsvpToken ? portalUrl(h.rsvpToken) : "";
+          var memberOptions = state.guests.slice().sort(function (a, b) { return a.name.localeCompare(b.name); }).map(function (g) {
+            // A guest already in a different household still appears (so you
+            // can move them), labeled with where they currently are.
+            var other = g.householdId && g.householdId !== h.id ? (state.households.filter(function (x) { return x.id === g.householdId; })[0] || {}).name : "";
+            return '<option value="' + g.id + '"' + (memberIds[g.id] ? " selected" : "") + '>' + escapeHtml(g.name) + (other ? " (in " + escapeHtml(other) + ")" : "") + "</option>";
+          }).join("");
           return "<tr><td><input type=\"text\" data-household-field=\"name|" + h.id + "\" value=\"" + escapeHtml(h.name) + "\" " + (canWrite ? "" : "disabled") + "/></td>" +
-            "<td>" + members.length + (members.length ? ": " + escapeHtml(members.map(function (g) { return g.name; }).join(", ")) : "") + "</td>" +
+            "<td><select multiple class=\"household-members-select\" data-household-members=\"" + h.id + "\" " + (canWrite ? "" : "disabled") + ">" + memberOptions + "</select></td>" +
             "<td><label style=\"display:flex;align-items:center;gap:0.4em;font-weight:400;white-space:nowrap\"><input type=\"checkbox\" data-household-check=\"sendSeparateInvites|" + h.id + "\" " + (h.sendSeparateInvites ? "checked" : "") + (canWrite ? "" : " disabled") + " style=\"width:16px;height:16px;accent-color:var(--accent)\"/> Send separate</label></td>" +
             "<td>" + (link ? "<input type=\"text\" readonly value=\"" + escapeHtml(link) + "\" onclick=\"this.select()\" style=\"width:220px\"/>" : '<span class="tiny">Not generated yet</span>') +
               (canWrite ? ' <button type="button" class="btn btn-secondary btn-sm" data-household-genlink="' + h.id + '">' + (link ? "Regenerate" : "Generate link") + "</button>" : "") + "</td>" +
@@ -2183,7 +2713,8 @@
           var rows = b.items.map(function (g) {
             var expanded = !!expandedGuestIds[g.id];
             var main = '<tr>' +
-              '<td class="guest-row-name">' + closenessDot(g) + '<input type="text" data-guest-field="name|' + g.id + '" value="' + escapeHtml(g.name) + '" ' + (canWrite ? "" : "disabled") + '/></td>' +
+              '<td class="guest-row-name">' + closenessDot(g) + '<input type="text" data-guest-field="name|' + g.id + '" value="' + escapeHtml(g.name) + '" ' + (canWrite ? "" : "disabled") + '/>' +
+                (g.pendingApproval ? '<span class="pending-approval-badge" title="Added by a guest through the RSVP portal — review and approve">New, via RSVP</span>' : "") + "</td>" +
               '<td class="guest-row-side"><input type="text" data-guest-field="side|' + g.id + '" value="' + escapeHtml(g.side || "") + '" ' + (canWrite ? "" : "disabled") + '/></td>' +
               '<td class="guest-row-group"><input type="text" data-guest-field="group|' + g.id + '" value="' + escapeHtml(g.group || "") + '" ' + (canWrite ? "" : "disabled") + '/></td>' +
               '<td class="guest-plus1"><input type="checkbox" data-guest-plusone="' + g.id + '" ' + (g.plusOne ? "checked" : "") + (canWrite ? "" : " disabled") + '/></td>' +
@@ -2194,7 +2725,7 @@
                 }).join("") + "</div>" : '<span class="pill"><span class="dot ' + (g.status === "invite" ? "good" : g.status === "no" ? "critical" : "neutral") + '"></span>' + (g.status === "invite" ? "Invited" : g.status === "no" ? "Not invited" : "To decide") + "</span>") + "</td>" +
               '<td><select data-guest-field="rsvp|' + g.id + '" ' + (canWrite ? "" : "disabled") + '>' + RSVP_META.map(function (r) { return '<option value="' + r.value + '"' + ((g.rsvp || "not_sent") === r.value ? " selected" : "") + '>' + r.label + "</option>"; }).join("") + "</select></td>" +
               "<td><button class=\"detail-toggle\" data-guest-toggle=\"" + g.id + '">' + (expanded ? "Hide ▾" : "Details ▸") + "</button></td>" +
-              "<td>" + (canWrite ? '<button class="btn btn-ghost btn-sm" data-guest-remove="' + g.id + '">Remove</button>' : "") + "</td>" +
+              "<td>" + (canWrite ? (g.pendingApproval ? '<button class="btn btn-secondary btn-sm" data-guest-approve="' + g.id + '">Approve</button> ' : "") + '<button class="btn btn-ghost btn-sm" data-guest-remove="' + g.id + '">Remove</button>' : "") + "</td>" +
               "</tr>";
             var detail = expanded ? '<tr class="detail-row"><td colspan="8"><div class="detail-grid">' +
               '<div class="field"><label>How you know them</label><input type="text" data-guest-field="howYouKnow|' + g.id + '" value="' + escapeHtml(g.howYouKnow || "") + '" placeholder="e.g. College roommate" ' + (canWrite ? "" : "disabled") + '/></div>' +
@@ -2231,7 +2762,59 @@
     return panel("guests",
       '<div class="card"><h2>Guest list</h2><p class="muted">Upload or build your list here, then work through it to decide who\'s in. This feeds the headcount and budget gap checks on the Overview tab.</p>' + statTiles + "</div>" +
       importCard + householdsCard + manualAdd +
-      '<div class="card">' + filterBar + tableHtml + saveRow + "</div>"
+      '<div class="card">' + filterBar + tableHtml + saveRow + "</div>" +
+      renderRegistryGiftsCard()
+    );
+  }
+
+  var MESSAGE_AUDIENCES = [
+    { value: "all", label: "Everyone with an email on file" },
+    { value: "attending", label: "Attending" },
+    { value: "no_response", label: "Awaiting RSVP" },
+    { value: "declined", label: "Declined" }
+  ];
+  function guestMatchesAudienceClient(g, audience) {
+    if (audience === "attending") return g.rsvp === "attending";
+    if (audience === "declined") return g.rsvp === "declined";
+    if (audience === "no_response") return g.rsvp !== "attending" && g.rsvp !== "declined";
+    return true;
+  }
+  function audienceRecipientCount(audience) {
+    return state.guests.filter(function (g) { return guestMatchesAudienceClient(g, audience) && g.email && String(g.email).trim(); }).length;
+  }
+
+  var messageAudience = "all";
+  var messageSending = false;
+  var messageFeedback = null; // { ok, text }
+
+  function renderMessaging() {
+    var count = audienceRecipientCount(messageAudience);
+    var audienceOptions = MESSAGE_AUDIENCES.map(function (a) {
+      return '<option value="' + a.value + '"' + (a.value === messageAudience ? " selected" : "") + '>' + a.label + " (" + audienceRecipientCount(a.value) + ")</option>";
+    }).join("");
+
+    var composeCard = canWrite ? '<div class="card"><h2>Send an email to your guests</h2>' +
+      '<p class="muted">Reaches everyone in the group below who has an email on file. Sends go out in small batches, and you\'re capped at 10 sends an hour.</p>' +
+      '<div class="field"><label for="f-msg-audience">Send to</label><select id="f-msg-audience">' + audienceOptions + '</select></div>' +
+      '<div class="field"><label for="f-msg-subject">Subject</label><input id="f-msg-subject" type="text" placeholder="e.g. Save the date!" maxlength="200"/></div>' +
+      '<div class="field"><label for="f-msg-body">Message</label><textarea id="f-msg-body" placeholder="Write your update here…" style="min-height:8em"></textarea></div>' +
+      '<div class="save-row"><span class="save-status' + (messageFeedback && !messageFeedback.ok ? " err" : "") + '" id="message-feedback">' + (messageFeedback ? escapeHtml(messageFeedback.text) : "") + '</span>' +
+      '<button class="btn btn-primary" id="send-message-btn"' + (messageSending ? " disabled" : "") + '>' + (messageSending ? "Sending…" : "Send to " + count + (count === 1 ? " guest" : " guests")) + "</button></div>" +
+      "</div>" : "";
+
+    var log = (state.messageLog || []).slice(0, 20);
+    var logHtml = log.length
+      ? '<div class="table-scroll"><table><thead><tr><th>Sent</th><th>Subject</th><th>To</th><th class="num">Recipients</th><th class="num">Sent</th><th class="num">Skipped</th><th class="num">Failed</th></tr></thead><tbody>' +
+        log.map(function (m) {
+          var audLabel = (MESSAGE_AUDIENCES.filter(function (a) { return a.value === m.audience; })[0] || {}).label || m.audience;
+          return '<tr><td class="tiny">' + fmtDate(new Date(m.createdAt)) + '</td><td>' + escapeHtml(m.subject || "") + '</td><td class="tiny">' + escapeHtml(audLabel) + '</td>' +
+            '<td class="num">' + m.recipientCount + '</td><td class="num">' + m.sent + '</td><td class="num">' + m.skipped + '</td><td class="num">' + m.failed + "</td></tr>";
+        }).join("") + "</tbody></table></div>"
+      : '<div class="empty-note">No messages sent yet.</div>';
+
+    return panel("message",
+      composeCard +
+      '<div class="card"><h2>Send history</h2><p class="muted">Skipped means email sending isn\'t configured yet — sends still work everywhere else in the app.</p>' + logHtml + "</div>"
     );
   }
 
@@ -2504,21 +3087,42 @@
     root.querySelectorAll(".tab-btn").forEach(function (btn) {
       btn.addEventListener("click", function () {
         activeTab = btn.getAttribute("data-tab");
+        navOpen = false;
         render();
       });
     });
 
+    var navToggleBtn = document.getElementById("nav-toggle-btn");
+    if (navToggleBtn) navToggleBtn.addEventListener("click", function () { navOpen = true; render(); });
+    var navCloseBtn = document.getElementById("nav-close-btn");
+    if (navCloseBtn) navCloseBtn.addEventListener("click", function () { navOpen = false; render(); });
+    var navBackdrop = document.getElementById("nav-backdrop");
+    if (navBackdrop) navBackdrop.addEventListener("click", function () { navOpen = false; render(); });
+
+    // Reads whatever's currently typed into the profile form fields, when
+    // they're on screen (i.e. we're on the Profile tab). Shared by the Save
+    // Profile button and the colorway picker below — picking a colorway
+    // saves+re-renders on its own, and without this, that re-render would
+    // silently overwrite the visible inputs with the last-saved (stale)
+    // values, wiping out anything typed but not yet saved.
+    function profileFieldsFromForm(profile) {
+      if (!document.getElementById("f-names")) return profile;
+      return Object.assign({}, profile, {
+        coupleNames: val("f-names"),
+        weddingDate: val("f-date"),
+        location: val("f-location"),
+        address: val("f-address"),
+        guestCount: numOrNull(val("f-guests")),
+        budgetTotal: numOrNull(val("f-budget")),
+        style: val("f-style"),
+        notes: val("f-notes", true)
+      });
+    }
+
     var saveProfileBtn = document.getElementById("save-profile-btn");
     if (saveProfileBtn) saveProfileBtn.addEventListener("click", function () {
       var next = clone(state);
-      next.profile.coupleNames = val("f-names");
-      next.profile.weddingDate = val("f-date");
-      next.profile.location = val("f-location");
-      next.profile.address = val("f-address");
-      next.profile.guestCount = numOrNull(val("f-guests"));
-      next.profile.budgetTotal = numOrNull(val("f-budget"));
-      next.profile.style = val("f-style");
-      next.profile.notes = val("f-notes", true);
+      next.profile = profileFieldsFromForm(next.profile);
       saveState(next, { doneLabel: "Profile saved." });
     });
 
@@ -2569,6 +3173,7 @@
         if (key === (state.settings && state.settings.colorway)) return;
         applyColorway(key); // instant preview, doesn't wait on the save round-trip
         var next = clone(state);
+        next.profile = profileFieldsFromForm(next.profile);
         next.settings = Object.assign({}, next.settings, { colorway: key });
         var picked = COLORWAYS.filter(function (c) { return c.key === key; })[0];
         saveState(next, { doneLabel: (picked ? picked.label : "Colorway") + " applied." }).then(function () {
@@ -2576,6 +3181,107 @@
           // colorway the reconciled/reverted state actually has.
           applyColorway(state.settings && state.settings.colorway);
         });
+      });
+    });
+
+    var couplePhotoInput = document.getElementById("f-couple-photo");
+    if (couplePhotoInput) couplePhotoInput.addEventListener("change", function () {
+      var file = couplePhotoInput.files && couplePhotoInput.files[0];
+      if (!file) return;
+      readAndResizeImage(file).then(function (dataUrl) {
+        var next = clone(state);
+        next.profile = Object.assign({}, profileFieldsFromForm(next.profile), { couplePhoto: dataUrl });
+        photoError = "";
+        saveState(next, { doneLabel: "Photo updated." });
+      }).catch(function (e) {
+        photoError = e.message || "Could not use that photo.";
+        render();
+      });
+    });
+    var removePhotoBtn = document.getElementById("remove-couple-photo-btn");
+    if (removePhotoBtn) removePhotoBtn.addEventListener("click", function () {
+      var next = clone(state);
+      next.profile = Object.assign({}, profileFieldsFromForm(next.profile), { couplePhoto: "" });
+      saveState(next, { doneLabel: "Photo removed." });
+    });
+
+    /* guest site (story, wedding party, FAQ, registry links) */
+
+    // Shared by every Guest Site action below — every tab panel is always
+    // in the DOM (just hidden), so this also carries over anything typed
+    // but not yet saved on the Profile tab, the same way the colorway
+    // picker and photo controls already do.
+    function nextWithGuestSiteForm() {
+      var next = clone(state);
+      next.profile = profileFieldsFromForm(next.profile);
+      return guestSiteFieldsFromForm(next);
+    }
+
+    var saveGuestSiteBtn = document.getElementById("save-guestsite-btn");
+    if (saveGuestSiteBtn) saveGuestSiteBtn.addEventListener("click", function () {
+      saveState(nextWithGuestSiteForm(), { doneLabel: "Guest site saved." });
+    });
+
+    var addPartyBtn = document.getElementById("add-party-btn");
+    if (addPartyBtn) addPartyBtn.addEventListener("click", function () {
+      var next = nextWithGuestSiteForm();
+      if (!next.weddingParty) next.weddingParty = [];
+      next.weddingParty.push({ id: makePartyId(), name: "", role: "", photo: "", blurb: "" });
+      saveState(next, { doneLabel: "Added to the wedding party." });
+    });
+    root.querySelectorAll("[data-party-remove]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-party-remove");
+        var next = nextWithGuestSiteForm();
+        next.weddingParty = (next.weddingParty || []).filter(function (p) { return p.id !== id; });
+        saveState(next, { doneLabel: "Removed." });
+      });
+    });
+    root.querySelectorAll("[data-party-photo]").forEach(function (inp) {
+      inp.addEventListener("change", function () {
+        var id = inp.getAttribute("data-party-photo");
+        var file = inp.files && inp.files[0];
+        if (!file) return;
+        readAndResizeImage(file, 500, 0.8).then(function (dataUrl) {
+          var next = nextWithGuestSiteForm();
+          var p = (next.weddingParty || []).filter(function (x) { return x.id === id; })[0];
+          if (p) p.photo = dataUrl;
+          saveState(next, { doneLabel: "Photo updated." });
+        }).catch(function (e) {
+          showToast(e.message || "Could not use that photo.");
+        });
+      });
+    });
+
+    var addFaqBtn = document.getElementById("add-faq-btn");
+    if (addFaqBtn) addFaqBtn.addEventListener("click", function () {
+      var next = nextWithGuestSiteForm();
+      if (!next.faq) next.faq = [];
+      next.faq.push({ id: makeFaqId(), question: "", answer: "" });
+      saveState(next, { doneLabel: "Question added." });
+    });
+    root.querySelectorAll("[data-faq-remove]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-faq-remove");
+        var next = nextWithGuestSiteForm();
+        next.faq = (next.faq || []).filter(function (q) { return q.id !== id; });
+        saveState(next, { doneLabel: "Removed." });
+      });
+    });
+
+    var addRegistryBtn = document.getElementById("add-registry-btn");
+    if (addRegistryBtn) addRegistryBtn.addEventListener("click", function () {
+      var next = nextWithGuestSiteForm();
+      if (!next.registryLinks) next.registryLinks = [];
+      next.registryLinks.push({ id: makeRegistryId(), label: "", url: "", type: "store" });
+      saveState(next, { doneLabel: "Link added." });
+    });
+    root.querySelectorAll("[data-registry-remove]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-registry-remove");
+        var next = nextWithGuestSiteForm();
+        next.registryLinks = (next.registryLinks || []).filter(function (r) { return r.id !== id; });
+        saveState(next, { doneLabel: "Removed." });
       });
     });
 
@@ -2601,9 +3307,35 @@
     root.querySelectorAll("[data-check]").forEach(function (cb) {
       cb.addEventListener("change", function () {
         var id = cb.getAttribute("data-check");
+        // Toggle the class immediately (before the save round-trip triggers
+        // a full re-render) so the line-draw strikethrough transition in
+        // CSS actually gets to play, instead of the row being destroyed
+        // and recreated already in its final state.
+        var row = cb.closest(".check-row");
+        if (row) row.classList.toggle("done", cb.checked);
         var next = clone(state);
         next.checklist = next.checklist.map(function (it) { return it.id === id ? Object.assign({}, it, { done: cb.checked }) : it; });
         saveState(next, { doneLabel: "Checklist updated." });
+      });
+    });
+
+    root.querySelectorAll("[data-phase-toggle]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var key = b.getAttribute("data-phase-toggle");
+        var group = b.closest(".checklist-phase-group");
+        var nowOpen = !group.classList.contains("open");
+        checklistPhaseOverride[key] = nowOpen;
+        render();
+      });
+    });
+
+    root.querySelectorAll("[data-phase-jump]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var key = b.getAttribute("data-phase-jump");
+        checklistPhaseOverride[key] = true;
+        render();
+        var group = document.querySelector('.checklist-phase-group [data-phase-toggle="' + key + '"]');
+        if (group) group.scrollIntoView({ behavior: "smooth", block: "start" });
       });
     });
 
@@ -2621,8 +3353,13 @@
       var title = val("f-new-check").trim();
       var offsetVal = val("f-new-check-offset");
       if (!title) return;
+      var offset = offsetVal ? -Math.abs(Number(offsetVal)) : -30;
       var next = clone(state);
-      next.checklist.push({ id: "cl-custom-" + Date.now(), title: title, offset: offsetVal ? -Math.abs(Number(offsetVal)) : -30, category: null, done: false, custom: true });
+      next.checklist.push({ id: "cl-custom-" + Date.now(), title: title, offset: offset, category: null, done: false, custom: true });
+      // Open whichever phase the new to-do landed in, so it's visible right
+      // away instead of silently tucked inside a collapsed group.
+      var landedPhase = CHECKLIST_PHASES.filter(function (p) { return p.test(offset); })[0];
+      if (landedPhase) checklistPhaseOverride[landedPhase.key] = true;
       saveState(next, { doneLabel: "Added to checklist." });
     });
 
@@ -2633,6 +3370,8 @@
       inp.addEventListener("change", function () {
         var key = inp.getAttribute("data-budget-alloc");
         state.categories[key].allocated = numOrNull(inp.value);
+        var sl = root.querySelector('[data-budget-slider="' + key + '"]');
+        if (sl) { var v = Number(inp.value) || 0; sl.value = v; sl.setAttribute("data-prev", v); }
       });
     });
     root.querySelectorAll("[data-budget-actual]").forEach(function (inp) {
@@ -2641,6 +3380,67 @@
         state.categories[key].actual = numOrNull(inp.value);
       });
     });
+
+    // Fluid budget sliders: dragging one category's allocation redistributes
+    // the delta across every other category, proportional to its current
+    // share of the remainder, so the total placed never drifts on its own —
+    // then renormalizes against the largest remaining category to absorb
+    // rounding drift. Values are painted straight to the DOM on every
+    // "input" tick (no full render — that would fight the drag), and only
+    // committed into `state` on "change" (drag release), matching this
+    // file's existing pattern for every other budget field.
+    var budgetSliders = Array.prototype.slice.call(root.querySelectorAll("[data-budget-slider]"));
+    if (budgetSliders.length) {
+      var paintBudgetSlider = function (sl, val) {
+        val = Math.max(0, Math.round(val / 25) * 25);
+        var row = sl.closest(".fluid-row");
+        var max = Number(sl.getAttribute("max")) || 1;
+        var pct = Math.max(0, Math.min(100, (val / max) * 100));
+        sl.value = val;
+        sl.setAttribute("data-prev", val);
+        if (row) {
+          var fill = row.querySelector("[data-fill]");
+          if (fill) fill.style.width = pct + "%";
+          var amt = row.querySelector("[data-fr-amt]");
+          if (amt) amt.textContent = fmtMoney(val);
+          var allocInput = row.querySelector("[data-budget-alloc]");
+          if (allocInput) allocInput.value = val || "";
+        }
+        return val;
+      };
+      budgetSliders.forEach(function (sl) {
+        sl.addEventListener("input", function () {
+          var newVal = Math.max(0, Number(sl.value) || 0);
+          var oldVal = Number(sl.getAttribute("data-prev")) || 0;
+          var delta = newVal - oldVal;
+          var others = budgetSliders.filter(function (s) { return s !== sl; });
+          var othersTotal = others.reduce(function (s, o) { return s + (Number(o.getAttribute("data-prev")) || 0); }, 0);
+          paintBudgetSlider(sl, newVal);
+          if (delta !== 0 && othersTotal > 0.0001) {
+            var adjusted = others.map(function (o) {
+              var ov = Number(o.getAttribute("data-prev")) || 0;
+              var share = ov / othersTotal;
+              return { el: o, val: Math.max(0, ov - delta * share) };
+            });
+            var totalBefore = oldVal + othersTotal;
+            var totalAfter = newVal + adjusted.reduce(function (s, a) { return s + a.val; }, 0);
+            var drift = totalBefore - totalAfter;
+            if (Math.abs(drift) >= 1 && adjusted.length) {
+              adjusted.sort(function (a, b) { return b.val - a.val; });
+              adjusted[0].val = Math.max(0, adjusted[0].val + drift);
+            }
+            adjusted.forEach(function (a) { paintBudgetSlider(a.el, a.val); });
+          }
+        });
+        sl.addEventListener("change", function () {
+          budgetSliders.forEach(function (s) {
+            var key = s.getAttribute("data-budget-slider");
+            state.categories[key].allocated = Number(s.value) || null;
+          });
+        });
+      });
+    }
+
     var saveBudgetBtn = document.getElementById("save-budget-btn");
     if (saveBudgetBtn) saveBudgetBtn.addEventListener("click", function () { saveState(clone(state), { doneLabel: "Budget saved." }); });
 
@@ -2865,6 +3665,79 @@
         render();
       });
     });
+    root.querySelectorAll("[data-gift-thankyou]").forEach(function (cb) {
+      cb.addEventListener("change", function () {
+        var id = cb.getAttribute("data-gift-thankyou");
+        var g = state.guests.filter(function (x) { return x.id === id; })[0];
+        if (g) g.thankYouSent = cb.checked;
+        saveState(clone(state), { doneLabel: "Thank-you updated." });
+      });
+    });
+
+    var msgAudienceSelect = document.getElementById("f-msg-audience");
+    if (msgAudienceSelect) msgAudienceSelect.addEventListener("change", function () {
+      messageAudience = msgAudienceSelect.value;
+      render();
+    });
+    var sendMessageBtn = document.getElementById("send-message-btn");
+    if (sendMessageBtn) sendMessageBtn.addEventListener("click", function () {
+      var subject = val("f-msg-subject").trim();
+      var bodyText = val("f-msg-body").trim();
+      if (!subject || !bodyText) {
+        messageFeedback = { ok: false, text: "Add a subject and a message first." };
+        render();
+        return;
+      }
+      var count = audienceRecipientCount(messageAudience);
+      if (!count) {
+        messageFeedback = { ok: false, text: "No guests in that group have an email on file." };
+        render();
+        return;
+      }
+      if (!window.confirm("Send this to " + count + (count === 1 ? " guest" : " guests") + "? This can't be undone.")) return;
+      // Plain textarea input, one blank-line-separated paragraph per <p> —
+      // good enough for an update email without asking for raw HTML.
+      var html = bodyText.split(/\n{2,}/).map(function (para) {
+        return "<p>" + escapeHtml(para).replace(/\n/g, "<br/>") + "</p>";
+      }).join("");
+      messageSending = true;
+      messageFeedback = null;
+      render();
+      fetch("/api/send-guest-message", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subject: subject, html: html, audience: messageAudience })
+      }).then(function (res) {
+        return res.json().then(function (data) { return { status: res.status, data: data }; });
+      }).then(function (r) {
+        messageSending = false;
+        if (r.status !== 200 || !r.data.ok) {
+          messageFeedback = { ok: false, text: (r.data && r.data.error) || "Could not send that message." };
+          render();
+          return;
+        }
+        var d = r.data;
+        var parts = [d.sent + " sent"];
+        if (d.skipped) parts.push(d.skipped + " skipped (email isn't set up yet)");
+        if (d.failed) parts.push(d.failed + " failed");
+        messageFeedback = { ok: true, text: parts.join(", ") + "." };
+        loadStateAndRender();
+      }).catch(function (err) {
+        console.error(err);
+        messageSending = false;
+        messageFeedback = { ok: false, text: "Network error — try again." };
+        render();
+      });
+    });
+    root.querySelectorAll("[data-guest-approve]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-guest-approve");
+        var g = state.guests.filter(function (x) { return x.id === id; })[0];
+        if (g) g.pendingApproval = false;
+        render();
+      });
+    });
     root.querySelectorAll("[data-guest-bulk]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         var parts = btn.getAttribute("data-guest-bulk").split("|");
@@ -2912,6 +3785,23 @@
         var id = btn.getAttribute("data-household-remove");
         state.households = (state.households || []).filter(function (h) { return h.id !== id; });
         state.guests.forEach(function (g) { if (g.householdId === id) g.householdId = ""; });
+        render();
+      });
+    });
+    root.querySelectorAll("[data-household-members]").forEach(function (sel) {
+      sel.addEventListener("change", function () {
+        var id = sel.getAttribute("data-household-members");
+        var selected = {};
+        Array.prototype.forEach.call(sel.selectedOptions, function (opt) { selected[opt.value] = true; });
+        // This one control is the source of truth for the household's
+        // roster: a guest checked here joins it (leaving whatever household
+        // they were in before, since a guest belongs to at most one), and a
+        // guest that was a member but is no longer selected is released
+        // back to being ungrouped.
+        state.guests.forEach(function (g) {
+          if (selected[g.id]) g.householdId = id;
+          else if (g.householdId === id) g.householdId = "";
+        });
         render();
       });
     });
@@ -3106,14 +3996,28 @@
   var portalError = "";
   var portalSaving = false;
   var portalDone = false;
-
-  var PORTAL_RSVP_CHOICES = [
-    { value: "attending", label: "Joyfully accepts" },
-    { value: "declined", label: "Regretfully declines" }
-  ];
+  // portalStep walks: "search" (type your name) -> "choose" (multiple name
+  // matches) or "notfound" (no match) -> "attend" (the actual RSVP form).
+  // Reusing the household's full member list for the "attend" step (rather
+  // than only the person who searched) keeps the existing, valuable "one
+  // person manages the whole family's RSVP" behavior once they've gotten in.
+  var portalStep = "search";
+  var portalQuery = "";
+  var portalMatches = [];
+  var portalIdentified = null;
+  var portalAddName = "";
+  // New family members/+1s a guest adds that weren't already on the list.
+  // Queued locally until Save RSVP; submitted as `additions` and land on
+  // the couple's Guest tab flagged pendingApproval for them to confirm.
+  var portalNewAdditions = [];
 
   function loadGuestPortal(token) {
     portalToken = token;
+    portalStep = "search";
+    portalQuery = "";
+    portalMatches = [];
+    portalIdentified = null;
+    portalNewAdditions = [];
     fetch("/api/guest-portal/" + encodeURIComponent(token), { credentials: "same-origin" })
       .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
       .then(function (r) {
@@ -3121,6 +4025,11 @@
           portalError = (r.data && r.data.error) || "This RSVP link isn't valid.";
         } else {
           portalData = r.data;
+          // Match the same theme the couple picked during setup — the RSVP
+          // page is a guest's first impression, so it should look like the
+          // same wedding (colors, background, and their photo), not a
+          // generic gray form.
+          applyColorway(portalData.colorway);
           // Local edit buffer, seeded from the server's current values.
           portalData.members.forEach(function (m) { m._draft = { rsvp: m.rsvp, mealChoice: m.mealChoice, email: m.email }; });
         }
@@ -3131,58 +4040,220 @@
       });
   }
 
+  var PORTAL_EYEBROW = '<div class="portal-eyebrow">The Wedding Ledger</div>';
+
+  function portalCountdown(weddingDateStr) {
+    var days = daysUntil(weddingDateStr);
+    if (days === null) return "";
+    if (days > 0) return '<div class="portal-countdown"><span class="num">' + days + "</span> day" + (days === 1 ? "" : "s") + " to go</div>";
+    if (days === 0) return '<div class="portal-countdown">Today’s the day!</div>';
+    return "";
+  }
+
+  function portalMap(address) {
+    if (!address) return "";
+    return '<iframe class="portal-map" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=' + encodeURIComponent(address) + '&output=embed" title="Venue map"></iframe>';
+  }
+
+  function portalHeader() {
+    var p = (portalData && portalData.profile) || {};
+    var dateStr = p.weddingDate ? fmtDate(new Date(p.weddingDate + "T00:00:00")) : "";
+    var photo = p.couplePhoto ? '<img class="couple-photo-frame" src="' + p.couplePhoto + '" alt="' + escapeHtml(p.coupleNames || "The couple") + '"/>' : "";
+    return photo + PORTAL_EYEBROW + "<h1>" + escapeHtml(p.coupleNames || "Our Wedding") + "</h1>" +
+      '<div class="portal-sub">' + [dateStr, p.location].filter(Boolean).join(" · ") + (p.address ? "<br/>" + escapeHtml(p.address) : "") + "</div>" +
+      portalCountdown(p.weddingDate) +
+      portalMap(p.address);
+  }
+
+  // Story, wedding party, FAQ, and registry links — shown on both the
+  // landing/search page and the RSVP page itself, so a guest gets the same
+  // "wedding website" content regardless of where they land.
+  function renderPortalExtras() {
+    if (!portalData) return "";
+    var p = portalData.profile || {};
+    var storyHtml = p.story ? '<div class="portal-card"><h2>Our story</h2><div class="portal-story">' + escapeHtml(p.story) + "</div></div>" : "";
+
+    var party = portalData.weddingParty || [];
+    var partyHtml = party.length ? '<div class="portal-card"><h2>Wedding party</h2><div class="portal-party-grid">' +
+      party.map(function (m) {
+        var photo = m.photo ? '<img class="portal-party-photo" src="' + m.photo + '" alt="' + escapeHtml(m.name || "") + '"/>' : '<div class="portal-party-photo-empty"></div>';
+        return '<div>' + photo + '<div class="portal-party-name">' + escapeHtml(m.name || "") + "</div>" +
+          (m.role ? '<div class="portal-party-role">' + escapeHtml(m.role) + "</div>" : "") +
+          (m.blurb ? '<div class="portal-party-blurb">' + escapeHtml(m.blurb) + "</div>" : "") + "</div>";
+      }).join("") + "</div></div>" : "";
+
+    var faq = portalData.faq || [];
+    var faqHtml = faq.length ? '<div class="portal-card"><h2>Good to know</h2>' +
+      faq.map(function (q) {
+        return '<div class="portal-faq-item"><div class="q">' + escapeHtml(q.question || "") + '</div><div class="a">' + escapeHtml(q.answer || "") + "</div></div>";
+      }).join("") + "</div>" : "";
+
+    var links = portalData.registryLinks || [];
+    var registryHtml = links.length ? '<div class="portal-card"><h2>Registry</h2><div class="portal-registry-links">' +
+      links.map(function (r) {
+        return '<a class="portal-registry-link" href="' + escapeHtml(r.url || "#") + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(r.label || "Registry") + "</a>";
+      }).join("") + "</div></div>" : "";
+
+    return storyHtml + partyHtml + faqHtml + registryHtml;
+  }
+
+  // Loose, forgiving name matching — case-insensitive substring in either
+  // direction, plus a per-word check, so "jordan" finds "Jordan Reyes" and
+  // "reyes" finds it too.
+  function portalSearchMembers(query) {
+    var q = query.trim().toLowerCase();
+    if (!q) return [];
+    return portalData.members.filter(function (m) {
+      var name = m.name.toLowerCase();
+      if (name.indexOf(q) !== -1 || q.indexOf(name) !== -1) return true;
+      return name.split(/\s+/).some(function (part) { return part && (part.indexOf(q) !== -1 || q.indexOf(part) !== -1); });
+    });
+  }
+
   function renderGuestPortalPage() {
     var root = document.getElementById("app-root");
-    if (portalError) {
-      root.innerHTML = '<div class="portal-shell"><h1>The Wedding Ledger</h1>' +
-        '<div class="login-error">' + escapeHtml(portalError) + "</div></div>";
+    if (portalError && !portalData) {
+      root.innerHTML = '<div class="themed-page"><div class="portal-search-shell">' + PORTAL_EYEBROW + "<h1>RSVP</h1>" +
+        '<div class="login-error">' + escapeHtml(portalError) + "</div></div></div>";
       return;
     }
     if (!portalData) {
-      root.innerHTML = '<div class="portal-shell"><h1>The Wedding Ledger</h1><div class="portal-sub">Loading your invitation…</div></div>';
+      root.innerHTML = '<div class="themed-page"><div class="portal-search-shell">' + PORTAL_EYEBROW + '<h1>RSVP</h1><div class="portal-sub">Loading your invitation…</div></div></div>';
       return;
     }
-    var p = portalData.profile || {};
-    var dateStr = p.weddingDate ? fmtDate(new Date(p.weddingDate + "T00:00:00")) : "";
+    if (portalDone) {
+      root.innerHTML = '<div class="themed-page"><div class="portal-shell">' + portalHeader() +
+        '<div class="login-notice">Thank you — your RSVP is saved. You can come back to this link any time to update it.</div></div></div>';
+      return;
+    }
+    if (portalStep === "attend") { root.innerHTML = renderPortalAttend(); bindGuestPortalEvents(); return; }
+    if (portalStep === "choose") { root.innerHTML = renderPortalChoose(); bindGuestPortalEvents(); return; }
+    if (portalStep === "notfound") { root.innerHTML = renderPortalNotFound(); bindGuestPortalEvents(); return; }
+    root.innerHTML = renderPortalSearch();
+    bindGuestPortalEvents();
+  }
+
+  function renderPortalSearch() {
+    return '<div class="themed-page"><div class="portal-search-shell">' + portalHeader() +
+      '<div class="portal-sub">Type your name to find your invitation.</div>' +
+      (portalError ? '<div class="login-error">' + escapeHtml(portalError) + "</div>" : "") +
+      '<div class="field"><label for="portal-search-input">Your name</label><input type="text" id="portal-search-input" placeholder="e.g. Jordan Reyes" value="' + escapeHtml(portalQuery) + '"/></div>' +
+      '<div class="save-row" style="justify-content:center"><button class="btn btn-primary" id="portal-search-btn">Find my invitation</button></div>' +
+      "</div><div class=\"portal-shell\" style=\"margin-top:0\">" + renderPortalExtras() + "</div></div>";
+  }
+
+  function renderPortalChoose() {
+    var list = portalMatches.map(function (m) {
+      return '<button type="button" class="portal-match-btn" data-portal-pick="' + m.id + '">' + escapeHtml(m.name) + "</button>";
+    }).join("");
+    return '<div class="themed-page"><div class="portal-search-shell">' + portalHeader() +
+      '<div class="portal-sub">A few names matched &ldquo;' + escapeHtml(portalQuery) + '&rdquo; — which one are you?</div>' +
+      '<div class="portal-match-list">' + list + "</div>" +
+      '<div class="save-row" style="justify-content:center"><button type="button" class="link-btn" id="portal-back-to-search">None of these — try again</button></div>' +
+      "</div></div>";
+  }
+
+  function renderPortalNotFound() {
+    return '<div class="themed-page"><div class="portal-search-shell">' + portalHeader() +
+      '<div class="portal-sub">We couldn&rsquo;t find &ldquo;' + escapeHtml(portalQuery) + '&rdquo;' + (portalData.householdName ? " on the list for " + escapeHtml(portalData.householdName) : " on the list") + '. Double-check the spelling, or let the couple know you&rsquo;ll be joining — they\'ll confirm it on their end.</div>' +
+      '<div class="save-row" style="justify-content:center;gap:0.6rem"><button type="button" class="btn btn-secondary" id="portal-back-to-search">Try again</button>' +
+      '<button type="button" class="btn btn-primary" id="portal-add-self-btn">Continue as &ldquo;' + escapeHtml(portalQuery) + '&rdquo;</button></div>' +
+      "</div></div>";
+  }
+
+  function renderPortalAttend() {
     var scheduleHtml = (portalData.timeline || []).length
       ? '<div class="portal-card"><h2>Schedule</h2>' + portalData.timeline.map(function (t) {
-          return '<div class="portal-schedule-item"><div class="ps-time">' + escapeHtml(t.time || "") + '</div><div>' + escapeHtml(t.title || "") + "</div>" +
+          return '<div class="portal-schedule-item"><div class="ps-time">' + escapeHtml(fmtTime(t.time)) + '</div><div>' + escapeHtml(t.title || "") + "</div>" +
             (t.notes ? '<div class="tiny">' + escapeHtml(t.notes) + "</div>" : "") + "</div>";
         }).join("") + "</div>"
       : "";
 
-    var doneHtml = portalDone ? '<div class="login-notice">Thank you — your RSVP is saved. You can come back to this link any time to update it.</div>' : "";
-
+    // A single checkbox per person — check off everyone from the household
+    // who's coming, rather than an accept/decline choice per person. Meal
+    // choice only makes sense once someone's marked as attending.
     var membersHtml = portalData.members.map(function (m) {
-      return '<div class="portal-member"><h3>' + escapeHtml(m.name) + "</h3>" +
-        '<div class="field"><label>Will you be attending?</label><div class="portal-rsvp-choices">' +
-        PORTAL_RSVP_CHOICES.map(function (c) {
-          return '<label><input type="radio" name="portal-rsvp-' + m.id + '" value="' + c.value + '" data-portal-rsvp="' + m.id + '"' + (m._draft.rsvp === c.value ? " checked" : "") + "/>" + c.label + "</label>";
-        }).join("") + "</div></div>" +
-        (m._draft.rsvp === "attending" ? '<div class="field"><label>Meal choice</label><input type="text" data-portal-meal="' + m.id + '" value="' + escapeHtml(m._draft.mealChoice || "") + '" placeholder="e.g. Vegetarian, no allergies"/></div>' : "") +
+      var attending = m._draft.rsvp === "attending";
+      return '<div class="portal-member"><label class="portal-attend-row">' +
+        '<input type="checkbox" data-portal-attending="' + m.id + '"' + (attending ? " checked" : "") + '/>' +
+        '<span class="portal-member-name">' + escapeHtml(m.name) + "</span></label>" +
+        (attending ? '<div class="field"><label>Meal choice</label><input type="text" data-portal-meal="' + m.id + '" value="' + escapeHtml(m._draft.mealChoice || "") + '" placeholder="e.g. Vegetarian, no allergies"/></div>' : "") +
         '<div class="field"><label>Email (optional — for updates from us)</label><input type="email" data-portal-email="' + m.id + '" value="' + escapeHtml(m._draft.email || "") + '" placeholder="name@example.com"/></div>' +
         "</div>";
     }).join("");
 
-    root.innerHTML = '<div class="portal-shell"><h1>' + escapeHtml(p.coupleNames || "Our Wedding") + "</h1>" +
-      '<div class="portal-sub">' + [dateStr, p.location].filter(Boolean).join(" · ") + (p.address ? "<br/>" + escapeHtml(p.address) : "") + "</div>" +
-      doneHtml + scheduleHtml +
-      '<div class="portal-card"><h2>RSVP' + (portalData.householdName ? " — " + escapeHtml(portalData.householdName) : "") + "</h2>" +
-      '<p class="muted">Let us know if ' + (portalData.members.length > 1 ? "each of you" : "you") + " can make it.</p>" +
-      membersHtml +
-      (portalError ? '<div class="login-error">' + escapeHtml(portalError) + "</div>" : "") +
-      '<div class="save-row"><button class="btn btn-primary" id="portal-submit-btn"' + (portalSaving ? " disabled" : "") + ">" + (portalSaving ? "Saving…" : "Save RSVP") + "</button></div></div></div>";
+    var additionsHtml = portalNewAdditions.length ? '<div class="portal-addition-list">' + portalNewAdditions.map(function (a, i) {
+      return '<div class="portal-addition-chip"><label style="display:flex;align-items:center;gap:0.5em;flex:1;font-weight:600;cursor:pointer">' +
+        '<input type="checkbox" data-portal-addition-attending="' + i + '"' + (a.rsvp === "attending" ? " checked" : "") + '/>' +
+        escapeHtml(a.name) + ' <span class="tiny" style="font-weight:400">(new — pending review)</span></label>' +
+        '<button type="button" data-portal-addition-remove="' + i + '">Remove</button></div>';
+    }).join("") + "</div>" : "";
 
-    bindGuestPortalEvents();
+    var addForm = '<div class="portal-addition-row"><div class="field"><label for="portal-add-name">Add a family member or +1 we missed</label>' +
+      '<input type="text" id="portal-add-name" placeholder="Full name" value="' + escapeHtml(portalAddName) + '"/></div>' +
+      '<button type="button" class="btn btn-secondary btn-sm" id="portal-add-btn">Add</button></div>';
+
+    var greeting = portalIdentified ? "Hi " + escapeHtml(portalIdentified.name) + "! " : "";
+    var rsvpIntro = greeting + (portalData.members.length > 1
+      ? "Check off everyone from " + (portalData.householdName ? escapeHtml(portalData.householdName) : "your household") + " who'll be joining us."
+      : "Let us know if you'll be joining us.");
+
+    return '<div class="themed-page"><div class="portal-shell">' + portalHeader() + scheduleHtml +
+      '<div class="portal-card"><h2>RSVP' + (portalData.householdName ? " — " + escapeHtml(portalData.householdName) : "") + "</h2>" +
+      '<p class="muted">' + rsvpIntro + "</p>" +
+      membersHtml + additionsHtml + addForm +
+      (portalError ? '<div class="login-error">' + escapeHtml(portalError) + "</div>" : "") +
+      '<div class="save-row"><button class="btn btn-primary" id="portal-submit-btn"' + (portalSaving ? " disabled" : "") + ">" + (portalSaving ? "Saving…" : "Save RSVP") + "</button></div></div>" +
+      renderPortalExtras() +
+      "</div></div>";
   }
 
   function bindGuestPortalEvents() {
     var root = document.getElementById("app-root");
-    root.querySelectorAll("[data-portal-rsvp]").forEach(function (el) {
+
+    var searchInput = document.getElementById("portal-search-input");
+    var searchBtn = document.getElementById("portal-search-btn");
+    function doPortalSearch() {
+      portalQuery = searchInput ? searchInput.value : portalQuery;
+      if (!portalQuery.trim()) { portalError = "Enter your name to continue."; renderGuestPortalPage(); return; }
+      var matches = portalSearchMembers(portalQuery);
+      portalError = "";
+      if (matches.length === 0) { portalStep = "notfound"; }
+      else if (matches.length === 1) { portalIdentified = matches[0]; portalStep = "attend"; }
+      else { portalMatches = matches; portalStep = "choose"; }
+      renderGuestPortalPage();
+    }
+    if (searchBtn) searchBtn.addEventListener("click", doPortalSearch);
+    if (searchInput) searchInput.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); doPortalSearch(); } });
+
+    root.querySelectorAll("[data-portal-pick]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-portal-pick");
+        portalIdentified = portalData.members.filter(function (m) { return m.id === id; })[0] || null;
+        portalStep = "attend";
+        renderGuestPortalPage();
+      });
+    });
+
+    var backBtn = document.getElementById("portal-back-to-search");
+    if (backBtn) backBtn.addEventListener("click", function () {
+      portalStep = "search"; portalError = ""; portalMatches = [];
+      renderGuestPortalPage();
+    });
+
+    var addSelfBtn = document.getElementById("portal-add-self-btn");
+    if (addSelfBtn) addSelfBtn.addEventListener("click", function () {
+      portalNewAdditions.push({ name: portalQuery.trim(), rsvp: "attending", mealChoice: "" });
+      portalIdentified = null;
+      portalStep = "attend";
+      renderGuestPortalPage();
+    });
+
+    root.querySelectorAll("[data-portal-attending]").forEach(function (el) {
       el.addEventListener("change", function () {
-        var id = el.getAttribute("data-portal-rsvp");
+        var id = el.getAttribute("data-portal-attending");
         var m = portalData.members.filter(function (x) { return x.id === id; })[0];
-        if (m && el.checked) { m._draft.rsvp = el.value; renderGuestPortalPage(); }
+        if (m) { m._draft.rsvp = el.checked ? "attending" : "declined"; renderGuestPortalPage(); }
       });
     });
     root.querySelectorAll("[data-portal-meal]").forEach(function (el) {
@@ -3199,19 +4270,72 @@
         if (m) m._draft.email = el.value;
       });
     });
+
+    root.querySelectorAll("[data-portal-addition-attending]").forEach(function (el) {
+      el.addEventListener("change", function () {
+        var i = Number(el.getAttribute("data-portal-addition-attending"));
+        if (portalNewAdditions[i]) portalNewAdditions[i].rsvp = el.checked ? "attending" : "declined";
+      });
+    });
+    root.querySelectorAll("[data-portal-addition-remove]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var i = Number(btn.getAttribute("data-portal-addition-remove"));
+        portalNewAdditions.splice(i, 1);
+        renderGuestPortalPage();
+      });
+    });
+
+    var addNameInput = document.getElementById("portal-add-name");
+    var addBtn = document.getElementById("portal-add-btn");
+    function addPortalAddition() {
+      var name = addNameInput ? addNameInput.value.trim() : "";
+      if (!name) return;
+      if (portalNewAdditions.length >= 6) {
+        portalError = "You can add up to 6 people at once — save this RSVP, then use the link again for more.";
+        renderGuestPortalPage();
+        return;
+      }
+      portalNewAdditions.push({ name: name, rsvp: "attending", mealChoice: "" });
+      portalAddName = "";
+      portalError = "";
+      renderGuestPortalPage();
+    }
+    if (addBtn) addBtn.addEventListener("click", addPortalAddition);
+    if (addNameInput) addNameInput.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); addPortalAddition(); } });
+
     var submitBtn = document.getElementById("portal-submit-btn");
     if (submitBtn) submitBtn.addEventListener("click", function () {
+      // Submitting is the definitive headcount: whatever's checked right
+      // now becomes "attending" and everything else becomes "declined" —
+      // including any member whose checkbox was never touched — so the
+      // couple gets a real yes/no for every person, not a lingering
+      // "no response yet". Read the live checkbox state before the render
+      // below replaces these elements.
+      root.querySelectorAll("[data-portal-attending]").forEach(function (el) {
+        var id = el.getAttribute("data-portal-attending");
+        var m = portalData.members.filter(function (x) { return x.id === id; })[0];
+        if (m) m._draft.rsvp = el.checked ? "attending" : "declined";
+      });
+      root.querySelectorAll("[data-portal-addition-attending]").forEach(function (el) {
+        var i = Number(el.getAttribute("data-portal-addition-attending"));
+        if (portalNewAdditions[i]) portalNewAdditions[i].rsvp = el.checked ? "attending" : "declined";
+      });
+
       portalSaving = true;
       portalError = "";
       renderGuestPortalPage();
       var updates = portalData.members.map(function (m) {
         return { id: m.id, rsvp: m._draft.rsvp, mealChoice: m._draft.mealChoice, email: m._draft.email };
       });
+      var body = { updates: updates };
+      if (portalNewAdditions.length) {
+        body.additions = portalNewAdditions.map(function (a) { return { name: a.name, rsvp: a.rsvp, mealChoice: a.mealChoice }; });
+      }
       fetch("/api/guest-portal/" + encodeURIComponent(portalToken), {
         method: "POST",
         credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ updates: updates })
+        body: JSON.stringify(body)
       }).then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
         .then(function (r) {
           portalSaving = false;
@@ -3220,6 +4344,7 @@
           } else {
             portalDone = true;
             portalData.members.forEach(function (m) { m.rsvp = m._draft.rsvp; m.mealChoice = m._draft.mealChoice; m.email = m._draft.email; });
+            portalNewAdditions = [];
           }
           renderGuestPortalPage();
         }).catch(function () {
