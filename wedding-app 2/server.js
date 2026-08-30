@@ -6,6 +6,7 @@ const rateLimit = require("express-rate-limit");
 const db = require("./db");
 const auth = require("./auth");
 const email = require("./email");
+const ai = require("./ai");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,7 +21,10 @@ const PORT = process.env.PORT || 3000;
 app.set("trust proxy", 1);
 
 app.disable("x-powered-by");
-app.use(express.json({ limit: "10mb" }));
+// 15mb, not 10mb: an 8MB vendor-quote PDF/photo (the client-side cap — see
+// MAX_IMPORT_BYTES in public/index.html) becomes ~11MB once base64-encoded
+// for the /api/analyze-vendor-doc request body.
+app.use(express.json({ limit: "15mb" }));
 app.use(cookieParser());
 
 const loginLimiter = rateLimit({
@@ -196,6 +200,47 @@ app.post("/api/accounts", authActionLimiter, auth.requireAuth, async (req, res) 
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: "Could not create that login right now." });
+  }
+});
+
+// ---- AI vendor-document analysis (Vendors tab) ----
+//
+// Capped noticeably lower than the other authActionLimiter routes — each
+// call is a real, billed Anthropic API request (a PDF/image gets sent in
+// full), not just a database write.
+const aiDocLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many documents analyzed this hour. Try again later." }
+});
+
+app.post("/api/analyze-vendor-doc", aiDocLimiter, auth.requireAuth, async (req, res) => {
+  try {
+    const { category, guestCount, filename, mimeType, fileBase64 } = req.body || {};
+    if (!db.CATEGORY_KEYS.includes(category)) {
+      return res.status(400).json({ error: "Unknown vendor category." });
+    }
+    if (!fileBase64 || !mimeType) {
+      return res.status(400).json({ error: "No file received." });
+    }
+    // Rough backstop on top of the client's own 8MB cap — base64 runs
+    // ~4/3 the size of the original bytes.
+    if (fileBase64.length > 11 * 1024 * 1024) {
+      return res.status(400).json({ error: "That file's too large to analyze." });
+    }
+    const result = await ai.analyzeVendorDocument({
+      category, guestCount: Number(guestCount) || null, filename: String(filename || "").slice(0, 200),
+      mimeType, fileBase64
+    });
+    if (!result.configured) {
+      return res.status(501).json({ error: "AI document analysis isn't set up yet — add an ANTHROPIC_API_KEY to enable it." });
+    }
+    res.json({ ok: true, extracted: result.extracted });
+  } catch (e) {
+    console.error(e);
+    res.status(e.userFacing ? 400 : 502).json({ error: e.userFacing ? e.message : "Could not analyze that document right now." });
   }
 });
 
