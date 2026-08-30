@@ -599,7 +599,7 @@
       cats[c.key] = { requestStatus: "none", requestNote: "", vendors: [], bookedVendorId: null, allocated: null, actual: null, payment: defaultPayment() };
     });
     return {
-      profile: { coupleNames: "", weddingDate: "", location: "", guestCount: null, budgetTotal: null, style: "", notes: "" },
+      profile: { coupleNames: "", weddingDate: "", location: "", address: "", guestCount: null, budgetTotal: null, style: "", notes: "" },
       categories: cats,
       checklist: CHECKLIST_DEFAULTS.map(function (d) {
         return { id: d.id, title: d.title, offset: d.offset, category: d.category || null, done: false, custom: false };
@@ -1399,6 +1399,7 @@
       f("f-names", "Couple's names", p.coupleNames) +
       f("f-date", "Wedding date", p.weddingDate, "date") +
       f("f-location", "Location (city, state / country)", p.location) +
+      f("f-address", "Address (venue or general area)", p.address, "text", 'placeholder="e.g. 123 Main St, Austin, TX — vendor searches use this"') +
       f("f-guests", "Guest count", p.guestCount, "number", 'min="0"') +
       f("f-budget", "Total budget (USD)", p.budgetTotal, "number", 'min="0"') +
       f("f-style", "Style / vibe", p.style) +
@@ -1959,6 +1960,7 @@
       next.profile.coupleNames = val("f-names");
       next.profile.weddingDate = val("f-date");
       next.profile.location = val("f-location");
+      next.profile.address = val("f-address");
       next.profile.guestCount = numOrNull(val("f-guests"));
       next.profile.budgetTotal = numOrNull(val("f-budget"));
       next.profile.style = val("f-style");
