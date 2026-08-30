@@ -16,7 +16,14 @@ const { chromium } = require("playwright");
   await page.fill("#login-email", "you@example.com");
   await page.fill("#login-password", "correcthorse");
   await page.click("#login-form button[type=submit]");
-  await page.waitForSelector(".masthead-title", { timeout: 5000 });
+  // First-run setup wizard gate: finish it here (leaving the theme on its
+  // default Classic) so it persists server-side and every later reload in
+  // this test sees the dashboard, not the wizard again.
+  await page.waitForSelector(".masthead-title, #wizard-finish-btn", { timeout: 5000 });
+  if (await page.$("#wizard-finish-btn")) {
+    await page.click("#wizard-finish-btn");
+    await page.waitForSelector(".masthead-title", { timeout: 5000 });
+  }
 
   const initialAttr = await page.evaluate(() => document.documentElement.getAttribute("data-colorway"));
   if (initialAttr !== null) throw new Error("expected no data-colorway attribute for the default Classic colorway, got: " + initialAttr);

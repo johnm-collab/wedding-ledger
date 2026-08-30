@@ -28,7 +28,13 @@ const { chromium } = require("playwright");
   await page.fill("#login-email", "you@example.com");
   await page.fill("#login-password", "correcthorse");
   await page.click("#login-form button[type=submit]");
-  await page.waitForSelector(".masthead-title", { timeout: 5000 });
+  // First-run setup wizard gate: finish (not skip) it here so it persists
+  // server-side and every later reload in this test sees the dashboard.
+  await page.waitForSelector(".masthead-title, #wizard-finish-btn", { timeout: 5000 });
+  if (await page.$("#wizard-finish-btn")) {
+    await page.click("#wizard-finish-btn");
+    await page.waitForSelector(".masthead-title", { timeout: 5000 });
+  }
   const title = await page.textContent(".masthead-title");
   if (title.trim() !== "Our Wedding") throw new Error("expected default masthead title, got: " + title);
   console.log("PASS: correct login loads the app shell");
