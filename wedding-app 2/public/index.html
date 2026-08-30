@@ -470,12 +470,17 @@
 
   .sort-select { width: auto; font-size: 0.8rem; padding: 0.35em 0.6em; }
 
-  .seat-visual-grid { display: flex; flex-wrap: wrap; gap: 1.5rem 2rem; }
-  .seat-visual-wrap { text-align: center; padding-bottom: 0.5rem; }
-  .seat-visual-wrap .seat-visual-name { font-weight: 700; font-size: 0.85rem; margin-top: 0.5rem; }
+  .floor-plan-canvas { position: relative; width: 100%; min-height: 560px; border: 1px dashed var(--line); border-radius: 12px; background: var(--paper-2); overflow: visible; }
+  .floor-table { position: absolute; transform: translate(-50%, -50%); text-align: center; }
+  .floor-table.dragging { z-index: 30; }
+  .seat-visual-name { font-weight: 700; font-size: 0.85rem; margin-top: 0.5rem; }
   .seat-visual-stage { position: relative; margin: 0 auto; }
-  .seat-table-visual { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; border: 2px dashed var(--line-strong); background: var(--paper-2); }
+  .seat-table-visual { position: absolute; transform: translate(-50%, -50%); border: 2px dashed var(--line-strong); background: var(--surface); }
+  .seat-table-visual.round { border-radius: 50%; }
+  .seat-table-visual.rectangle { border-radius: 10px; }
   .seat-table-visual.over { border-color: var(--critical); }
+  .seat-table-visual[data-table-drag] { cursor: grab; touch-action: none; }
+  .floor-table.dragging .seat-table-visual { cursor: grabbing; border-style: solid; border-color: var(--accent); }
   .seat-table-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 70%; }
   .seat-pill {
     position: absolute; transform: translate(-50%, -50%); max-width: 118px; padding: 0.28rem 0.65rem; border-radius: 999px;
@@ -567,6 +572,7 @@
     { key: "budget", label: "Budget" },
     { key: "vendors", label: "Vendors" },
     { key: "guests", label: "Guest List" },
+    { key: "seating", label: "Seating" },
     { key: "dayof", label: "Day-of" }
   ];
 
@@ -1268,7 +1274,7 @@
     root.innerHTML = renderMasthead() + renderReadonlyBanner() + renderStatStrip() +
       '<div class="app-shell">' + renderTabs() +
       '<div class="main-content"><div class="tab-panels">' +
-      renderOverview() + renderProfile() + renderChecklist() + renderBudget() + renderVendors() + renderGuestList() + renderDayOf() +
+      renderOverview() + renderProfile() + renderChecklist() + renderBudget() + renderVendors() + renderGuestList() + renderSeatingTab() + renderDayOf() +
       "</div></div></div>" + renderFooter();
     bindEvents();
   }
@@ -1983,44 +1989,100 @@
     return "filled neutral";
   }
 
+  // Tables with no saved position yet (created before the free-form floor
+  // plan existed, or just added) fall back to a stable, deterministic grid
+  // position based on their index — so nothing starts stacked at 0,0. Once
+  // a table is dragged, its real x/y is saved and this fallback no longer
+  // applies to it.
+  function tablePosition(t, idx) {
+    if (typeof t.x === "number" && typeof t.y === "number") return { x: t.x, y: t.y };
+    var col = idx % 3, row = Math.floor(idx / 3);
+    return { x: 18 + col * 32, y: 22 + row * 34 };
+  }
+
+  // Walks the perimeter of a `w` x `h` rectangle centered on the origin,
+  // starting at the top-middle and going clockwise, returning the point at
+  // arc-length `dist` along that perimeter. Used to lay seats evenly around
+  // a rectangular table (proportionally more seats along the long sides).
+  function pointOnRectPerimeter(dist, w, h) {
+    var perim = 2 * (w + h);
+    dist = ((dist % perim) + perim) % perim;
+    var halfW = w / 2, halfH = h / 2;
+    var topLen = w / 2;
+    if (dist <= topLen) return { x: dist, y: -halfH };
+    dist -= topLen;
+    if (dist <= h) return { x: halfW, y: -halfH + dist };
+    dist -= h;
+    if (dist <= w) return { x: halfW - dist, y: halfH };
+    dist -= w;
+    if (dist <= h) return { x: -halfW, y: halfH - dist };
+    dist -= h;
+    return { x: -halfW + dist, y: -halfH };
+  }
+
   function renderSeatingVisual(invited) {
     if (!state.tables.length) return '<div class="empty-note">Add a table below to start the seating chart.</div>';
     var pillWidth = 108, pillGap = 16;
-    var cards = state.tables.map(function (t) {
+    var cards = state.tables.map(function (t, idx) {
       var seated = invited.filter(function (g) { return g.tableId === t.id; });
       var capacity = Math.max(Number(t.capacity) || 0, seated.length, 1);
       var over = t.capacity && seated.length > Number(t.capacity);
-      // The table itself grows a little with capacity so bigger tables read
-      // as bigger, and the ring of name pills sits far enough outside it
-      // (based on how many seats have to fit around the circumference)
-      // that neighboring names don't overlap.
-      var tableDiameter = Math.min(150, Math.max(84, capacity * 9));
-      var tableRadius = tableDiameter / 2;
-      var seatRadius = Math.max(tableRadius + 46, (capacity * (pillWidth + pillGap)) / (2 * Math.PI));
-      var size = Math.round(seatRadius * 2 + pillWidth + 24);
-      var center = size / 2;
+      var shape = t.shape === "rectangle" ? "rectangle" : "round";
+      var pos = tablePosition(t, idx);
       var seats = [];
-      for (var i = 0; i < capacity; i++) {
-        var g = seated[i] || null;
-        var angle = (360 / capacity) * i - 90;
-        var rad = angle * Math.PI / 180;
-        var x = center + seatRadius * Math.cos(rad);
-        var y = center + seatRadius * Math.sin(rad);
-        if (g) {
-          seats.push('<div class="seat-pill ' + seatChipClass(g) + '" style="left:' + x.toFixed(1) + 'px;top:' + y.toFixed(1) + 'px" title="' + escapeHtml(g.name) + (g.rsvp ? " · " + rsvpLabel(g.rsvp) : "") + '"' + (canWrite ? ' data-table-unseat="' + g.id + '"' : "") + ">" + escapeHtml(g.name) + "</div>");
-        } else {
-          seats.push('<div class="seat-dot" style="left:' + x.toFixed(1) + 'px;top:' + y.toFixed(1) + 'px" title="Empty seat"></div>');
+      var size, center, tableW, tableH;
+
+      if (shape === "rectangle") {
+        // The table grows with capacity (long side scales), seats walk an
+        // evenly-spaced loop just outside the table's own edges.
+        tableW = Math.min(220, Math.max(120, capacity * 15));
+        tableH = 72;
+        var seatGap = 14;
+        var loopW = tableW + seatGap * 2, loopH = tableH + seatGap * 2;
+        size = Math.round(Math.max(loopW, loopH) + pillWidth + 48);
+        center = size / 2;
+        var loopPerim = 2 * (loopW + loopH);
+        for (var i = 0; i < capacity; i++) {
+          var g = seated[i] || null;
+          var pt = pointOnRectPerimeter((loopPerim / capacity) * i, loopW, loopH);
+          seats.push(seatHtml(g, center + pt.x, center + pt.y));
+        }
+      } else {
+        // The table itself grows a little with capacity so bigger tables
+        // read as bigger, and the ring of name pills sits far enough
+        // outside it (based on how many seats have to fit around the
+        // circumference) that neighboring names don't overlap.
+        tableW = tableH = Math.min(150, Math.max(84, capacity * 9));
+        var tableRadius = tableW / 2;
+        var seatRadius = Math.max(tableRadius + 46, (capacity * (pillWidth + pillGap)) / (2 * Math.PI));
+        size = Math.round(seatRadius * 2 + pillWidth + 24);
+        center = size / 2;
+        for (var j = 0; j < capacity; j++) {
+          var g2 = seated[j] || null;
+          var angle = (360 / capacity) * j - 90;
+          var rad = angle * Math.PI / 180;
+          seats.push(seatHtml(g2, center + seatRadius * Math.cos(rad), center + seatRadius * Math.sin(rad)));
         }
       }
-      return '<div class="seat-visual-wrap"><div class="seat-visual-stage" style="width:' + size + 'px;height:' + size + 'px">' +
-        '<div class="seat-table-visual' + (over ? " over" : "") + '" style="width:' + tableDiameter + 'px;height:' + tableDiameter + 'px;left:' + center + 'px;top:' + center + 'px">' +
+
+      return '<div class="floor-table" data-table-id="' + t.id + '" style="left:' + pos.x + '%;top:' + pos.y + '%">' +
+        '<div class="seat-visual-stage" style="width:' + size + 'px;height:' + size + 'px">' +
+        '<div class="seat-table-visual ' + shape + (over ? " over" : "") + '" style="width:' + tableW + 'px;height:' + tableH + 'px;left:' + center + 'px;top:' + center + 'px"' + (canWrite ? ' data-table-drag="' + t.id + '"' : "") + '>' +
         '<div class="seat-table-center"><div class="tiny">' + seated.length + " / " + (t.capacity || capacity) + "</div></div>" +
         "</div>" + seats.join("") + "</div>" +
         '<div class="seat-visual-name">' + escapeHtml(t.name) + "</div>" +
         (canWrite ? '<button class="seat-remove-link" data-table-remove="' + t.id + '">Remove table</button>' : "") +
         "</div>";
     }).join("");
-    return '<div class="seat-visual-grid">' + cards + "</div><p class=\"tiny\" style=\"margin-top:0.75rem\">Click a name to unseat that guest. Colors follow RSVP: green attending, red declined, gray awaiting a response.</p>";
+    return '<div class="floor-plan-canvas" id="floor-plan-canvas">' + cards + "</div>" +
+      '<p class="tiny" style="margin-top:0.75rem">' + (canWrite ? "Drag a table to rearrange the floor plan. " : "") + 'Click a name to unseat that guest. Colors follow RSVP: green attending, red declined, gray awaiting a response.</p>';
+  }
+
+  function seatHtml(g, x, y) {
+    if (g) {
+      return '<div class="seat-pill ' + seatChipClass(g) + '" style="left:' + x.toFixed(1) + 'px;top:' + y.toFixed(1) + 'px" title="' + escapeHtml(g.name) + (g.rsvp ? " · " + rsvpLabel(g.rsvp) : "") + '"' + (canWrite ? ' data-table-unseat="' + g.id + '"' : "") + ">" + escapeHtml(g.name) + "</div>";
+    }
+    return '<div class="seat-dot" style="left:' + x.toFixed(1) + 'px;top:' + y.toFixed(1) + 'px" title="Empty seat"></div>';
   }
 
   function renderSeatingList(invited) {
@@ -2055,17 +2117,23 @@
       }).join("") + "</tbody></table></div>" : '<div class="empty-note">' + (invited.length ? "Everyone invited has a seat." : "Mark guests Invited on the Guest List tab, then seat them here.") + "</div>";
 
     var addTableForm = canWrite ? '<div class="grid-3" style="margin-top:1rem"><div class="field"><label for="f-table-name">Table name</label><input type="text" id="f-table-name" placeholder="e.g. Table 1"/></div>' +
-      '<div class="field"><label for="f-table-capacity">Capacity</label><input type="number" min="1" id="f-table-capacity"/></div></div>' +
+      '<div class="field"><label for="f-table-capacity">Capacity</label><input type="number" min="1" id="f-table-capacity"/></div>' +
+      '<div class="field"><label for="f-table-shape">Shape</label><select id="f-table-shape"><option value="round">Round</option><option value="rectangle">Rectangular</option></select></div></div>' +
       '<div class="save-row"><button class="btn btn-secondary" id="add-table-btn">Add table</button></div>' : "";
 
-    return '<div class="card"><h2>Seating chart</h2><p class="muted">Add tables, then assign each invited guest to one — the visual view updates live from your guest list.</p>' + toggle + tablesBlock + addTableForm + "</div>" +
-      '<div class="card"><h3>Unseated</h3>' + unseatedRows + "</div>";
+    return '<div class="card"><h2>Seating chart</h2><p class="muted">Add tables, then assign each invited guest to one — the visual view updates live from your guest list. Round or rectangular, and drag any table to lay out the room.</p>' + toggle + tablesBlock + addTableForm + "</div>" +
+      '<div class="card"><h3>Unseated</h3>' + unseatedRows + "</div>" +
+      '<div class="save-row"><span class="save-status" id="save-status-badge-6"></span>' + (canWrite ? '<button class="btn btn-primary" id="save-seating-btn">Save seating chart</button>' : "") + "</div>";
+  }
+
+  function renderSeatingTab() {
+    return panel("seating", renderSeating());
   }
 
   function renderDayOf() {
     return panel("dayof",
-      renderTimeline() + renderSeating() +
-      '<div class="save-row"><span class="save-status" id="save-status-badge-5"></span>' + (canWrite ? '<button class="btn btn-primary" id="save-dayof-btn">Save day-of details</button>' : "") + "</div>"
+      renderTimeline() +
+      '<div class="save-row"><span class="save-status" id="save-status-badge-5"></span>' + (canWrite ? '<button class="btn btn-primary" id="save-dayof-btn">Save timeline</button>' : "") + "</div>"
     );
   }
 
@@ -2460,7 +2528,7 @@
     var saveGuestsBtn = document.getElementById("save-guests-btn");
     if (saveGuestsBtn) saveGuestsBtn.addEventListener("click", function () { saveState(clone(state), { doneLabel: "Guest list saved." }); });
 
-    /* day-of: timeline + seating */
+    /* day-of: timeline */
 
     var addTimelineBtn = document.getElementById("add-timeline-btn");
     if (addTimelineBtn) addTimelineBtn.addEventListener("click", function () {
@@ -2487,7 +2555,16 @@
       var name = val("f-table-name").trim();
       if (!name) return;
       var next = clone(state);
-      next.tables.push({ id: makeTableId(), name: name, capacity: numOrNull(val("f-table-capacity")) });
+      var idx = next.tables.length;
+      var pos = tablePosition({}, idx); // same default-grid fallback the renderer uses, so a freshly added table doesn't overlap the others
+      next.tables.push({
+        id: makeTableId(),
+        name: name,
+        capacity: numOrNull(val("f-table-capacity")),
+        shape: val("f-table-shape") === "rectangle" ? "rectangle" : "round",
+        x: pos.x,
+        y: pos.y
+      });
       saveState(next, { doneLabel: "Added " + name + "." });
     });
     root.querySelectorAll("[data-table-remove]").forEach(function (btn) {
@@ -2498,6 +2575,49 @@
         render();
       });
     });
+
+    // Dragging a table: move it live with plain style updates on the one
+    // element being dragged (not a full render(), which would rebuild the
+    // whole app and interrupt the gesture), and only commit the new
+    // position into `state` — for the next Save click — once the drag ends.
+    root.querySelectorAll("[data-table-drag]").forEach(function (shapeEl) {
+      shapeEl.addEventListener("pointerdown", function (e) {
+        if (e.button !== undefined && e.button !== 0) return;
+        var tableId = shapeEl.getAttribute("data-table-drag");
+        var wrap = shapeEl.closest(".floor-table");
+        var canvas = document.getElementById("floor-plan-canvas");
+        if (!wrap || !canvas) return;
+        e.preventDefault();
+        shapeEl.setPointerCapture(e.pointerId);
+        var canvasRect = canvas.getBoundingClientRect();
+        wrap.classList.add("dragging");
+        var pendingX = null, pendingY = null;
+        function onMove(ev) {
+          var xPct = ((ev.clientX - canvasRect.left) / canvasRect.width) * 100;
+          var yPct = ((ev.clientY - canvasRect.top) / canvasRect.height) * 100;
+          xPct = Math.max(4, Math.min(96, xPct));
+          yPct = Math.max(6, Math.min(94, yPct));
+          wrap.style.left = xPct.toFixed(2) + "%";
+          wrap.style.top = yPct.toFixed(2) + "%";
+          pendingX = xPct;
+          pendingY = yPct;
+        }
+        function onUp() {
+          shapeEl.removeEventListener("pointermove", onMove);
+          shapeEl.removeEventListener("pointerup", onUp);
+          shapeEl.removeEventListener("pointercancel", onUp);
+          wrap.classList.remove("dragging");
+          if (pendingX !== null) {
+            var t = state.tables.filter(function (x) { return x.id === tableId; })[0];
+            if (t) { t.x = pendingX; t.y = pendingY; }
+          }
+        }
+        shapeEl.addEventListener("pointermove", onMove);
+        shapeEl.addEventListener("pointerup", onUp);
+        shapeEl.addEventListener("pointercancel", onUp);
+      });
+    });
+
     root.querySelectorAll("[data-table-unseat]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         var id = btn.getAttribute("data-table-unseat");
@@ -2508,7 +2628,10 @@
     });
 
     var saveDayOfBtn = document.getElementById("save-dayof-btn");
-    if (saveDayOfBtn) saveDayOfBtn.addEventListener("click", function () { saveState(clone(state), { doneLabel: "Day-of details saved." }); });
+    if (saveDayOfBtn) saveDayOfBtn.addEventListener("click", function () { saveState(clone(state), { doneLabel: "Timeline saved." }); });
+
+    var saveSeatingBtn = document.getElementById("save-seating-btn");
+    if (saveSeatingBtn) saveSeatingBtn.addEventListener("click", function () { saveState(clone(state), { doneLabel: "Seating chart saved." }); });
   }
 
   function val(id, isTextarea) { var el = document.getElementById(id); return el ? el.value : ""; }
