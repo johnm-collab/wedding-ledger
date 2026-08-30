@@ -78,7 +78,8 @@ function defaultState() {
     faq: [],
     registryLinks: [],
     messageLog: [],
-    settings: { colorway: "classic", onboardingComplete: false },
+    simulations: [],
+    settings: { colorway: "classic", onboardingComplete: false, rsvpDeadline: "" },
     writable: true,
     _rev: 0
   };
