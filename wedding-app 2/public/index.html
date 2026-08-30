@@ -32,16 +32,18 @@
     --critical-soft: #f5e3dd;
     --series-1: #b08d57;
     --series-2: #7d5064;
-    --shadow: 0 1px 2px rgba(43,38,32,0.05), 0 10px 28px -14px rgba(43,38,32,0.22);
-    --radius: 4px;
+    --shadow: 0 2px 6px rgba(43,38,32,0.06), 0 18px 40px -18px rgba(43,38,32,0.26);
+    --radius: 18px;
     font-size: 16px;
     /* The "theme" a couple picks packages a colorway with a matching
        background — built entirely from that colorway's own --accent-soft /
        --brass-soft / --paper tokens (which already change per colorway and
        per light/dark mode above), so every theme gets a distinct, on-brand
        background wash for free, with no separate image assets needed. Used
-       on guest-facing pages (RSVP portal) and the first-run setup wizard —
-       never on the couple's own working dashboard. */
+       on guest-facing pages (RSVP portal), the first-run setup wizard, and
+       — as of the masthead redesign — the couple's own dashboard masthead
+       too (see .masthead), where it's the fallback when no couple photo
+       has been uploaded yet. */
     --theme-bg: radial-gradient(circle at 12% -10%, var(--accent-soft) 0%, transparent 48%),
                 radial-gradient(circle at 92% 8%, var(--brass-soft) 0%, transparent 42%),
                 radial-gradient(circle at 50% 115%, var(--accent-soft) 0%, transparent 55%),
@@ -72,7 +74,7 @@
       --critical-soft: #3a251f;
       --series-1: #d9b979;
       --series-2: #caa0b8;
-      --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 14px 34px -16px rgba(0,0,0,0.6);
+      --shadow: 0 2px 6px rgba(0,0,0,0.4), 0 20px 44px -18px rgba(0,0,0,0.65);
     }
   }
   :root[data-theme="dark"] {
@@ -99,7 +101,7 @@
     --critical-soft: #3a251f;
     --series-1: #d9b979;
     --series-2: #caa0b8;
-    --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 14px 34px -16px rgba(0,0,0,0.6);
+    --shadow: 0 2px 6px rgba(0,0,0,0.4), 0 20px 44px -18px rgba(0,0,0,0.65);
   }
 
   /* ---------- colorways ----------
@@ -397,7 +399,7 @@
     color: var(--ink);
     background: var(--surface);
     border: 1px solid var(--line-strong);
-    border-radius: 6px;
+    border-radius: 10px;
     padding: 0.55em 0.7em;
     width: 100%;
   }
@@ -410,7 +412,7 @@
 
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 0.5em;
-    padding: 0.65em 1.25em; border-radius: 2px; border: 1px solid transparent;
+    padding: 0.65em 1.3em; border-radius: 999px; border: 1px solid transparent;
     font-weight: 700; font-size: 0.85rem; letter-spacing: 0.01em; cursor: pointer;
     transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
     white-space: nowrap;
@@ -428,25 +430,65 @@
 
   .shell { max-width: 1320px; margin: 0 auto; padding: 2rem 1.25rem 6rem; }
 
-  .masthead {
-    display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1.5rem;
-    padding-bottom: 1.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid var(--brass);
-    position: relative;
+  /* Icons: a small hand-rolled inline-SVG set (see ICONS/icon() in the
+     script below) rather than an icon-font dependency. .icon-badge is the
+     circular chip wrapper used in nav tabs and stat tiles; .icon alone is
+     used where a chip would be too heavy (e.g. the masthead countdown). */
+  .icon { display: inline-block; vertical-align: middle; flex: none; }
+  .icon-badge {
+    display: inline-flex; align-items: center; justify-content: center; flex: none;
+    width: 34px; height: 34px; border-radius: 50%; background: var(--accent-soft); color: var(--accent);
   }
+
+  /* The masthead is a rounded "hero" panel rather than a plain text strip:
+     it washes its background with the couple's photo (heavily blurred,
+     tinted with a --paper scrim for legibility) once one's uploaded on the
+     Profile tab, and falls back to the same on-brand gradient (--theme-bg)
+     used on guest-facing pages otherwise — so there's always some color and
+     texture here, photo or not. */
+  .masthead {
+    position: relative; overflow: hidden;
+    display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1.5rem;
+    padding: 1.85rem 2rem; margin-bottom: 1.75rem;
+    border-radius: var(--radius); box-shadow: var(--shadow);
+    background: var(--theme-bg);
+  }
+  .masthead.has-photo { background: var(--paper); }
+  .masthead.has-photo::before {
+    content: ""; position: absolute; inset: -10%; z-index: 0;
+    background-image: var(--masthead-photo); background-size: cover; background-position: center;
+    filter: blur(32px) saturate(1.15) brightness(0.95);
+  }
+  .masthead.has-photo::after {
+    content: ""; position: absolute; inset: 0; z-index: 1; background: var(--paper); opacity: 0.7;
+  }
+  .masthead-left, .masthead-count { position: relative; z-index: 2; }
   .masthead-left { display: flex; align-items: center; gap: 1rem; }
-  .masthead-title { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 600; }
+  .masthead-title { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 600; font-style: italic; }
   .masthead-sub { color: var(--ink-2); font-size: 0.95rem; margin-top: 0.35rem; }
-  .masthead-count { text-align: right; }
+  .masthead-count { text-align: right; display: flex; align-items: center; gap: 0.65rem; }
+  .masthead-count .icon-badge { background: var(--surface); }
   .masthead-count .num { font-family: "Manrope", sans-serif; font-variant-numeric: tabular-nums; font-size: 2.1rem; font-weight: 800; color: var(--accent); line-height: 1; }
   .masthead-count .lbl { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-muted); margin-top: 0.3rem; }
 
   .stat-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; margin-bottom: 1.75rem; }
   .stat-tile { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.9rem 1rem; box-shadow: var(--shadow); }
+  .stat-tile-row { display: flex; align-items: center; gap: 0.75rem; }
   .stat-tile .stat-val { font-family: "Manrope", sans-serif; font-variant-numeric: tabular-nums; font-size: 1.5rem; font-weight: 800; }
   .stat-tile .stat-lbl { font-size: 0.75rem; color: var(--ink-2); margin-top: 0.15rem; }
   .stat-tile.warn .stat-val { color: var(--warning); }
   .stat-tile.critical .stat-val { color: var(--critical); }
   .stat-tile.good .stat-val { color: var(--good); }
+
+  /* Radial progress ring (Checklist tab's overall-completion header) — a
+     plain SVG stroke-dasharray trick, no charting library needed. */
+  .progress-ring { position: relative; flex: none; }
+  .progress-ring svg circle { transition: stroke-dashoffset 0.5s ease; }
+  .progress-ring-label {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-family: "Manrope", sans-serif; font-weight: 800; font-size: 0.92rem; font-variant-numeric: tabular-nums; color: var(--accent);
+  }
+  .checklist-progress-head { display: flex; align-items: center; gap: 1.1rem; margin-bottom: 1.1rem; }
 
   .app-shell { display: block; }
   .main-content { min-width: 0; }
@@ -456,7 +498,7 @@
      magazine page) instead of a permanent app-chrome rail. */
   .hamburger-btn {
     display: flex; flex-direction: column; justify-content: center; gap: 4px; width: 38px; height: 38px;
-    border: 1px solid var(--line-strong); border-radius: 2px; background: var(--surface); cursor: pointer;
+    border: 1px solid var(--line-strong); border-radius: 11px; background: var(--surface); cursor: pointer;
     padding: 0 8px; flex-shrink: 0; transition: border-color 0.15s ease, background 0.15s ease;
   }
   .hamburger-btn span { display: block; height: 1.5px; background: var(--ink); border-radius: 1px; }
@@ -482,11 +524,15 @@
   .nav-close-btn:hover { color: var(--ink); }
 
   .tab-btn {
-    background: none; border: none; border-radius: 2px; padding: 0.75em 0.9em; font-weight: 600; font-size: 0.92rem;
+    display: flex; align-items: center; gap: 0.75em;
+    background: none; border: none; border-radius: 12px; padding: 0.7em 0.9em; font-weight: 600; font-size: 0.92rem;
     color: var(--ink-2); cursor: pointer; text-align: left; white-space: normal; width: 100%;
   }
+  .tab-btn .icon-badge { width: 30px; height: 30px; background: var(--paper-2); color: var(--ink-muted); }
   .tab-btn:hover { color: var(--ink); background: var(--accent-soft); }
-  .tab-btn.active { color: var(--accent); background: var(--accent-soft); font-weight: 700; box-shadow: inset 2px 0 0 var(--accent); }
+  .tab-btn:hover .icon-badge { color: var(--ink); }
+  .tab-btn.active { color: var(--accent); background: var(--accent-soft); font-weight: 700; box-shadow: inset 3px 0 0 var(--accent); }
+  .tab-btn.active .icon-badge { background: var(--surface); color: var(--accent); }
   .tab-panel { display: none; }
   .tab-panel.active { display: block; animation: fadein 0.2s ease; }
   @keyframes fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
@@ -677,7 +723,7 @@
   .guest-group-header .grp-actions button:hover { text-decoration: underline; }
 
   .guest-row-name input, .guest-row-side input, .guest-row-group input { font-size: 0.85rem; padding: 0.4em 0.55em; }
-  .status-btn-group { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 7px; overflow: hidden; }
+  .status-btn-group { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 10px; overflow: hidden; }
   .status-btn { background: var(--surface); border: none; border-right: 1px solid var(--line-strong); color: var(--ink-2); padding: 0.35em 0.65em; font-size: 0.76rem; font-weight: 600; cursor: pointer; }
   .status-btn:last-child { border-right: none; }
   .status-btn.on.invite { background: var(--good-soft); color: var(--good); }
@@ -935,20 +981,65 @@
   ];
 
   var TABS = [
-    { key: "overview", label: "Overview" },
-    { key: "profile", label: "Profile" },
-    { key: "guestsite", label: "Guest Site" },
-    { key: "checklist", label: "Checklist" },
-    { key: "budget", label: "Budget" },
-    { key: "vendors", label: "Vendors" },
-    { key: "simulations", label: "Simulations" },
-    { key: "guests", label: "Guest List" },
-    { key: "message", label: "Message Guests" },
-    { key: "seating", label: "Seating" },
-    { key: "dayof", label: "Day-of" }
+    { key: "overview", label: "Overview", icon: "overview" },
+    { key: "profile", label: "Profile", icon: "profile" },
+    { key: "guestsite", label: "Guest Site", icon: "guestsite" },
+    { key: "checklist", label: "Checklist", icon: "checklist" },
+    { key: "budget", label: "Budget", icon: "budget" },
+    { key: "vendors", label: "Vendors", icon: "vendors" },
+    { key: "simulations", label: "Simulations", icon: "simulations" },
+    { key: "guests", label: "Guest List", icon: "guests" },
+    { key: "message", label: "Message Guests", icon: "message" },
+    { key: "seating", label: "Seating", icon: "seating" },
+    { key: "dayof", label: "Day-of", icon: "dayof" }
   ];
 
   var DAY_MS = 86400000;
+
+  // A small hand-rolled icon set (no icon-font/library dependency) —
+  // simple stroke-based glyphs, 24x24 viewBox, colored via currentColor so
+  // wrapping CSS (.icon-badge, .tab-btn.active, etc.) controls their tint.
+  var ICONS = {
+    overview: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+    profile: '<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',
+    guestsite: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3z"/>',
+    checklist: '<circle cx="12" cy="12" r="9"/><polyline points="7.5 12.5 10.5 15.5 16.5 8.5"/>',
+    budget: '<circle cx="12" cy="12" r="9"/><path d="M12 6.5v11M15.3 9.3c0-1.3-1.4-2.1-3.3-2.1s-3.3.9-3.3 2.1 1.3 1.7 3.3 2 3.3.8 3.3 2.1-1.4 2.1-3.3 2.1-3.3-.8-3.3-2.1"/>',
+    vendors: '<path d="M20.5 11.5l-8-8H4v8.5l8 8a1.7 1.7 0 0 0 2.4 0l6.1-6.1a1.7 1.7 0 0 0 0-2.4z"/><circle cx="8.5" cy="8.5" r="1.4"/>',
+    simulations: '<rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="7" width="4" height="13" rx="1"/><rect x="16" y="3" width="4" height="17" rx="1"/>',
+    guests: '<circle cx="8.5" cy="8" r="3.2"/><circle cx="16" cy="9.5" r="2.6"/><path d="M2.5 20c0-3.7 2.7-6 6-6s6 2.3 6 6M14.5 20c.2-2.8 1.9-4.7 4.5-4.7 2.8 0 4.9 2 5 4.7"/>',
+    message: '<rect x="3" y="5.5" width="18" height="13" rx="2"/><polyline points="3.5 6.5 12 13 20.5 6.5"/>',
+    seating: '<circle cx="12" cy="12" r="4.2"/><circle cx="12" cy="4" r="1.6"/><circle cx="19" cy="8.5" r="1.6"/><circle cx="19" cy="15.5" r="1.6"/><circle cx="12" cy="20" r="1.6"/><circle cx="5" cy="15.5" r="1.6"/><circle cx="5" cy="8.5" r="1.6"/>',
+    dayof: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+    calendar: '<rect x="3.5" y="4.5" width="17" height="16" rx="2"/><path d="M3.5 9.5h17M8 2.5v4M16 2.5v4"/>',
+    alert: '<circle cx="12" cy="12" r="9"/><line x1="12" y1="7.5" x2="12" y2="13"/><circle cx="12" cy="16.4" r="0.9" fill="currentColor" stroke="none"/>'
+  };
+  function icon(name, size) {
+    var body = ICONS[name] || ICONS.overview;
+    size = size || 18;
+    return '<svg class="icon" width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + body + "</svg>";
+  }
+  function iconBadge(name, size) {
+    return '<div class="icon-badge">' + icon(name, size || 18) + "</div>";
+  }
+
+  // A radial (SVG stroke-dasharray) progress ring — used on the Checklist
+  // tab for the overall-completion summary. No charting library needed.
+  function progressRing(pct, size) {
+    size = size || 64;
+    pct = Math.min(100, Math.max(0, pct || 0));
+    var stroke = 6;
+    var r = (size - stroke) / 2;
+    var c = 2 * Math.PI * r;
+    var offset = c * (1 - pct / 100);
+    var mid = size / 2;
+    return '<div class="progress-ring" style="width:' + size + 'px;height:' + size + 'px">' +
+      '<svg width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '">' +
+      '<circle cx="' + mid + '" cy="' + mid + '" r="' + r + '" fill="none" stroke="var(--line)" stroke-width="' + stroke + '"/>' +
+      '<circle cx="' + mid + '" cy="' + mid + '" r="' + r + '" fill="none" stroke="var(--accent)" stroke-width="' + stroke + '" stroke-linecap="round" stroke-dasharray="' + c + '" stroke-dashoffset="' + offset + '" transform="rotate(-90 ' + mid + " " + mid + ')"/>' +
+      "</svg>" +
+      '<div class="progress-ring-label">' + Math.round(pct) + "%</div></div>";
+  }
 
   // Swatch colors are each colorway's light-mode --accent / --brass so the
   // picker looks the same regardless of which colorway (or light/dark
@@ -1992,11 +2083,17 @@
     if (du !== null) {
       var num = du >= 0 ? du : Math.abs(du);
       var lbl = du > 0 ? "days to go" : (du === 0 ? "today!" : "days married");
-      countBlock = '<div class="masthead-count"><div class="num mono">' + num + '</div><div class="lbl">' + lbl + "</div></div>";
+      countBlock = '<div class="masthead-count">' + iconBadge("calendar", 18) + '<div><div class="num mono">' + num + '</div><div class="lbl">' + lbl + "</div></div></div>";
     }
     var account = '<div class="masthead-account"><span class="tiny">' + (currentUser ? escapeHtml(currentUser.email) : "") + '</span><button class="logout-link" id="logout-btn" type="button">Log out</button></div>';
     var navToggle = '<button class="hamburger-btn" id="nav-toggle-btn" type="button" aria-label="Open menu" aria-expanded="' + (navOpen ? "true" : "false") + '"><span></span><span></span><span></span></button>';
-    return '<div class="masthead"><div class="masthead-left">' + navToggle + '<div><h1 class="masthead-title">' + title + "</h1>" +
+    // A couple photo (Profile tab) gives the masthead a soft, blurred
+    // photo wash instead of the plain gradient fallback — the actual
+    // <img> src is never used here, just the CSS custom property that
+    // feeds .masthead.has-photo::before's background-image.
+    var hasPhoto = !!p.couplePhoto;
+    var mastheadStyle = hasPhoto ? ' style="--masthead-photo:url(' + p.couplePhoto + ')"' : "";
+    return '<div class="masthead' + (hasPhoto ? " has-photo" : "") + '"' + mastheadStyle + '><div class="masthead-left">' + navToggle + '<div><h1 class="masthead-title">' + title + "</h1>" +
       (sub.length ? '<div class="masthead-sub">' + sub.join(" · ") + "</div>" : '<div class="masthead-sub">Fill in your profile to get started</div>') +
       account + "</div></div>" + countBlock + "</div>";
   }
@@ -2009,20 +2106,22 @@
     var vendorOptionCount = CATEGORY_META.reduce(function (s, c) { return s + state.categories[c.key].vendors.length; }, 0);
     var bookedCount = CATEGORY_META.filter(function (c) { return state.categories[c.key].bookedVendorId; }).length;
 
-    function tile(val, lbl, cls) {
-      return '<div class="stat-tile ' + (cls || "") + '"><div class="stat-val mono">' + val + '</div><div class="stat-lbl">' + lbl + "</div></div>";
+    function tile(val, lbl, cls, iconName) {
+      var body = '<div class="stat-val mono">' + val + '</div><div class="stat-lbl">' + lbl + "</div>";
+      var inner = iconName ? '<div class="stat-tile-row">' + iconBadge(iconName) + "<div>" + body + "</div></div>" : body;
+      return '<div class="stat-tile ' + (cls || "") + '">' + inner + "</div>";
     }
     return '<div class="stat-strip">' +
-      tile(critical + warn, "open gaps", critical ? "critical" : (warn ? "warn" : "good")) +
-      tile(bookedCount + " / " + CATEGORY_META.length, "categories booked", "") +
-      tile(budget.total ? fmtMoney(budget.remaining) : "—", "budget remaining", budget.total && budget.remaining < 0 ? "critical" : "") +
-      tile(vendorOptionCount, "vendor options logged", "") +
+      tile(critical + warn, "open gaps", critical ? "critical" : (warn ? "warn" : "good"), "alert") +
+      tile(bookedCount + " / " + CATEGORY_META.length, "categories booked", "", "vendors") +
+      tile(budget.total ? fmtMoney(budget.remaining) : "—", "budget remaining", budget.total && budget.remaining < 0 ? "critical" : "", "budget") +
+      tile(vendorOptionCount, "vendor options logged", "", "simulations") +
       "</div>";
   }
 
   function renderTabs() {
     var items = TABS.map(function (t) {
-      return '<button class="tab-btn' + (t.key === activeTab ? " active" : "") + '" data-tab="' + t.key + '" role="tab">' + t.label + "</button>";
+      return '<button class="tab-btn' + (t.key === activeTab ? " active" : "") + '" data-tab="' + t.key + '" role="tab">' + iconBadge(t.icon) + "<span>" + t.label + "</span></button>";
     }).join("");
     return '<div class="nav-backdrop' + (navOpen ? " open" : "") + '" id="nav-backdrop"></div>' +
       '<div class="nav-drawer' + (navOpen ? " open" : "") + '" role="tablist" aria-hidden="' + (navOpen ? "false" : "true") + '">' +
@@ -2485,6 +2584,13 @@
     }
     if (!currentKey && phaseData.length) currentKey = phaseData[phaseData.length - 1].phase.key;
 
+    var totalDone = phaseData.reduce(function (s, pd) { return s + pd.doneCount; }, 0);
+    var totalItems = phaseData.reduce(function (s, pd) { return s + pd.total; }, 0);
+    var overallPct = totalItems ? (totalDone / totalItems) * 100 : 0;
+    var progressHead = totalItems ? '<div class="checklist-progress-head">' + progressRing(overallPct, 68) +
+      '<div><h3 style="margin-bottom:0.2rem">' + totalDone + " of " + totalItems + ' done</h3><div class="tiny muted">' +
+      (totalDone === totalItems ? "Everything's checked off." : "Keep going — you've got this.") + "</div></div></div>" : "";
+
     var rail = '<div class="phase-rail">' + phaseData.map(function (pd) {
       var isCurrent = pd.phase.key === currentKey;
       var isDone = pd.doneCount === pd.total;
@@ -2513,7 +2619,7 @@
 
     var addRow = canWrite ? '<div class="grid-2" style="margin-top:0.5rem"><div class="field"><label for="f-new-check">Add a custom to-do</label><input id="f-new-check" type="text" placeholder="e.g. Order welcome bags"/></div><div class="field"><label for="f-new-check-offset">Due (days before wedding)</label><input id="f-new-check-offset" type="number" placeholder="e.g. 30"/></div></div><div class="save-row"><button class="btn btn-secondary" id="add-check-btn">Add to-do</button><span class="save-status" id="save-status-badge-2"></span><button class="btn btn-primary" id="save-checklist-btn">Save checklist</button></div>' : "";
 
-    return panel("checklist", '<div class="card"><h2>Wedding timeline</h2><p class="muted">Grouped into four phases, in the order most couples tackle them — the phase you\'re in stays open, the rest tuck away until you need them. Check items off as you go.</p>' + compressionNote + rail + html + addRow + "</div>");
+    return panel("checklist", '<div class="card"><h2>Wedding timeline</h2><p class="muted">Grouped into four phases, in the order most couples tackle them — the phase you\'re in stays open, the rest tuck away until you need them. Check items off as you go.</p>' + compressionNote + progressHead + rail + html + addRow + "</div>");
   }
 
   function renderBudgetBars(compact) {
