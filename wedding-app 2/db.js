@@ -54,7 +54,7 @@ function defaultState() {
     id, title, offset, category: category || null, done: false, custom: false
   }));
   return {
-    profile: { coupleNames: "", weddingDate: "", location: "", guestCount: null, budgetTotal: null, style: "", notes: "" },
+    profile: { coupleNames: "", weddingDate: "", location: "", address: "", guestCount: null, budgetTotal: null, style: "", notes: "" },
     categories,
     checklist,
     requests: [],
