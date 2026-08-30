@@ -97,6 +97,96 @@ async function init() {
     );
     console.log("Seeded initial ledger state.");
   }
+  await initAccounts();
+}
+
+// ---- accounts + password resets ----
+//
+// Passwords used to live only in Render env vars (AUTH_USER_n_EMAIL /
+// AUTH_USER_n_PASSWORD_HASH), which meant every password change required a
+// full app redeploy. They now live in this table instead, so a change or
+// reset takes effect immediately. The env vars are kept as a one-time seed
+// source: the very first time this table is empty, whatever accounts are
+// currently described by those env vars get copied in, so both partners'
+// existing logins keep working without any manual re-entry. After that,
+// this table is the sole source of truth and the env vars are ignored.
+async function initAccounts() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS accounts (
+      email TEXT PRIMARY KEY,
+      password_hash TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS password_resets (
+      token TEXT PRIMARY KEY,
+      email TEXT NOT NULL,
+      expires_at TIMESTAMPTZ NOT NULL,
+      used_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `);
+
+  const { rows } = await pool.query("SELECT COUNT(*)::int AS n FROM accounts");
+  if (rows[0].n > 0) return;
+
+  const seeds = [];
+  for (const n of [1, 2]) {
+    const email = process.env[`AUTH_USER_${n}_EMAIL`];
+    const hash = process.env[`AUTH_USER_${n}_PASSWORD_HASH`];
+    if (email && hash) seeds.push([email.toLowerCase(), hash]);
+  }
+  for (const [email, hash] of seeds) {
+    await pool.query(
+      "INSERT INTO accounts (email, password_hash) VALUES ($1, $2) ON CONFLICT (email) DO NOTHING",
+      [email, hash]
+    );
+  }
+  if (seeds.length) console.log(`Seeded ${seeds.length} account(s) from environment variables into the accounts table.`);
+}
+
+async function getAccountByEmail(email) {
+  const { rows } = await pool.query(
+    "SELECT email, password_hash FROM accounts WHERE email = $1",
+    [String(email || "").toLowerCase()]
+  );
+  return rows[0] || null;
+}
+
+async function updateAccountPassword(email, newHash) {
+  await pool.query(
+    "UPDATE accounts SET password_hash = $1, updated_at = now() WHERE email = $2",
+    [newHash, String(email || "").toLowerCase()]
+  );
+}
+
+async function createPasswordReset(email, token, expiresAt) {
+  await pool.query(
+    "INSERT INTO password_resets (token, email, expires_at) VALUES ($1, $2, $3)",
+    [token, String(email || "").toLowerCase(), expiresAt]
+  );
+}
+
+// Returns the reset row only if the token exists, hasn't been used, and
+// hasn't expired — callers should treat any other outcome (null) as "this
+// link is no longer valid" without distinguishing why, to avoid leaking
+// details to someone probing tokens.
+async function getValidPasswordReset(token) {
+  const { rows } = await pool.query(
+    "SELECT token, email, expires_at, used_at FROM password_resets WHERE token = $1",
+    [token]
+  );
+  const row = rows[0];
+  if (!row) return null;
+  if (row.used_at) return null;
+  if (new Date(row.expires_at).getTime() < Date.now()) return null;
+  return row;
+}
+
+async function markPasswordResetUsed(token) {
+  await pool.query("UPDATE password_resets SET used_at = now() WHERE token = $1", [token]);
 }
 
 async function getState() {
@@ -137,4 +227,8 @@ async function saveState(nextState, expectedRev, updatedBy) {
   }
 }
 
-module.exports = { pool, init, getState, saveState, defaultState };
+module.exports = {
+  pool, init, getState, saveState, defaultState,
+  getAccountByEmail, updateAccountPassword,
+  createPasswordReset, getValidPasswordReset, markPasswordResetUsed
+};
