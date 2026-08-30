@@ -797,6 +797,22 @@
   .faq-row .field { margin-bottom: 0.6rem; }
   .registry-row.grid-3 { align-items: end; }
   .portal-story { white-space: pre-wrap; line-height: 1.6; }
+  .portal-story-photos {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.6rem; margin-top: 1rem;
+  }
+  .portal-story-photos img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; border: 1px solid var(--line); }
+  .portal-preview-banner {
+    position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: center; gap: 1rem;
+    background: var(--ink); color: var(--paper); padding: 0.6em 1rem; font-size: 0.85rem; text-align: center;
+  }
+  .portal-preview-banner .btn { flex: none; }
+  .story-photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 0.6rem; margin: 0.75rem 0; }
+  .story-photo-tile { position: relative; }
+  .story-photo-tile img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); display: block; }
+  .story-photo-remove {
+    position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 999px; border: none;
+    background: rgba(0,0,0,0.65); color: #fff; font-size: 0.85rem; line-height: 1; cursor: pointer;
+  }
   .portal-map { width: 100%; height: 220px; border: 0; border-radius: 10px; margin-top: 0.75rem; }
   .portal-countdown {
     display: inline-flex; align-items: baseline; gap: 0.4em; margin-top: 0.5rem; font-weight: 700;
@@ -1012,6 +1028,14 @@
   var resetErr = "";
   var changePasswordMsg = "";
   var changePasswordErr = "";
+  var addLoginMsg = "";
+  var addLoginErr = "";
+  var accountEmails = [];
+
+  // True while showing the guest-site preview (see openGuestPreview()) —
+  // reuses the real guest-portal render functions so what the couple sees
+  // here is exactly what a guest would see, just without a real token.
+  var guestPreviewOpen = false;
 
   // First-run setup wizard — shown once, right after a couple's first
   // sign-in, before they ever see the normal dashboard (state.settings.
@@ -1699,6 +1723,10 @@
       bindOnboardingWizardEvents();
       return;
     }
+    if (guestPreviewOpen) {
+      renderGuestPortalPage();
+      return;
+    }
     // Whatever the wizard (or anything else) left previewed on <html>, the
     // dashboard always reflects the couple's actually-saved colorway.
     applyColorway(state.settings && state.settings.colorway);
@@ -2244,8 +2272,18 @@
   }
 
   function renderGuestSite() {
+    var storyPhotos = state.profile.storyPhotos || [];
+    var storyPhotoTiles = storyPhotos.map(function (src, i) {
+      return '<div class="story-photo-tile"><img src="' + src + '" alt="Story photo"/>' +
+        (canWrite ? '<button type="button" class="story-photo-remove" data-story-photo-remove="' + i + '" aria-label="Remove photo">×</button>' : "") +
+        "</div>";
+    }).join("");
     var storyCard = '<div class="card"><h2>Your story</h2><p class="muted">A little background for guests who want it — shown on your guest RSVP page.</p>' +
-      '<div class="field"><label for="f-story">Couple\'s story</label><textarea id="f-story" placeholder="How you met, the proposal, whatever you want to share…" ' + (canWrite ? "" : "disabled") + '>' + escapeHtml(state.profile.story || "") + "</textarea></div></div>";
+      '<div class="field"><label for="f-story">Couple\'s story</label><textarea id="f-story" placeholder="How you met, the proposal, whatever you want to share…" ' + (canWrite ? "" : "disabled") + '>' + escapeHtml(state.profile.story || "") + "</textarea></div>" +
+      '<div class="field"><label>Story photos</label>' +
+      (storyPhotoTiles ? '<div class="story-photo-grid">' + storyPhotoTiles + "</div>" : '<div class="empty-note">No photos added yet.</div>') +
+      (canWrite ? '<input type="file" accept="image/*" multiple id="f-story-photos"/><p class="tiny">Up to 12 photos — shown as a gallery alongside your story.</p>' : "") +
+      "</div></div>";
 
     var partyCards = (state.weddingParty || []).map(function (p) {
       var photo = p.photo ? '<img class="party-photo" src="' + p.photo + '" alt="' + escapeHtml(p.name || "") + '"/>' : '<div class="party-photo party-photo-empty"></div>';
@@ -2290,18 +2328,22 @@
       (canWrite ? '<div class="save-row" style="margin-top:1rem"><button class="btn btn-secondary" id="add-registry-btn">Add a link</button></div>' : "") +
       "</div>";
 
-    var previewLink = state.guests.length || (state.households || []).length
-      ? '<p class="tiny">Preview: open any guest\'s RSVP link from the Guest List tab — this content shows there.</p>' : "";
-
     return panel("guestsite",
-      '<div class="card"><h2>Guest site</h2><p class="muted">Everything here shows up on your guest RSVP page, alongside the schedule and the RSVP form itself.</p>' + previewLink + "</div>" +
+      '<div class="card"><h2>Guest site</h2><p class="muted">Everything here shows up on your guest RSVP page, alongside the schedule and the RSVP form itself.</p>' +
+      '<div class="save-row" style="margin-top:.5rem"><span></span><button type="button" class="btn btn-secondary" id="guest-preview-btn">Preview as a guest</button></div></div>' +
       storyCard + partyCard + faqCard + registryCard +
       (canWrite ? '<div class="save-row"><span class="save-status" id="save-status-badge-8"></span><button class="btn btn-primary" id="save-guestsite-btn">Save guest site</button></div>' : "")
     );
   }
 
+  // The couple can add a login for anyone on this fixed list — kept in sync
+  // with server.js's ALLOWED_NEW_ACCOUNT_EMAILS, which is the list that
+  // actually gets enforced; this copy only drives which options show up in
+  // the dropdown below.
+  var NEW_LOGIN_ALLOWLIST = ["jmundia18@gmail.com", "99amethyst@gmail.com", "jkmundia99@gmail.com"];
+
   function renderAccountSecurity() {
-    return '<div class="card"><h2>Account security</h2><p class="muted">Change the password for ' + escapeHtml(currentUser ? currentUser.email : "your account") + ".</p>" +
+    var passwordCard = '<div class="card"><h2>Account security</h2><p class="muted">Change the password for ' + escapeHtml(currentUser ? currentUser.email : "your account") + ".</p>" +
       (changePasswordMsg ? '<div class="login-notice">' + escapeHtml(changePasswordMsg) + "</div>" : "") +
       (changePasswordErr ? '<div class="login-error">' + escapeHtml(changePasswordErr) + "</div>" : "") +
       '<div class="grid-2">' +
@@ -2310,6 +2352,32 @@
       "</div>" +
       '<div class="save-row"><span></span><button class="btn btn-primary" id="change-password-btn">Change password</button></div>' +
       "</div>";
+
+    var existing = accountEmails || [];
+    var available = NEW_LOGIN_ALLOWLIST.filter(function (e) { return existing.indexOf(e) === -1; });
+    var loginsListHtml = existing.length
+      ? "<ul style=\"margin:0 0 1rem;padding-left:1.2em\">" + existing.map(function (e) {
+          return "<li>" + escapeHtml(e) + (currentUser && currentUser.email === e ? ' <span class="tiny muted">(you)</span>' : "") + "</li>";
+        }).join("") + "</ul>"
+      : '<p class="muted">Loading…</p>';
+    var addLoginFormHtml = available.length
+      ? '<div class="grid-2">' +
+          '<div class="field"><label for="f-new-login-email">Email</label><select id="f-new-login-email">' +
+            available.map(function (e) { return '<option value="' + escapeHtml(e) + '">' + escapeHtml(e) + "</option>"; }).join("") +
+          "</select></div>" +
+          '<div class="field"><label for="f-new-login-password">Password</label><input id="f-new-login-password" type="password" autocomplete="new-password" minlength="8"/></div>' +
+        "</div>" +
+        '<div class="save-row"><span></span><button class="btn btn-secondary" id="add-login-btn">Add login</button></div>'
+      : '<p class="tiny muted">Every approved login already has an account.</p>';
+
+    var loginsCard = '<div class="card"><h2>Logins</h2><p class="muted">Everyone who can sign in to this planner.</p>' +
+      loginsListHtml +
+      (addLoginMsg ? '<div class="login-notice">' + escapeHtml(addLoginMsg) + "</div>" : "") +
+      (addLoginErr ? '<div class="login-error">' + escapeHtml(addLoginErr) + "</div>" : "") +
+      addLoginFormHtml +
+      "</div>";
+
+    return passwordCard + loginsCard;
   }
 
   function requestStatusPill(cat, key) {
@@ -3167,6 +3235,47 @@
       });
     });
 
+    var addLoginBtn = document.getElementById("add-login-btn");
+    if (addLoginBtn) addLoginBtn.addEventListener("click", function () {
+      var newEmail = val("f-new-login-email");
+      var newPassword = val("f-new-login-password");
+      addLoginMsg = "";
+      addLoginErr = "";
+      if (!newEmail || !newPassword) {
+        addLoginErr = "Choose an email and enter a password.";
+        render();
+        return;
+      }
+      if (newPassword.length < 8) {
+        addLoginErr = "Password must be at least 8 characters.";
+        render();
+        return;
+      }
+      addLoginBtn.disabled = true;
+      addLoginBtn.textContent = "Adding…";
+      fetch("/api/accounts", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: newEmail, password: newPassword })
+      }).then(function (res) {
+        if (res.status === 401) { currentUser = null; render(); return null; }
+        return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+      }).then(function (r) {
+        if (!r) return;
+        if (!r.ok) {
+          addLoginErr = (r.data && r.data.error) || "Could not add that login.";
+          render();
+          return;
+        }
+        addLoginMsg = (r.data && r.data.email ? r.data.email : "That login") + " can now sign in.";
+        loadAccountEmails();
+      }).catch(function () {
+        addLoginErr = "Network error — try again.";
+        render();
+      });
+    });
+
     root.querySelectorAll("[data-colorway-pick]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         var key = btn.getAttribute("data-colorway-pick");
@@ -3222,6 +3331,14 @@
       saveState(nextWithGuestSiteForm(), { doneLabel: "Guest site saved." });
     });
 
+    var guestPreviewBtn = document.getElementById("guest-preview-btn");
+    if (guestPreviewBtn) guestPreviewBtn.addEventListener("click", function () {
+      // Carry over whatever's typed but not yet saved on the Guest Site
+      // card, same as Save does, so the preview reflects what's on screen.
+      state = nextWithGuestSiteForm();
+      openGuestPreview();
+    });
+
     var addPartyBtn = document.getElementById("add-party-btn");
     if (addPartyBtn) addPartyBtn.addEventListener("click", function () {
       var next = nextWithGuestSiteForm();
@@ -3250,6 +3367,38 @@
         }).catch(function (e) {
           showToast(e.message || "Could not use that photo.");
         });
+      });
+    });
+
+    var storyPhotosInput = document.getElementById("f-story-photos");
+    if (storyPhotosInput) storyPhotosInput.addEventListener("change", function () {
+      var files = storyPhotosInput.files ? Array.from(storyPhotosInput.files) : [];
+      if (!files.length) return;
+      var next = nextWithGuestSiteForm();
+      var existing = next.profile.storyPhotos || [];
+      var room = Math.max(0, 12 - existing.length);
+      if (!room) {
+        showToast("You've reached the 12-photo limit — remove one to add another.");
+        storyPhotosInput.value = "";
+        return;
+      }
+      var toAdd = files.slice(0, room);
+      if (files.length > toAdd.length) showToast("Only added " + toAdd.length + " photo" + (toAdd.length === 1 ? "" : "s") + " — 12-photo limit reached.");
+      Promise.all(toAdd.map(function (f) { return readAndResizeImage(f, 900, 0.82); }))
+        .then(function (dataUrls) {
+          next.profile.storyPhotos = existing.concat(dataUrls);
+          saveState(next, { doneLabel: "Story photos updated." });
+        })
+        .catch(function (e) {
+          showToast(e.message || "Could not use one of those photos.");
+        });
+    });
+    root.querySelectorAll("[data-story-photo-remove]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var idx = Number(btn.getAttribute("data-story-photo-remove"));
+        var next = nextWithGuestSiteForm();
+        next.profile.storyPhotos = (next.profile.storyPhotos || []).filter(function (_, i) { return i !== idx; });
+        saveState(next, { doneLabel: "Photo removed." });
       });
     });
 
@@ -3970,10 +4119,23 @@
       applyLoadedState(data.state);
       state._rev = data.rev;
       render();
+      loadAccountEmails();
     }).catch(function (err) {
       console.error(err);
       setSaveStatus("Could not load your data. Refresh to try again.", "err");
     });
+  }
+
+  // Powers the "Add a login" card on the Profile tab — see renderAccountSecurity().
+  function loadAccountEmails() {
+    fetch("/api/accounts", { credentials: "same-origin" }).then(function (res) {
+      if (res.status === 401) { currentUser = null; render(); return null; }
+      return res.json();
+    }).then(function (data) {
+      if (!data) return;
+      accountEmails = data.emails || [];
+      render();
+    }).catch(function () {});
   }
 
   // Bound once (not inside bindEvents, which reruns on every render — that
@@ -4071,7 +4233,15 @@
   function renderPortalExtras() {
     if (!portalData) return "";
     var p = portalData.profile || {};
-    var storyHtml = p.story ? '<div class="portal-card"><h2>Our story</h2><div class="portal-story">' + escapeHtml(p.story) + "</div></div>" : "";
+    var storyPhotos = Array.isArray(p.storyPhotos) ? p.storyPhotos : [];
+    var storyPhotosHtml = storyPhotos.length
+      ? '<div class="portal-story-photos">' + storyPhotos.map(function (src) { return '<img src="' + src + '" alt="A photo from our story"/>'; }).join("") + "</div>"
+      : "";
+    var storyHtml = (p.story || storyPhotosHtml)
+      ? '<div class="portal-card"><h2>Our story</h2>' +
+        (p.story ? '<div class="portal-story">' + escapeHtml(p.story) + "</div>" : "") +
+        storyPhotosHtml + "</div>"
+      : "";
 
     var party = portalData.weddingParty || [];
     var partyHtml = party.length ? '<div class="portal-card"><h2>Wedding party</h2><div class="portal-party-grid">' +
@@ -4110,27 +4280,87 @@
     });
   }
 
+  // Previewing the guest site (from inside the authenticated app — see
+  // openGuestPreview() below) reuses this exact same rendering code as the
+  // real /rsvp/<token> page, just with `guestPreviewOpen` true, so what the
+  // couple sees really is what a guest would see. The only difference is a
+  // banner + a way back to the dashboard, prepended here so every branch
+  // below gets it without having to duplicate it.
+  function guestPreviewBanner() {
+    if (!guestPreviewOpen) return "";
+    return '<div class="portal-preview-banner">Previewing what your guests see — this isn’t a live RSVP link.' +
+      '<button type="button" class="btn btn-secondary btn-sm" id="guest-preview-exit-btn">Back to dashboard</button></div>';
+  }
+
   function renderGuestPortalPage() {
     var root = document.getElementById("app-root");
+    var banner = guestPreviewBanner();
     if (portalError && !portalData) {
-      root.innerHTML = '<div class="themed-page"><div class="portal-search-shell">' + PORTAL_EYEBROW + "<h1>RSVP</h1>" +
+      root.innerHTML = banner + '<div class="themed-page"><div class="portal-search-shell">' + PORTAL_EYEBROW + "<h1>RSVP</h1>" +
         '<div class="login-error">' + escapeHtml(portalError) + "</div></div></div>";
+      bindGuestPortalEvents();
       return;
     }
     if (!portalData) {
-      root.innerHTML = '<div class="themed-page"><div class="portal-search-shell">' + PORTAL_EYEBROW + '<h1>RSVP</h1><div class="portal-sub">Loading your invitation…</div></div></div>';
+      root.innerHTML = banner + '<div class="themed-page"><div class="portal-search-shell">' + PORTAL_EYEBROW + '<h1>RSVP</h1><div class="portal-sub">Loading your invitation…</div></div></div>';
+      bindGuestPortalEvents();
       return;
     }
     if (portalDone) {
-      root.innerHTML = '<div class="themed-page"><div class="portal-shell">' + portalHeader() +
+      root.innerHTML = banner + '<div class="themed-page"><div class="portal-shell">' + portalHeader() +
         '<div class="login-notice">Thank you — your RSVP is saved. You can come back to this link any time to update it.</div></div></div>';
+      bindGuestPortalEvents();
       return;
     }
-    if (portalStep === "attend") { root.innerHTML = renderPortalAttend(); bindGuestPortalEvents(); return; }
-    if (portalStep === "choose") { root.innerHTML = renderPortalChoose(); bindGuestPortalEvents(); return; }
-    if (portalStep === "notfound") { root.innerHTML = renderPortalNotFound(); bindGuestPortalEvents(); return; }
-    root.innerHTML = renderPortalSearch();
+    if (portalStep === "attend") { root.innerHTML = banner + renderPortalAttend(); bindGuestPortalEvents(); return; }
+    if (portalStep === "choose") { root.innerHTML = banner + renderPortalChoose(); bindGuestPortalEvents(); return; }
+    if (portalStep === "notfound") { root.innerHTML = banner + renderPortalNotFound(); bindGuestPortalEvents(); return; }
+    root.innerHTML = banner + renderPortalSearch();
     bindGuestPortalEvents();
+  }
+
+  // Builds a portalData-shaped object straight from the couple's own saved
+  // state, so the preview can reuse every guest-portal render function
+  // as-is instead of needing a token round-trip through the server.
+  function buildGuestPreviewData() {
+    var p = state.profile || {};
+    return {
+      householdName: null,
+      colorway: (state.settings && state.settings.colorway) || "classic",
+      profile: {
+        coupleNames: p.coupleNames || "", weddingDate: p.weddingDate || "",
+        location: p.location || "", address: p.address || "",
+        couplePhoto: p.couplePhoto || "", story: p.story || "",
+        storyPhotos: p.storyPhotos || []
+      },
+      timeline: state.timeline || [],
+      weddingParty: state.weddingParty || [],
+      faq: state.faq || [],
+      registryLinks: state.registryLinks || [],
+      members: []
+    };
+  }
+
+  function openGuestPreview() {
+    portalData = buildGuestPreviewData();
+    portalToken = null;
+    portalError = "";
+    portalDone = false;
+    portalStep = "search";
+    portalQuery = "";
+    portalMatches = [];
+    portalIdentified = null;
+    portalNewAdditions = [];
+    guestPreviewOpen = true;
+    applyColorway(portalData.colorway);
+    renderGuestPortalPage();
+  }
+
+  function closeGuestPreview() {
+    guestPreviewOpen = false;
+    portalData = null;
+    applyColorway(state.settings && state.settings.colorway);
+    render();
   }
 
   function renderPortalSearch() {
@@ -4211,9 +4441,16 @@
   function bindGuestPortalEvents() {
     var root = document.getElementById("app-root");
 
+    var exitPreviewBtn = document.getElementById("guest-preview-exit-btn");
+    if (exitPreviewBtn) exitPreviewBtn.addEventListener("click", closeGuestPreview);
+
     var searchInput = document.getElementById("portal-search-input");
     var searchBtn = document.getElementById("portal-search-btn");
     function doPortalSearch() {
+      if (guestPreviewOpen) {
+        showToast("Search only works on a real guest link — this preview just shows your story, wedding party, FAQ, and registry.");
+        return;
+      }
       portalQuery = searchInput ? searchInput.value : portalQuery;
       if (!portalQuery.trim()) { portalError = "Enter your name to continue."; renderGuestPortalPage(); return; }
       var matches = portalSearchMembers(portalQuery);
