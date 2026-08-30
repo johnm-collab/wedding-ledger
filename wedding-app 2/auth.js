@@ -8,8 +8,10 @@
 // so credentials can be generated anywhere Node runs, no npm install needed.
 
 const crypto = require("crypto");
+const db = require("./db");
 
 const COOKIE_NAME = "wl_session";
+const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 hour
 const TOKEN_TTL_MS = 90 * 24 * 60 * 60 * 1000;
 const SCRYPT_KEYLEN = 64;
 const DUMMY_SALT = Buffer.from("0000000000000000000000000000000000000000000000000000000000", "hex");
@@ -31,26 +33,24 @@ function verifyPassword(password, stored) {
   return crypto.timingSafeEqual(actual, expected);
 }
 
-function loadAccounts() {
-  const accounts = [];
-  for (const n of [1, 2]) {
-    const email = process.env[`AUTH_USER_${n}_EMAIL`];
-    const hash = process.env[`AUTH_USER_${n}_PASSWORD_HASH`];
-    if (email && hash) accounts.push({ email: email.toLowerCase(), hash });
-  }
-  return accounts;
-}
-
+// Accounts (email + password hash) live in the database now, not env vars
+// — see db.js's initAccounts() for the one-time env-var seed migration.
 async function verifyCredentials(email, password) {
-  const accounts = loadAccounts();
-  const account = accounts.find((a) => a.email === String(email || "").toLowerCase());
+  const account = await db.getAccountByEmail(email);
   if (!account) {
     // Run a real (discarded) scrypt hash so a nonexistent-email response
     // costs about the same CPU time as a wrong-password one.
     crypto.scryptSync(String(password || ""), DUMMY_SALT, SCRYPT_KEYLEN);
     return null;
   }
-  return verifyPassword(password, account.hash) ? { email: account.email } : null;
+  return verifyPassword(password, account.password_hash) ? { email: account.email } : null;
+}
+
+// A cryptographically random, unguessable reset token. It's the row's
+// primary key in password_resets, so it also has to be unpredictable
+// enough that nobody can enumerate or guess another user's token.
+function generateResetToken() {
+  return crypto.randomBytes(32).toString("hex");
 }
 
 function signSession(user) {
@@ -110,5 +110,5 @@ function clearSessionCookie(res) {
 
 module.exports = {
   verifyCredentials, requireAuth, setSessionCookie, clearSessionCookie, verifySession,
-  hashPassword, verifyPassword, COOKIE_NAME
+  hashPassword, verifyPassword, generateResetToken, COOKIE_NAME, RESET_TOKEN_TTL_MS
 };
