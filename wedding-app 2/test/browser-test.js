@@ -56,8 +56,8 @@ const { chromium } = require("playwright");
   await page.click('[data-tab="budget"]');
   await page.waitForSelector(".tab-panel.active .card h2", { timeout: 5000 });
 
-  // Vendors, guests, checklist, dayof tabs all render without throwing
-  for (const tab of ["vendors", "guests", "checklist", "dayof", "overview"]) {
+  // Vendors, guests, checklist, seating, dayof tabs all render without throwing
+  for (const tab of ["vendors", "guests", "checklist", "seating", "dayof", "overview"]) {
     await page.click('[data-tab="' + tab + '"]');
     await page.waitForSelector('.tab-panel.active[data-panel="' + tab + '"]', { timeout: 5000 });
   }
