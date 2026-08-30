@@ -493,7 +493,10 @@
   .login-shell h1 { font-size: 1.5rem; margin-bottom: 0.4rem; }
   .login-shell .login-sub { color: var(--ink-2); font-size: 0.9rem; margin-bottom: 1.5rem; }
   .login-error { background: var(--critical-soft); color: var(--critical); border: 1px solid var(--critical); border-radius: 8px; padding: 0.65rem 0.9rem; font-size: 0.85rem; margin-bottom: 1rem; }
+  .login-notice { background: var(--good-soft); color: var(--good); border: 1px solid var(--good); border-radius: 8px; padding: 0.65rem 0.9rem; font-size: 0.85rem; margin-bottom: 1rem; }
   .login-shell .field { margin-bottom: 1rem; }
+  .login-links { display: flex; justify-content: space-between; margin-top: 0.9rem; }
+  .link-btn { background: none; border: none; color: var(--accent); font-size: 0.82rem; font-weight: 600; cursor: pointer; text-decoration: underline; padding: 0; }
   .masthead-account { display: flex; align-items: center; gap: 0.75rem; }
   .logout-link { background: none; border: none; color: var(--ink-muted); font-size: 0.78rem; font-weight: 600; cursor: pointer; text-decoration: underline; padding: 0; }
 </style>
@@ -635,6 +638,19 @@
   var activeTab = "overview";
   var canWrite = true;
   var currentUser = null;
+
+  // Auth-adjacent view state (forgot/reset-password flow). authScreen picks
+  // between the login form and the "forgot password" form when signed out;
+  // pendingResetToken (read from a ?resetToken=... URL param at boot, then
+  // scrubbed from the URL) takes over the whole screen until consumed.
+  var authScreen = "login";
+  var loginNotice = "";
+  var pendingResetToken = null;
+  var forgotMsg = "";
+  var resetMsg = "";
+  var resetErr = "";
+  var changePasswordMsg = "";
+  var changePasswordErr = "";
 
   function applyLoadedState(parsed) {
     state = Object.assign(defaultState(), parsed, {
@@ -1234,9 +1250,19 @@
 
   function render() {
     var root = document.getElementById("app-root");
+    if (pendingResetToken) {
+      root.innerHTML = renderResetPassword();
+      bindResetPasswordEvents();
+      return;
+    }
     if (!currentUser) {
-      root.innerHTML = renderLogin();
-      bindLoginEvents();
+      if (authScreen === "forgot") {
+        root.innerHTML = renderForgotPassword();
+        bindForgotPasswordEvents();
+      } else {
+        root.innerHTML = renderLogin();
+        bindLoginEvents();
+      }
       return;
     }
     root.innerHTML = renderMasthead() + renderReadonlyBanner() + renderStatStrip() +
@@ -1250,11 +1276,13 @@
   var loginError = "";
   function renderLogin() {
     return '<div class="login-shell"><h1>The Wedding Ledger</h1><div class="login-sub">Sign in to view and edit your planner.</div>' +
+      (loginNotice ? '<div class="login-notice">' + escapeHtml(loginNotice) + "</div>" : "") +
       (loginError ? '<div class="login-error">' + escapeHtml(loginError) + "</div>" : "") +
       '<form id="login-form">' +
       '<div class="field"><label for="login-email">Email</label><input id="login-email" type="email" autocomplete="username" required/></div>' +
       '<div class="field"><label for="login-password">Password</label><input id="login-password" type="password" autocomplete="current-password" required/></div>' +
       '<button class="btn btn-primary" type="submit" style="width:100%">Sign in</button>' +
+      '<div class="login-links"><button class="link-btn" type="button" id="show-forgot-btn">Forgot password?</button></div>' +
       "</form></div>";
   }
 
@@ -1281,10 +1309,109 @@
             return;
           }
           loginError = "";
+          loginNotice = "";
           currentUser = r.data.user;
           loadStateAndRender();
         }).catch(function () {
           loginError = "Network error — try again.";
+          render();
+        });
+    });
+    var showForgotBtn = document.getElementById("show-forgot-btn");
+    if (showForgotBtn) showForgotBtn.addEventListener("click", function () {
+      loginError = "";
+      forgotMsg = "";
+      authScreen = "forgot";
+      render();
+    });
+  }
+
+  function renderForgotPassword() {
+    return '<div class="login-shell"><h1>Reset your password</h1><div class="login-sub">Enter your account email and we\'ll send a link to set a new password.</div>' +
+      (forgotMsg ? '<div class="login-notice">' + escapeHtml(forgotMsg) + "</div>" : "") +
+      '<form id="forgot-form">' +
+      '<div class="field"><label for="forgot-email">Email</label><input id="forgot-email" type="email" autocomplete="username" required/></div>' +
+      '<button class="btn btn-primary" type="submit" style="width:100%">Send reset link</button>' +
+      '<div class="login-links"><button class="link-btn" type="button" id="back-to-login-btn">Back to sign in</button></div>' +
+      "</form></div>";
+  }
+
+  function bindForgotPasswordEvents() {
+    var form = document.getElementById("forgot-form");
+    if (form) form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var emailVal = document.getElementById("forgot-email").value.trim();
+      var btn = form.querySelector("button[type=submit]");
+      btn.disabled = true;
+      btn.textContent = "Sending…";
+      fetch("/api/forgot-password", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailVal })
+      }).then(function (res) { return res.json(); })
+        .then(function (data) {
+          forgotMsg = (data && data.message) || "If that email has an account, a reset link is on its way.";
+          render();
+        }).catch(function () {
+          btn.disabled = false;
+          btn.textContent = "Send reset link";
+          forgotMsg = "Network error — try again.";
+          render();
+        });
+    });
+    var backBtn = document.getElementById("back-to-login-btn");
+    if (backBtn) backBtn.addEventListener("click", function () {
+      forgotMsg = "";
+      authScreen = "login";
+      render();
+    });
+  }
+
+  function renderResetPassword() {
+    return '<div class="login-shell"><h1>Set a new password</h1><div class="login-sub">Choose a new password for your account.</div>' +
+      (resetErr ? '<div class="login-error">' + escapeHtml(resetErr) + "</div>" : "") +
+      '<form id="reset-form">' +
+      '<div class="field"><label for="reset-password">New password</label><input id="reset-password" type="password" autocomplete="new-password" minlength="8" required/></div>' +
+      '<div class="field"><label for="reset-password-confirm">Confirm new password</label><input id="reset-password-confirm" type="password" autocomplete="new-password" minlength="8" required/></div>' +
+      '<button class="btn btn-primary" type="submit" style="width:100%">Set new password</button>' +
+      "</form></div>";
+  }
+
+  function bindResetPasswordEvents() {
+    var form = document.getElementById("reset-form");
+    if (!form) return;
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var pw = document.getElementById("reset-password").value;
+      var pwConfirm = document.getElementById("reset-password-confirm").value;
+      if (pw !== pwConfirm) {
+        resetErr = "Passwords don't match.";
+        render();
+        return;
+      }
+      var btn = form.querySelector("button[type=submit]");
+      btn.disabled = true;
+      btn.textContent = "Saving…";
+      fetch("/api/reset-password", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: pendingResetToken, newPassword: pw })
+      }).then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+        .then(function (r) {
+          if (!r.ok) {
+            resetErr = (r.data && r.data.error) || "Could not reset your password.";
+            render();
+            return;
+          }
+          resetErr = "";
+          pendingResetToken = null;
+          loginNotice = "Password updated — sign in with your new password.";
+          authScreen = "login";
+          render();
+        }).catch(function () {
+          resetErr = "Network error — try again.";
           render();
         });
     });
@@ -1455,8 +1582,21 @@
       '<div class="card"><h2>Wedding profile</h2><p class="muted">This is what I use to research vendors and build your timeline. Fill it in and save — updates flow back into this dashboard.</p>' + profileForm + "</div>" +
       '<div class="card"><h2>Vendor categories</h2><p class="muted">Log a research request for any category, or add options yourself on the Vendors tab. Automatic research isn\'t wired up yet — requests just sit logged below until you follow up.</p><div class="grid-3">' + catCards + "</div>" + adhoc + "</div>" +
       vendorUpload +
-      '<div class="card"><h2>Request log</h2>' + log + "</div>"
+      '<div class="card"><h2>Request log</h2>' + log + "</div>" +
+      renderAccountSecurity()
     );
+  }
+
+  function renderAccountSecurity() {
+    return '<div class="card"><h2>Account security</h2><p class="muted">Change the password for ' + escapeHtml(currentUser ? currentUser.email : "your account") + ".</p>" +
+      (changePasswordMsg ? '<div class="login-notice">' + escapeHtml(changePasswordMsg) + "</div>" : "") +
+      (changePasswordErr ? '<div class="login-error">' + escapeHtml(changePasswordErr) + "</div>" : "") +
+      '<div class="grid-2">' +
+      '<div class="field"><label for="f-current-password">Current password</label><input id="f-current-password" type="password" autocomplete="current-password"/></div>' +
+      '<div class="field"><label for="f-new-password">New password</label><input id="f-new-password" type="password" autocomplete="new-password" minlength="8"/></div>' +
+      "</div>" +
+      '<div class="save-row"><span></span><button class="btn btn-primary" id="change-password-btn">Change password</button></div>' +
+      "</div>";
   }
 
   function requestStatusPill(cat, key) {
@@ -1968,6 +2108,47 @@
       saveState(next, { doneLabel: "Profile saved." });
     });
 
+    var changePasswordBtn = document.getElementById("change-password-btn");
+    if (changePasswordBtn) changePasswordBtn.addEventListener("click", function () {
+      var currentPassword = val("f-current-password");
+      var newPassword = val("f-new-password");
+      changePasswordMsg = "";
+      changePasswordErr = "";
+      if (!currentPassword || !newPassword) {
+        changePasswordErr = "Enter your current and new password.";
+        render();
+        return;
+      }
+      if (newPassword.length < 8) {
+        changePasswordErr = "New password must be at least 8 characters.";
+        render();
+        return;
+      }
+      changePasswordBtn.disabled = true;
+      changePasswordBtn.textContent = "Changing…";
+      fetch("/api/change-password", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword: currentPassword, newPassword: newPassword })
+      }).then(function (res) {
+        if (res.status === 401) { currentUser = null; render(); return null; }
+        return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+      }).then(function (r) {
+        if (!r) return;
+        if (!r.ok) {
+          changePasswordErr = (r.data && r.data.error) || "Could not change your password.";
+          render();
+          return;
+        }
+        changePasswordMsg = "Password changed.";
+        render();
+      }).catch(function () {
+        changePasswordErr = "Network error — try again.";
+        render();
+      });
+    });
+
     root.querySelectorAll("[data-colorway-pick]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         var key = btn.getAttribute("data-colorway-pick");
@@ -2352,6 +2533,18 @@
   }
 
   function boot() {
+    // A password-reset email link lands here as /?resetToken=... — grab it
+    // and scrub it from the URL bar so a reload/bookmark doesn't resubmit
+    // (or leak) the token.
+    var params = new URLSearchParams(window.location.search);
+    var tokenFromUrl = params.get("resetToken");
+    if (tokenFromUrl) {
+      pendingResetToken = tokenFromUrl;
+      var cleanUrl = window.location.pathname + window.location.hash;
+      window.history.replaceState({}, document.title, cleanUrl);
+      render();
+      return;
+    }
     fetch("/api/me", { credentials: "same-origin" }).then(function (res) { return res.json(); })
       .then(function (data) {
         if (data && data.authenticated) {
