@@ -10,14 +10,6 @@ const email = require("./email");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Render (like Heroku, Vercel, etc.) puts the app behind a reverse proxy
-// that sets X-Forwarded-For to the real client IP. Express ignores that
-// header by default, which makes express-rate-limit's IP-based key
-// generator throw (ERR_ERL_UNEXPECTED_X_FORWARDED_FOR) instead of handling
-// the request — that crash is what surfaced to users as "Network error"
-// on login. Trusting exactly one hop (the platform's own edge proxy) is
-// the standard, safe setting for this kind of single-proxy deployment.
-app.set("trust proxy", 1);
 
 app.disable("x-powered-by");
 app.use(express.json({ limit: "10mb" }));
@@ -78,12 +70,7 @@ app.post("/api/change-password", authActionLimiter, auth.requireAuth, async (req
       return res.status(400).json({ error: "New password must be at least 8 characters." });
     }
     const verified = await auth.verifyCredentials(req.user.email, currentPassword);
-    // 400, not 401: the request itself is properly authenticated (it made
-    // it past auth.requireAuth on a valid session) — this is a form
-    // validation failure, not a session problem, and the frontend treats a
-    // 401 here as "your session expired, go back to the login screen",
-    // which would be wrong.
-    if (!verified) return res.status(400).json({ error: "Current password is incorrect." });
+    if (!verified) return res.status(401).json({ error: "Current password is incorrect." });
     const newHash = auth.hashPassword(newPassword);
     await db.updateAccountPassword(req.user.email, newHash);
     res.json({ ok: true });
@@ -169,108 +156,6 @@ app.put("/api/state", auth.requireAuth, async (req, res) => {
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: "Could not save your changes." });
-  }
-});
-
-// ---- guest RSVP portal (unauthenticated, token-gated) ----
-//
-// Reached at /rsvp/<token> from a link the couple generates and shares
-// (see the Guest List tab). A token resolves to either a household (every
-// guest with that householdId — the couple can put several family members
-// behind one shared link) or a single guest (a personal token, when they're
-// not part of a household). Anything else is a generic 404, matching the
-// forgot-password anti-enumeration pattern, so this can't be used to probe
-// for valid tokens. Writes are scoped strictly to the resolved guest ids —
-// the request body can never touch a guest outside its own household — and
-// go through the same optimistic-concurrency read-modify-write-retry as
-// every other write to the shared planner state, since this is the one
-// write path that isn't behind a login and could otherwise race the couple's
-// own edits.
-const portalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 60,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: "Too many requests. Try again in a few minutes." }
-});
-
-function resolvePortalScope(state, token) {
-  if (!token) return null;
-  const household = (state.households || []).find((h) => h.rsvpToken && h.rsvpToken === token);
-  if (household) {
-    const guestIds = (state.guests || []).filter((g) => g.householdId === household.id).map((g) => g.id);
-    if (!guestIds.length) return null;
-    return { kind: "household", household, guestIds };
-  }
-  const guest = (state.guests || []).find((g) => g.rsvpToken && g.rsvpToken === token);
-  if (guest) return { kind: "guest", guestIds: [guest.id] };
-  return null;
-}
-
-app.get("/api/guest-portal/:token", portalLimiter, async (req, res) => {
-  try {
-    const { state } = await db.getState();
-    const scope = resolvePortalScope(state, req.params.token);
-    if (!scope) return res.status(404).json({ error: "This RSVP link isn't valid." });
-    const members = state.guests
-      .filter((g) => scope.guestIds.includes(g.id))
-      .map((g) => ({
-        id: g.id, name: g.name, rsvp: g.rsvp || "not_sent",
-        mealChoice: g.mealChoice || "", email: g.email || "",
-        plusOne: !!g.plusOne, plusOneName: g.plusOneName || ""
-      }));
-    res.json({
-      ok: true,
-      householdName: scope.kind === "household" ? scope.household.name : null,
-      profile: {
-        coupleNames: (state.profile && state.profile.coupleNames) || "",
-        weddingDate: (state.profile && state.profile.weddingDate) || "",
-        location: (state.profile && state.profile.location) || "",
-        address: (state.profile && state.profile.address) || ""
-      },
-      timeline: (state.timeline || []).map((t) => ({ time: t.time || "", title: t.title || "", notes: t.notes || "" })),
-      members
-    });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "Could not load this RSVP link right now." });
-  }
-});
-
-app.post("/api/guest-portal/:token", portalLimiter, async (req, res) => {
-  try {
-    const { updates } = req.body || {};
-    if (!Array.isArray(updates) || !updates.length) return res.status(400).json({ error: "No changes submitted." });
-
-    const VALID_RSVP = new Set(["not_sent", "sent", "attending", "declined"]);
-    for (let attempt = 0; attempt < 5; attempt++) {
-      const { state, rev } = await db.getState();
-      const scope = resolvePortalScope(state, req.params.token);
-      if (!scope) return res.status(404).json({ error: "This RSVP link isn't valid." });
-
-      const allowedIds = new Set(scope.guestIds);
-      const next = JSON.parse(JSON.stringify(state));
-      let changed = false;
-      updates.forEach((u) => {
-        if (!u || !allowedIds.has(u.id)) return; // never touch a guest outside this link's own household
-        const g = next.guests.find((x) => x.id === u.id);
-        if (!g) return;
-        if (typeof u.rsvp === "string" && VALID_RSVP.has(u.rsvp)) { g.rsvp = u.rsvp; changed = true; }
-        if (typeof u.mealChoice === "string") { g.mealChoice = u.mealChoice.slice(0, 200); changed = true; }
-        if (typeof u.email === "string") { g.email = u.email.slice(0, 200); changed = true; }
-      });
-      if (!changed) return res.status(400).json({ error: "No valid changes submitted." });
-
-      const result = await db.saveState(next, rev, "guest-portal:" + req.params.token.slice(0, 8));
-      if (!result.conflict) return res.json({ ok: true });
-      // The couple (or another member on the same shared link) saved in
-      // between our read and write — loop and retry against the fresh
-      // state instead of clobbering it.
-    }
-    res.status(409).json({ error: "Could not save right now — please try again." });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "Could not save your RSVP right now." });
   }
 });
 

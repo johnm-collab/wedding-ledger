@@ -6,6 +6,13 @@ public Claude Artifact link. Same design and the same planning features you
 already had — budget recommendations, vendor tracking, guest list, seating
 chart, checklist, day-of timeline — just self-hosted with a password gate.
 
+Guests never get a login: from the Guest List tab you can generate a
+private, unguessable RSVP link per guest (or one shared link per household,
+for families who should get a single invite) at `/rsvp/<token>` — it shows
+your wedding info and schedule and lets them RSVP, pick a meal, and leave
+an email, with no account of their own. Marking a guest "Attending" (by
+them, or by you) is what makes them eligible to seat on the Seating tab.
+
 ## How it's built
 
 - `server.js` / `db.js` / `auth.js` — the backend. Express serves the API
@@ -95,6 +102,23 @@ Note: on Render's free tier the service spins down after 15 minutes of no
 traffic and takes a few seconds to wake back up on the next visit. That's
 normal and doesn't affect your saved data (which lives in Neon, not on the
 Render instance).
+
+## 4. (Optional) Weekly email digest
+
+`scripts/send-digest.js` emails both of you a summary of what's due in the
+next two weeks (checklist items + vendor deposits/balances) — it connects
+straight to the database and needs the same `RESEND_API_KEY`/
+`RESEND_FROM_EMAIL` as the forgot-password emails (step 2b). It's meant to
+run on a schedule, not as part of the web server itself:
+
+1. In Render, add a **Cron Job** (separate from your Web Service) pointed
+   at this same repo.
+2. Command: `node scripts/send-digest.js`. Schedule: whatever cadence you
+   want (e.g. `0 14 * * 1` for every Monday at 9am Eastern).
+3. Give the cron job the same `DATABASE_URL`, `RESEND_API_KEY`, and
+   `RESEND_FROM_EMAIL` environment variables as the web service.
+
+Skipping this is fine — the app itself never depends on it running.
 
 ## Local development
 

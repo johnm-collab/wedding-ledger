@@ -11,6 +11,17 @@ const CATEGORY_KEYS = [
   "transportation", "cake"
 ];
 
+// Kept in sync with CATEGORY_META's labels in public/index.html — used only
+// for the emailed digest (scripts/send-digest.js), which has no browser DOM
+// to render category names from.
+const CATEGORY_LABELS = {
+  planner: "Wedding Planner", venue: "Venue", photography: "Photography",
+  videography: "Videography", catering: "Catering", attire: "Attire",
+  florist: "Florist & Décor", music: "Music (DJ / Band)", officiant: "Officiant",
+  invitations: "Invitations & Stationery", rentals: "Rentals",
+  hairMakeup: "Hair & Makeup", transportation: "Transportation", cake: "Cake & Desserts"
+};
+
 const CHECKLIST_DEFAULTS = [
   ["cl-01", "Set a total budget and rough guest count", -365, null],
   ["cl-02", "Draft the guest list", -330, null],
@@ -59,6 +70,7 @@ function defaultState() {
     checklist,
     requests: [],
     guests: [],
+    households: [],
     fileImports: [],
     timeline: [],
     tables: [],
@@ -147,6 +159,11 @@ async function initAccounts() {
   if (seeds.length) console.log(`Seeded ${seeds.length} account(s) from environment variables into the accounts table.`);
 }
 
+async function listAccountEmails() {
+  const { rows } = await pool.query("SELECT email FROM accounts");
+  return rows.map((r) => r.email);
+}
+
 async function getAccountByEmail(email) {
   const { rows } = await pool.query(
     "SELECT email, password_hash FROM accounts WHERE email = $1",
@@ -229,6 +246,7 @@ async function saveState(nextState, expectedRev, updatedBy) {
 
 module.exports = {
   pool, init, getState, saveState, defaultState,
-  getAccountByEmail, updateAccountPassword,
-  createPasswordReset, getValidPasswordReset, markPasswordResetUsed
+  getAccountByEmail, updateAccountPassword, listAccountEmails,
+  createPasswordReset, getValidPasswordReset, markPasswordResetUsed,
+  CATEGORY_KEYS, CATEGORY_LABELS, CHECKLIST_DEFAULTS
 };
