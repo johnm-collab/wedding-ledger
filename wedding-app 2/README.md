@@ -94,6 +94,13 @@ whenever you want the emailed reset link to work.
      (same, one-time seed)
    - `RESEND_API_KEY`, `RESEND_FROM_EMAIL` — optional, only needed for
      "forgot password" emails to actually send (see step 2b above)
+   - `ANTHROPIC_API_KEY` — optional, only needed for the Vendors tab's
+     "Analyze a quote with AI" feature. Get a key at
+     console.anthropic.com/settings/keys (this is a separate, billed API
+     account — not your claude.ai subscription). Without it, that feature
+     just tells you it isn't set up yet; everything else works normally.
+   - `ANTHROPIC_MODEL` — optional, overrides which Claude model handles
+     document analysis (defaults to a current Sonnet model)
    - `NODE_ENV` = `production`
 4. Deploy. Render gives you a `https://your-service.onrender.com` URL —
    that's the link you both use to log in.
