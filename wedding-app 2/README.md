@@ -18,9 +18,11 @@ chart, checklist, day-of timeline — just self-hosted with a password gate.
   Artifact-specific plumbing (the self-republishing "quine" trick, the
   `downloads` capability) replaced by plain `fetch()` calls to the backend
   and a normal browser file download.
-- Login is two fixed accounts (you + your partner) set via environment
-  variables — there's no public signup page and no third account can be
-  created without you adding one.
+- Login is two fixed accounts (you + your partner) — there's no public
+  signup page and no third account can be created without you adding one.
+  Passwords live in the database (not environment variables), so either of
+  you can change your own password from the Profile tab, or reset it via a
+  "Forgot password?" emailed link, without needing a redeploy.
 
 ## 1. Set up the database (Neon)
 
@@ -47,6 +49,27 @@ node scripts/hash-password.js "a real password for your partner"
 Each command prints a salted scrypt hash. You'll paste these into Render,
 not the plain passwords — Render/Neon never see the real password.
 
+These env vars are only a one-time seed: the first time the app starts up
+and finds its `accounts` table empty, it copies these two accounts in, and
+from then on the database is the source of truth. After that first boot,
+change a password from the app itself (Profile tab → Account security, or
+the "Forgot password?" link on the login screen) instead of editing these
+variables — editing them again later has no effect.
+
+## 2b. (Optional) Enable "forgot password" emails
+
+The "Forgot password?" link works without this — the app will still accept
+the request and generate a reset link — but won't actually be able to
+email it to you until you set this up. Skipping it for now is fine; add it
+whenever you want the emailed reset link to work.
+
+1. Create a free account at [Resend](https://resend.com) and verify a
+   sending domain (or use their default test setup for personal use).
+2. Grab an API key from the Resend dashboard.
+3. In step 3 below, add `RESEND_API_KEY` and `RESEND_FROM_EMAIL` (something
+   like `The Wedding Ledger <noreply@yourdomain.com>`, using your verified
+   domain) alongside the other environment variables.
+
 ## 3. Deploy to Render
 
 1. Push this folder to a GitHub repo (Render deploys from a repo).
@@ -58,8 +81,12 @@ not the plain passwords — Render/Neon never see the real password.
    - `SESSION_SECRET` — any long random string (e.g. run
      `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
      locally and paste the output)
-   - `AUTH_USER_1_EMAIL`, `AUTH_USER_1_PASSWORD_HASH` — your login
+   - `AUTH_USER_1_EMAIL`, `AUTH_USER_1_PASSWORD_HASH` — your login (used
+     once, to seed the database — see step 2 above)
    - `AUTH_USER_2_EMAIL`, `AUTH_USER_2_PASSWORD_HASH` — your partner's login
+     (same, one-time seed)
+   - `RESEND_API_KEY`, `RESEND_FROM_EMAIL` — optional, only needed for
+     "forgot password" emails to actually send (see step 2b above)
    - `NODE_ENV` = `production`
 4. Deploy. Render gives you a `https://your-service.onrender.com` URL —
    that's the link you both use to log in.
