@@ -470,18 +470,26 @@
 
   .sort-select { width: auto; font-size: 0.8rem; padding: 0.35em 0.6em; }
 
-  .floor-plan-canvas { position: relative; width: 100%; min-height: 560px; border: 1px dashed var(--line); border-radius: 12px; background: var(--paper-2); overflow: visible; }
+  .seating-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.6rem; }
+  .floor-plan-canvas { position: relative; width: 100%; min-height: 600px; border: 1px dashed var(--line); border-radius: 12px; background: var(--paper-2); overflow: hidden; }
+  .floor-plan-canvas.fullscreen {
+    position: fixed; inset: 14px; width: auto; height: auto; min-height: 0; z-index: 901;
+    background: var(--paper-2); box-shadow: 0 12px 48px rgba(0,0,0,0.4); border: 1px solid var(--line-strong);
+  }
+  .floor-plan-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 900; }
+  .floor-plan-exit { position: absolute; top: 12px; right: 12px; z-index: 40; }
   .floor-table { position: absolute; transform: translate(-50%, -50%); text-align: center; }
   .floor-table.dragging { z-index: 30; }
-  .seat-visual-name { font-weight: 700; font-size: 0.85rem; margin-top: 0.5rem; }
   .seat-visual-stage { position: relative; margin: 0 auto; }
-  .seat-table-visual { position: absolute; transform: translate(-50%, -50%); border: 2px dashed var(--line-strong); background: var(--surface); }
+  .seat-table-visual { position: absolute; border: 2px dashed var(--line-strong); background: var(--surface); }
   .seat-table-visual.round { border-radius: 50%; }
   .seat-table-visual.rectangle { border-radius: 10px; }
   .seat-table-visual.over { border-color: var(--critical); }
   .seat-table-visual[data-table-drag] { cursor: grab; touch-action: none; }
   .floor-table.dragging .seat-table-visual { cursor: grabbing; border-style: solid; border-color: var(--accent); }
-  .seat-table-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 70%; }
+  .seat-table-center { position: absolute; top: 50%; left: 50%; text-align: center; width: 74%; line-height: 1.15; }
+  .seat-table-name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .floor-table-actions { display: flex; gap: 0.75rem; justify-content: center; margin-top: 0.4rem; }
   .seat-pill {
     position: absolute; transform: translate(-50%, -50%); max-width: 118px; padding: 0.28rem 0.65rem; border-radius: 999px;
     font-size: 0.7rem; font-weight: 700; border: 2px solid var(--line-strong); background: var(--surface); color: var(--ink-2);
@@ -1981,6 +1989,7 @@
   }
 
   var seatingView = "visual";
+  var seatingFullscreen = false;
 
   function seatChipClass(g) {
     if (!g) return "empty";
@@ -1997,7 +2006,11 @@
   function tablePosition(t, idx) {
     if (typeof t.x === "number" && typeof t.y === "number") return { x: t.x, y: t.y };
     var col = idx % 3, row = Math.floor(idx / 3);
-    return { x: 18 + col * 32, y: 22 + row * 34 };
+    // Kept well clear of the canvas edges (28-92% / 30-90%) — a table's
+    // ring of seats is much bigger than the table itself, so a position
+    // too close to the top used to bleed outside the canvas and sit on top
+    // of the Visual/List toggle buttons above it, silently blocking clicks.
+    return { x: 28 + col * 32, y: 30 + row * 34 };
   }
 
   // Walks the perimeter of a `w` x `h` rectangle centered on the origin,
@@ -2020,6 +2033,16 @@
     return { x: -halfW + dist, y: -halfH };
   }
 
+  // Rotates an (x,y) offset from a table's center by `deg` degrees, so a
+  // rotated table's seats stay lined up with its (also rotated) edges
+  // instead of sitting where the seats would be at rotation 0.
+  function rotateOffset(x, y, deg) {
+    if (!deg) return { x: x, y: y };
+    var rad = deg * Math.PI / 180;
+    var cos = Math.cos(rad), sin = Math.sin(rad);
+    return { x: x * cos - y * sin, y: x * sin + y * cos };
+  }
+
   function renderSeatingVisual(invited) {
     if (!state.tables.length) return '<div class="empty-note">Add a table below to start the seating chart.</div>';
     var pillWidth = 108, pillGap = 16;
@@ -2028,6 +2051,7 @@
       var capacity = Math.max(Number(t.capacity) || 0, seated.length, 1);
       var over = t.capacity && seated.length > Number(t.capacity);
       var shape = t.shape === "rectangle" ? "rectangle" : "round";
+      var rotation = Number(t.rotation) || 0;
       var pos = tablePosition(t, idx);
       var seats = [];
       var size, center, tableW, tableH;
@@ -2045,7 +2069,8 @@
         for (var i = 0; i < capacity; i++) {
           var g = seated[i] || null;
           var pt = pointOnRectPerimeter((loopPerim / capacity) * i, loopW, loopH);
-          seats.push(seatHtml(g, center + pt.x, center + pt.y));
+          var off = rotateOffset(pt.x, pt.y, rotation);
+          seats.push(seatHtml(g, center + off.x, center + off.y));
         }
       } else {
         // The table itself grows a little with capacity so bigger tables
@@ -2061,20 +2086,30 @@
           var g2 = seated[j] || null;
           var angle = (360 / capacity) * j - 90;
           var rad = angle * Math.PI / 180;
-          seats.push(seatHtml(g2, center + seatRadius * Math.cos(rad), center + seatRadius * Math.sin(rad)));
+          var off2 = rotateOffset(seatRadius * Math.cos(rad), seatRadius * Math.sin(rad), rotation);
+          seats.push(seatHtml(g2, center + off2.x, center + off2.y));
         }
       }
 
+      // The shape itself is rotated; its name/count label is counter-
+      // rotated by the same amount so the text always reads upright, and
+      // sits directly inside the table shape (not floating below the whole
+      // stage) so it's easy to tell which label belongs to which table.
+      var shapeTransform = "translate(-50%,-50%)" + (rotation ? " rotate(" + rotation + "deg)" : "");
+      var centerTransform = "translate(-50%,-50%)" + (rotation ? " rotate(" + (-rotation) + "deg)" : "");
+
       return '<div class="floor-table" data-table-id="' + t.id + '" style="left:' + pos.x + '%;top:' + pos.y + '%">' +
         '<div class="seat-visual-stage" style="width:' + size + 'px;height:' + size + 'px">' +
-        '<div class="seat-table-visual ' + shape + (over ? " over" : "") + '" style="width:' + tableW + 'px;height:' + tableH + 'px;left:' + center + 'px;top:' + center + 'px"' + (canWrite ? ' data-table-drag="' + t.id + '"' : "") + '>' +
-        '<div class="seat-table-center"><div class="tiny">' + seated.length + " / " + (t.capacity || capacity) + "</div></div>" +
+        '<div class="seat-table-visual ' + shape + (over ? " over" : "") + '" style="width:' + tableW + 'px;height:' + tableH + 'px;left:' + center + 'px;top:' + center + 'px;transform:' + shapeTransform + '"' + (canWrite ? ' data-table-drag="' + t.id + '"' : "") + '>' +
+        '<div class="seat-table-center" style="transform:' + centerTransform + '"><div class="tiny seat-table-name">' + escapeHtml(t.name) + '</div><div class="tiny">' + seated.length + " / " + (t.capacity || capacity) + "</div></div>" +
         "</div>" + seats.join("") + "</div>" +
-        '<div class="seat-visual-name">' + escapeHtml(t.name) + "</div>" +
-        (canWrite ? '<button class="seat-remove-link" data-table-remove="' + t.id + '">Remove table</button>' : "") +
+        (canWrite ? '<div class="floor-table-actions"><button class="seat-remove-link" data-table-rotate="' + t.id + '">Rotate ⟳</button><button class="seat-remove-link" data-table-remove="' + t.id + '">Remove</button></div>' : "") +
         "</div>";
     }).join("");
-    return '<div class="floor-plan-canvas" id="floor-plan-canvas">' + cards + "</div>" +
+    return '<div class="floor-plan-canvas' + (seatingFullscreen ? " fullscreen" : "") + '" id="floor-plan-canvas">' +
+      (seatingFullscreen ? '<button class="btn btn-secondary btn-sm floor-plan-exit" id="exit-fullscreen-btn" type="button">✕ Exit full screen</button>' : "") +
+      cards + "</div>" +
+      (seatingFullscreen ? '<div class="floor-plan-backdrop" id="floor-plan-backdrop"></div>' : "") +
       '<p class="tiny" style="margin-top:0.75rem">' + (canWrite ? "Drag a table to rearrange the floor plan. " : "") + 'Click a name to unseat that guest. Colors follow RSVP: green attending, red declined, gray awaiting a response.</p>';
   }
 
@@ -2104,9 +2139,10 @@
     var invited = state.guests.filter(function (g) { return g.status === "invite"; });
     var unseated = invited.filter(function (g) { return !g.tableId || !state.tables.some(function (t) { return t.id === g.tableId; }); });
 
-    var toggle = '<div class="filter-group" style="margin-bottom:1rem">' +
-      '<button class="filter-btn' + (seatingView === "visual" ? " active" : "") + '" data-seating-view="visual">Visual</button>' +
-      '<button class="filter-btn' + (seatingView === "list" ? " active" : "") + '" data-seating-view="list">List</button>' +
+    var toggle = '<div class="filter-group seating-toolbar" style="margin-bottom:1rem">' +
+      '<div><button class="filter-btn' + (seatingView === "visual" ? " active" : "") + '" data-seating-view="visual">Visual</button>' +
+      '<button class="filter-btn' + (seatingView === "list" ? " active" : "") + '" data-seating-view="list">List</button></div>' +
+      (seatingView === "visual" ? '<button class="btn btn-secondary btn-sm" id="fullscreen-seating-btn" type="button">' + (seatingFullscreen ? "Exit full screen" : "⤢ Full screen") + "</button>" : "") +
       "</div>";
     var tablesBlock = seatingView === "visual" ? renderSeatingVisual(invited) : renderSeatingList(invited);
 
@@ -2550,6 +2586,16 @@
       btn.addEventListener("click", function () { seatingView = btn.getAttribute("data-seating-view"); render(); });
     });
 
+    var fullscreenSeatingBtn = document.getElementById("fullscreen-seating-btn");
+    if (fullscreenSeatingBtn) fullscreenSeatingBtn.addEventListener("click", function () {
+      seatingFullscreen = !seatingFullscreen;
+      render();
+    });
+    var exitFullscreenBtn = document.getElementById("exit-fullscreen-btn");
+    if (exitFullscreenBtn) exitFullscreenBtn.addEventListener("click", function () { seatingFullscreen = false; render(); });
+    var floorPlanBackdrop = document.getElementById("floor-plan-backdrop");
+    if (floorPlanBackdrop) floorPlanBackdrop.addEventListener("click", function () { seatingFullscreen = false; render(); });
+
     var addTableBtn = document.getElementById("add-table-btn");
     if (addTableBtn) addTableBtn.addEventListener("click", function () {
       var name = val("f-table-name").trim();
@@ -2572,6 +2618,14 @@
         var id = btn.getAttribute("data-table-remove");
         state.tables = state.tables.filter(function (t) { return t.id !== id; });
         state.guests.forEach(function (g) { if (g.tableId === id) g.tableId = ""; });
+        render();
+      });
+    });
+    root.querySelectorAll("[data-table-rotate]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-table-rotate");
+        var t = state.tables.filter(function (x) { return x.id === id; })[0];
+        if (t) t.rotation = ((Number(t.rotation) || 0) + 45) % 360;
         render();
       });
     });
@@ -2654,6 +2708,16 @@
       setSaveStatus("Could not load your data. Refresh to try again.", "err");
     });
   }
+
+  // Bound once (not inside bindEvents, which reruns on every render — that
+  // would stack up a fresh listener each time). Lets Escape close the
+  // full-screen floor plan from anywhere, same as the ✕ button or backdrop.
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && seatingFullscreen) {
+      seatingFullscreen = false;
+      render();
+    }
+  });
 
   function boot() {
     // A password-reset email link lands here as /?resetToken=... — grab it
