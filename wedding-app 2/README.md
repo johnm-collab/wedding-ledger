@@ -21,6 +21,12 @@ your wedding info and schedule and lets them RSVP, pick a meal, and leave
 an email, with no account of their own. Marking a guest "Attending" (by
 them, or by you) is what makes them eligible to seat on the Seating tab.
 
+The Guest List tab also has a settable RSVP deadline with a countdown, a
+caterer-ready meal-choice/dietary report, and a travel-and-lodging summary
+for guests who need a hotel room — each report exports to CSV. Pairing the
+deadline with the optional reminder cron job below emails anyone who
+hasn't responded yet.
+
 ## How it's built
 
 - `server.js` / `db.js` / `auth.js` — the backend. Express serves the API
@@ -134,6 +140,28 @@ run on a schedule, not as part of the web server itself:
    `RESEND_FROM_EMAIL` environment variables as the web service.
 
 Skipping this is fine — the app itself never depends on it running.
+
+## 5. (Optional) RSVP deadline reminders
+
+`scripts/send-rsvp-reminders.js` emails anyone who hasn't RSVP'd yet a
+reminder with their personal link, once you've set a deadline on the Guest
+List tab. It starts reminding 3 weeks out, sends at most one reminder per
+household or guest every 5 days, and stops nagging 10 days after a missed
+deadline. Same setup as the digest above, with one extra variable:
+
+1. Add another **Cron Job** in Render pointed at this repo.
+2. Command: `node scripts/send-rsvp-reminders.js`. Schedule: daily is a
+   reasonable choice (e.g. `0 14 * * *` for 9am Eastern every day) — it's a
+   no-op on days there's nothing to send, so running it more often than the
+   5-day cooldown doesn't cause extra emails.
+3. Give the cron job `DATABASE_URL`, `RESEND_API_KEY`, and
+   `RESEND_FROM_EMAIL` (same as the digest), plus one new one: `APP_URL` —
+   your service's public URL (e.g. `https://wedding-ledger.onrender.com`).
+   The web service itself can infer this from the incoming request, but a
+   scheduled script has no request to read it from, so it needs to be told.
+
+Skipping this is fine — the deadline countdown and reports on the Guest
+List tab work with or without it.
 
 ## Local development
 
