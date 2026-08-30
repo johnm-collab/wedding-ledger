@@ -219,6 +219,151 @@
     --series-1: #b6906c; --series-2: #a9c19a;
   }
 
+  :root[data-colorway="dustyblue"] {
+    --paper: #eef1f0; --paper-2: #e4e9e7; --surface: #f9fbfa;
+    --ink: #232f36; --ink-2: #4f6069; --ink-muted: #7e8b91;
+    --line: #d7dee0; --line-strong: #bdc9cc;
+    --accent: #4a6b8a; --accent-ink: #ffffff; --accent-soft: #dbe4ea;
+    --brass: #b5563c; --brass-soft: #f5ded6; --brass-ink: #6b2d1c;
+    --series-1: #4a6b8a; --series-2: #b5563c;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-colorway="dustyblue"]:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #12181c; --paper-2: #171f23; --surface: #1b2429;
+      --ink: #e2ebee; --ink-2: #a8bac2; --ink-muted: #77898f;
+      --line: #29363c; --line-strong: #384852;
+      --accent: #7fa3c2; --accent-ink: #0d1b24; --accent-soft: #223948;
+      --brass: #e08867; --brass-soft: #3c2419; --brass-ink: #f8d9cb;
+      --series-1: #7fa3c2; --series-2: #e08867;
+    }
+  }
+  :root[data-colorway="dustyblue"][data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #12181c; --paper-2: #171f23; --surface: #1b2429;
+    --ink: #e2ebee; --ink-2: #a8bac2; --ink-muted: #77898f;
+    --line: #29363c; --line-strong: #384852;
+    --accent: #7fa3c2; --accent-ink: #0d1b24; --accent-soft: #223948;
+    --brass: #e08867; --brass-soft: #3c2419; --brass-ink: #f8d9cb;
+    --series-1: #7fa3c2; --series-2: #e08867;
+  }
+
+  :root[data-colorway="plum"] {
+    --paper: #f3eeee; --paper-2: #ece4e4; --surface: #faf7f7;
+    --ink: #2e1f2c; --ink-2: #5e4a5a; --ink-muted: #8f7d8b;
+    --line: #ddd0da; --line-strong: #c7b3c2;
+    --accent: #5b3159; --accent-ink: #ffffff; --accent-soft: #e6dbe5;
+    --brass: #c9a227; --brass-soft: #f6ecc9; --brass-ink: #5c4710;
+    --series-1: #5b3159; --series-2: #c9a227;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-colorway="plum"]:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #18121a; --paper-2: #1e161f; --surface: #241a26;
+      --ink: #ecdfeb; --ink-2: #bfa8bd; --ink-muted: #8c778a;
+      --line: #382a37; --line-strong: #4a3849;
+      --accent: #a978a6; --accent-ink: #22132a; --accent-soft: #372639;
+      --brass: #e3c25a; --brass-soft: #3d3212; --brass-ink: #f7ecc4;
+      --series-1: #a978a6; --series-2: #e3c25a;
+    }
+  }
+  :root[data-colorway="plum"][data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #18121a; --paper-2: #1e161f; --surface: #241a26;
+    --ink: #ecdfeb; --ink-2: #bfa8bd; --ink-muted: #8c778a;
+    --line: #382a37; --line-strong: #4a3849;
+    --accent: #a978a6; --accent-ink: #22132a; --accent-soft: #372639;
+    --brass: #e3c25a; --brass-soft: #3d3212; --brass-ink: #f7ecc4;
+    --series-1: #a978a6; --series-2: #e3c25a;
+  }
+
+  :root[data-colorway="charcoal"] {
+    --paper: #f2f1ee; --paper-2: #eae8e3; --surface: #fbfbf9;
+    --ink: #262625; --ink-2: #565553; --ink-muted: #86837e;
+    --line: #dcdad3; --line-strong: #c4c1b7;
+    --accent: #3a3a3a; --accent-ink: #ffffff; --accent-soft: #e2e1dd;
+    --brass: #b8a97c; --brass-soft: #f2ecd9; --brass-ink: #5c5230;
+    --series-1: #3a3a3a; --series-2: #b8a97c;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-colorway="charcoal"]:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #141413; --paper-2: #191918; --surface: #1e1e1d;
+      --ink: #ecebe8; --ink-2: #b8b6b0; --ink-muted: #86847e;
+      --line: #302f2d; --line-strong: #423f3a;
+      --accent: #9d9d9d; --accent-ink: #171717; --accent-soft: #2c2c2b;
+      --brass: #d4c294; --brass-soft: #3a331f; --brass-ink: #f4ead0;
+      --series-1: #9d9d9d; --series-2: #d4c294;
+    }
+  }
+  :root[data-colorway="charcoal"][data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #141413; --paper-2: #191918; --surface: #1e1e1d;
+    --ink: #ecebe8; --ink-2: #b8b6b0; --ink-muted: #86847e;
+    --line: #302f2d; --line-strong: #423f3a;
+    --accent: #9d9d9d; --accent-ink: #171717; --accent-soft: #2c2c2b;
+    --brass: #d4c294; --brass-soft: #3a331f; --brass-ink: #f4ead0;
+    --series-1: #9d9d9d; --series-2: #d4c294;
+  }
+
+  :root[data-colorway="terracotta"] {
+    --paper: #f4efe7; --paper-2: #ece4d6; --surface: #fbf8f2;
+    --ink: #362619; --ink-2: #665141; --ink-muted: #96866f;
+    --line: #e2d4bd; --line-strong: #ccb995;
+    --accent: #a85c3e; --accent-ink: #ffffff; --accent-soft: #f0ddd3;
+    --brass: #6b7a4a; --brass-soft: #e6ecd9; --brass-ink: #37401f;
+    --series-1: #a85c3e; --series-2: #6b7a4a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-colorway="terracotta"]:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #1a140f; --paper-2: #201911; --surface: #261e15;
+      --ink: #f1e5d7; --ink-2: #c3ac93; --ink-muted: #92806a;
+      --line: #382c1e; --line-strong: #4b3b26;
+      --accent: #d68a68; --accent-ink: #291608; --accent-soft: #3d2a1c;
+      --brass: #9db77e; --brass-soft: #253018; --brass-ink: #dcecc8;
+      --series-1: #d68a68; --series-2: #9db77e;
+    }
+  }
+  :root[data-colorway="terracotta"][data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #1a140f; --paper-2: #201911; --surface: #261e15;
+    --ink: #f1e5d7; --ink-2: #c3ac93; --ink-muted: #92806a;
+    --line: #382c1e; --line-strong: #4b3b26;
+    --accent: #d68a68; --accent-ink: #291608; --accent-soft: #3d2a1c;
+    --brass: #9db77e; --brass-soft: #253018; --brass-ink: #dcecc8;
+    --series-1: #d68a68; --series-2: #9db77e;
+  }
+
+  :root[data-colorway="burgundy"] {
+    --paper: #f4edea; --paper-2: #ece1dc; --surface: #fbf7f5;
+    --ink: #341419; --ink-2: #63414a; --ink-muted: #937178;
+    --line: #e3cdd2; --line-strong: #cba9b0;
+    --accent: #6b1f2a; --accent-ink: #ffffff; --accent-soft: #ecd6d9;
+    --brass: #c9a86a; --brass-soft: #f5ecd8; --brass-ink: #5c481f;
+    --series-1: #6b1f2a; --series-2: #c9a86a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-colorway="burgundy"]:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #180d0f; --paper-2: #1e1113; --surface: #241417;
+      --ink: #f2dfe1; --ink-2: #c4a2a8; --ink-muted: #927175;
+      --line: #35171b; --line-strong: #492026;
+      --accent: #b25864; --accent-ink: #250a0d; --accent-soft: #3d1e22;
+      --brass: #e3c584; --brass-soft: #3d3316; --brass-ink: #f7ecca;
+      --series-1: #b25864; --series-2: #e3c584;
+    }
+  }
+  :root[data-colorway="burgundy"][data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #180d0f; --paper-2: #1e1113; --surface: #241417;
+    --ink: #f2dfe1; --ink-2: #c4a2a8; --ink-muted: #927175;
+    --line: #35171b; --line-strong: #492026;
+    --accent: #b25864; --accent-ink: #250a0d; --accent-soft: #3d1e22;
+    --brass: #e3c584; --brass-soft: #3d3316; --brass-ink: #f7ecca;
+    --series-1: #b25864; --series-2: #e3c584;
+  }
+
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
   body {
@@ -508,10 +653,41 @@
   .login-error { background: var(--critical-soft); color: var(--critical); border: 1px solid var(--critical); border-radius: 8px; padding: 0.65rem 0.9rem; font-size: 0.85rem; margin-bottom: 1rem; }
   .login-notice { background: var(--good-soft); color: var(--good); border: 1px solid var(--good); border-radius: 8px; padding: 0.65rem 0.9rem; font-size: 0.85rem; margin-bottom: 1rem; }
   .login-shell .field { margin-bottom: 1rem; }
+  .portal-shell { max-width: 600px; margin: 3rem auto; padding: 0 1.25rem 4rem; }
+  .portal-shell h1 { font-size: 1.6rem; margin-bottom: 0.3rem; }
+  .portal-sub { color: var(--ink-2); font-size: 0.95rem; margin-bottom: 1.5rem; }
+  .portal-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow); margin-bottom: 1.25rem; }
+  .portal-card h2 { font-size: 1.05rem; margin-bottom: 0.75rem; }
+  .portal-schedule-item { padding: 0.55rem 0; border-bottom: 1px solid var(--line); }
+  .portal-schedule-item:last-child { border-bottom: none; }
+  .portal-schedule-item .ps-time { font-family: "IBM Plex Mono", monospace; font-size: 0.8rem; color: var(--ink-2); }
+  .portal-member { border: 1px solid var(--line); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+  .portal-member h3 { font-size: 1rem; margin-bottom: 0.7rem; }
+  .portal-member .field { margin-bottom: 0.8rem; }
+  .portal-rsvp-choices { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .portal-rsvp-choices label { display: flex; align-items: center; gap: 0.4em; font-weight: 400; border: 1px solid var(--line-strong); border-radius: 7px; padding: 0.45em 0.8em; cursor: pointer; color: var(--ink); }
+  .portal-rsvp-choices input { width: auto; }
   .login-links { display: flex; justify-content: space-between; margin-top: 0.9rem; }
   .link-btn { background: none; border: none; color: var(--accent); font-size: 0.82rem; font-weight: 600; cursor: pointer; text-decoration: underline; padding: 0; }
   .masthead-account { display: flex; align-items: center; gap: 0.75rem; }
   .logout-link { background: none; border: none; color: var(--ink-muted); font-size: 0.78rem; font-weight: 600; cursor: pointer; text-decoration: underline; padding: 0; }
+
+  /* Printable seating chart / day-of run sheet. The floor-plan canvas is
+     pixel-positioned for screen dragging and doesn't translate to a printed
+     page, so the print button instead reveals a plain, paginated table-by-
+     table list (.print-run-sheet), which is otherwise hidden on screen. */
+  .print-run-sheet { display: none; }
+  .print-run-sheet .prs-table { break-inside: avoid; margin-bottom: 1rem; }
+  .print-run-sheet .prs-table h4 { font-size: 1rem; margin-bottom: 0.3rem; }
+  .print-run-sheet .prs-table ul { margin: 0; padding-left: 1.2rem; }
+  @media print {
+    .sidebar, .masthead-count, .stat-strip, .tab-btn, .save-row, .guest-toolbar,
+    .seating-toolbar, .floor-plan-canvas, .readonly-banner, footer.note, .btn { display: none !important; }
+    .print-run-sheet { display: block !important; }
+    .app-shell { display: block !important; }
+    .card { box-shadow: none; border: none; padding: 0; }
+    body { background: #fff; }
+  }
 </style>
 </head>
 <body>
@@ -594,7 +770,12 @@
     { key: "sage", label: "Sage & Blush", sub: "Green + pink", colors: ["#6b7f5e", "#c98fa0"] },
     { key: "emerald", label: "Emerald & Mocha", sub: "Green + brown", colors: ["#0f5c46", "#8a6a52"] },
     { key: "chocolate", label: "Cocoa & Blush", sub: "Brown + pink", colors: ["#5c3a21", "#d98aa0"] },
-    { key: "mocha", label: "Mocha & Sage", sub: "Brown + green", colors: ["#7a5c46", "#8fa583"] }
+    { key: "mocha", label: "Mocha & Sage", sub: "Brown + green", colors: ["#7a5c46", "#8fa583"] },
+    { key: "dustyblue", label: "Dusty Blue & Rust", sub: "Blue + rust", colors: ["#4a6b8a", "#b5563c"] },
+    { key: "plum", label: "Plum & Gold", sub: "Purple + gold", colors: ["#5b3159", "#c9a227"] },
+    { key: "charcoal", label: "Charcoal & Ivory", sub: "Grey + tan", colors: ["#3a3a3a", "#b8a97c"] },
+    { key: "terracotta", label: "Terracotta & Olive", sub: "Clay + olive", colors: ["#a85c3e", "#6b7a4a"] },
+    { key: "burgundy", label: "Burgundy & Champagne", sub: "Wine + gold", colors: ["#6b1f2a", "#c9a86a"] }
   ];
 
   function applyColorway(key) {
@@ -623,6 +804,7 @@
       }),
       requests: [],
       guests: [],
+      households: [],
       fileImports: [],
       timeline: [],
       tables: [],
@@ -1010,6 +1192,26 @@
     return out;
   }
 
+  // Every deposit/balance across every vendor category that's due and not
+  // yet marked paid, soonest first — a single place to see what to pay next
+  // instead of clicking into each category on the Vendors tab.
+  function computePaymentsDue() {
+    var items = [];
+    CATEGORY_META.forEach(function (c) {
+      var cat = state.categories[c.key];
+      if (!cat || !cat.payment) return;
+      var pay = cat.payment;
+      if (pay.depositAmount && pay.depositDueDate && !pay.depositPaid) {
+        items.push({ category: c.label, kind: "Deposit", amount: pay.depositAmount, dueDate: pay.depositDueDate });
+      }
+      if (pay.balanceAmount && pay.balanceDueDate && !pay.balancePaid) {
+        items.push({ category: c.label, kind: "Balance", amount: pay.balanceAmount, dueDate: pay.balanceDueDate });
+      }
+    });
+    items.sort(function (a, b) { return parseDate(a.dueDate) - parseDate(b.dueDate); });
+    return items;
+  }
+
   function computeGuestStats() {
     var total = state.guests.length;
     var invite = state.guests.filter(function (g) { return g.status === "invite"; }).length;
@@ -1023,10 +1225,27 @@
     var needsHotel = state.guests.filter(function (g) { return g.needsHotel; }).length;
     var thankYouPending = state.guests.filter(function (g) { return g.giftReceived && !g.thankYouSent; }).length;
     var seated = state.guests.filter(function (g) { return g.tableId; }).length;
+
+    // How many physical/emailed invitations to actually send: a household
+    // that isn't set to "send separate invites" counts once no matter how
+    // many invited guests it has; everyone else (no household, or a
+    // household that opted into separate invites) counts individually.
+    var invitesToSend = 0;
+    var countedHouseholds = {};
+    state.guests.forEach(function (g) {
+      if (g.status !== "invite") return;
+      var h = g.householdId ? (state.households || []).filter(function (x) { return x.id === g.householdId; })[0] : null;
+      if (h && !h.sendSeparateInvites) {
+        if (!countedHouseholds[h.id]) { countedHouseholds[h.id] = true; invitesToSend++; }
+      } else {
+        invitesToSend++;
+      }
+    });
+
     return {
       total: total, invite: invite, no: no, undecided: undecided, plusOnes: plusOnes, estAttending: invite + plusOnes,
       confirmedAttending: confirmedAttending, declined: declined, awaitingRsvp: awaitingRsvp,
-      needsHotel: needsHotel, thankYouPending: thankYouPending, seated: seated
+      needsHotel: needsHotel, thankYouPending: thankYouPending, seated: seated, invitesToSend: invitesToSend
     };
   }
 
@@ -1089,6 +1308,7 @@
       else if (map.closeness === undefined && /(closeness|tier)/.test(k)) map.closeness = idx;
       else if (map.rsvp === undefined && /rsvp/.test(k)) map.rsvp = idx;
       else if (map.mealChoice === undefined && /meal/.test(k)) map.mealChoice = idx;
+      else if (map.email === undefined && /e[\s-]?mail/.test(k)) map.email = idx;
       else if (map.notes === undefined && /note/.test(k)) map.notes = idx;
     });
     return map;
@@ -1109,6 +1329,19 @@
   }
 
   function makeGuestId() { return "g-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7); }
+  function makeHouseholdId() { return "hh-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7); }
+
+  // Same shape as the server's password-reset tokens (32 random bytes, hex)
+  // so it's equally unguessable — minted client-side since households/guest
+  // links are just ordinary fields on the shared state, saved the normal way.
+  function makeRsvpToken() {
+    var bytes = new Uint8Array(32);
+    (window.crypto || window.msCrypto).getRandomValues(bytes);
+    var hex = "";
+    for (var i = 0; i < bytes.length; i++) hex += bytes[i].toString(16).padStart(2, "0");
+    return hex;
+  }
+  function portalUrl(token) { return window.location.origin + "/rsvp/" + token; }
 
   function rowsToGuests(rows) {
     if (!rows.length) return [];
@@ -1134,8 +1367,9 @@
         notes: hasHeader && map.notes !== undefined ? (r[map.notes] || "").trim() : "",
         rsvp: hasHeader && map.rsvp !== undefined ? normalizeRsvp(r[map.rsvp]) : "not_sent",
         mealChoice: hasHeader && map.mealChoice !== undefined ? (r[map.mealChoice] || "").trim() : "",
+        email: hasHeader && map.email !== undefined ? (r[map.email] || "").trim() : "",
         plusOneName: "", needsHotel: false, hotelBlock: "", arrival: "", departure: "",
-        giftReceived: false, giftDescription: "", thankYouSent: false, tableId: ""
+        giftReceived: false, giftDescription: "", thankYouSent: false, tableId: "", householdId: "", rsvpToken: ""
       };
     }).filter(Boolean);
   }
@@ -1220,19 +1454,20 @@
   }
 
   function downloadTemplate() {
-    var csv = "Name,Side,Group,Plus One,How You Know Them,Last Contact,Closeness,RSVP,Meal Choice,Notes\n" +
-      "Jamie Rivera," + partnerLabels()[0] + ",College friends,Yes,College roommate,2026-03-01,close,,,\n" +
-      "Alex Chen," + partnerLabels()[1] + ",Coworkers,No,Coworker,,acquaintance,,,Vegetarian\n";
+    var csv = "Name,Side,Group,Plus One,How You Know Them,Last Contact,Closeness,RSVP,Meal Choice,Email,Notes\n" +
+      "Jamie Rivera," + partnerLabels()[0] + ",College friends,Yes,College roommate,2026-03-01,close,,,jamie@example.com,\n" +
+      "Alex Chen," + partnerLabels()[1] + ",Coworkers,No,Coworker,,acquaintance,,,alex@example.com,Vegetarian\n";
     offerDownload("guest-list-template.csv", csv);
   }
 
   function exportGuests() {
-    var rows = [["Name", "Side", "Group", "Plus One", "Status", "How You Know Them", "Last Contact", "Closeness", "RSVP", "Plus-One Name", "Meal Choice", "Needs Hotel", "Hotel Block", "Arrival", "Departure", "Gift Received", "Thank-You Sent", "Table", "Notes"]];
+    var rows = [["Name", "Side", "Group", "Household", "Plus One", "Status", "How You Know Them", "Last Contact", "Closeness", "RSVP", "Plus-One Name", "Meal Choice", "Email", "Needs Hotel", "Hotel Block", "Arrival", "Departure", "Gift Received", "Thank-You Sent", "Table", "Notes"]];
     state.guests.forEach(function (g) {
       var table = state.tables.filter(function (t) { return t.id === g.tableId; })[0];
+      var household = (state.households || []).filter(function (h) { return h.id === g.householdId; })[0];
       rows.push([
-        g.name, g.side, g.group, g.plusOne ? "Yes" : "No", g.status, g.howYouKnow || "", g.lastContact || "", g.closeness || "",
-        g.rsvp || "not_sent", g.plusOneName || "", g.mealChoice || "",
+        g.name, g.side, g.group, household ? household.name : "", g.plusOne ? "Yes" : "No", g.status, g.howYouKnow || "", g.lastContact || "", g.closeness || "",
+        g.rsvp || "not_sent", g.plusOneName || "", g.mealChoice || "", g.email || "",
         g.needsHotel ? "Yes" : "No", g.hotelBlock || "", g.arrival || "", g.departure || "",
         g.giftReceived ? (g.giftDescription || "Yes") : "", g.thankYouSent ? "Yes" : "No",
         table ? table.name : "", g.notes || ""
@@ -1505,12 +1740,23 @@
         }).join("") + "</div>"
       : '<div class="empty-note">Set your wedding date to see upcoming to-dos here.</div>';
 
+    var duesList = computePaymentsDue();
+    var duesHtml = duesList.length
+      ? '<div class="table-scroll"><table><thead><tr><th>Category</th><th>What</th><th>Amount</th><th>Due</th></tr></thead><tbody>' +
+        duesList.map(function (d) {
+          var due = parseDate(d.dueDate);
+          var overdue = due && due.getTime() < today().getTime();
+          return "<tr" + (overdue ? ' style="color:var(--critical)"' : "") + "><td>" + escapeHtml(d.category) + "</td><td>" + d.kind + '</td><td class="mono">' + fmtMoney(d.amount) + '</td><td class="mono">' + (due ? fmtDate(due) : d.dueDate) + (overdue ? " (overdue)" : "") + "</td></tr>";
+        }).join("") + "</tbody></table></div>"
+      : '<div class="empty-note">No deposits or balances due — or everything\'s already marked paid.</div>';
+
     return panel("overview",
       '<div class="card"><div class="card-head"><h2>Gaps & alerts</h2></div>' + body + "</div>" +
       '<div class="grid-2">' +
       '<div class="card"><h3>Coming up</h3>' + upcomingHtml + "</div>" +
       '<div class="card"><h3>Budget snapshot</h3>' + renderBudgetBars(true) + "</div>" +
-      "</div>"
+      "</div>" +
+      '<div class="card"><h3>Payments due</h3>' + duesHtml + "</div>"
     );
   }
 
@@ -1833,6 +2079,7 @@
     var statTiles = '<div class="guest-stats">' +
       ["On the list|" + stats.total + "|", "To decide|" + stats.undecided + "|" + (stats.undecided ? "warn" : "good"),
        "Invited|" + stats.invite + "|good", "Not invited|" + stats.no + "|",
+       "Invites to send|" + stats.invitesToSend + "|",
        "Est. attending|" + stats.estAttending + "|", "Confirmed (RSVP)|" + stats.confirmedAttending + "|good",
        "Awaiting RSVP|" + stats.awaitingRsvp + "|" + (stats.awaitingRsvp ? "warn" : "good"),
        "Need hotel|" + stats.needsHotel + "|", "Thank-yous pending|" + stats.thankYouPending + "|" + (stats.thankYouPending ? "warn" : "good")]
@@ -1857,6 +2104,22 @@
       '<div class="save-row"><button class="btn btn-primary" id="import-paste-btn">Add pasted guests</button></div>' +
       guestImportLog +
       "</div>" : (copyFallback || guestImportLog ? '<div class="card">' + fallback + guestImportLog + "</div>" : "");
+
+    var householdsCard = state.guests.length ? '<div class="card"><h3>Households</h3><p class="muted">Group family members who should share one invitation and one RSVP link — set who\'s in which household from a guest\'s Details panel below. Everyone else counts, and RSVPs, on their own.</p>' +
+      ((state.households || []).length ? '<div class="table-scroll"><table><thead><tr><th>Household</th><th>Members</th><th>Invite</th><th>RSVP link</th><th></th></tr></thead><tbody>' +
+        state.households.map(function (h) {
+          var members = state.guests.filter(function (g) { return g.householdId === h.id; });
+          var link = h.rsvpToken ? portalUrl(h.rsvpToken) : "";
+          return "<tr><td><input type=\"text\" data-household-field=\"name|" + h.id + "\" value=\"" + escapeHtml(h.name) + "\" " + (canWrite ? "" : "disabled") + "/></td>" +
+            "<td>" + members.length + (members.length ? ": " + escapeHtml(members.map(function (g) { return g.name; }).join(", ")) : "") + "</td>" +
+            "<td><label style=\"display:flex;align-items:center;gap:0.4em;font-weight:400;white-space:nowrap\"><input type=\"checkbox\" data-household-check=\"sendSeparateInvites|" + h.id + "\" " + (h.sendSeparateInvites ? "checked" : "") + (canWrite ? "" : " disabled") + " style=\"width:16px;height:16px;accent-color:var(--accent)\"/> Send separate</label></td>" +
+            "<td>" + (link ? "<input type=\"text\" readonly value=\"" + escapeHtml(link) + "\" onclick=\"this.select()\" style=\"width:220px\"/>" : '<span class="tiny">Not generated yet</span>') +
+              (canWrite ? ' <button type="button" class="btn btn-secondary btn-sm" data-household-genlink="' + h.id + '">' + (link ? "Regenerate" : "Generate link") + "</button>" : "") + "</td>" +
+            "<td>" + (canWrite ? '<button class="btn btn-ghost btn-sm" data-household-remove="' + h.id + '">Remove</button>' : "") + "</td></tr>";
+        }).join("") + "</tbody></table></div>" : '<div class="empty-note">No households yet — everyone RSVPs and is invited individually.</div>') +
+      (canWrite ? '<div class="grid-3" style="margin-top:0.9rem"><div class="field"><label for="f-household-name">New household name</label><input type="text" id="f-household-name" placeholder="e.g. The Chen Family"/></div></div>' +
+        '<div class="save-row"><button class="btn btn-secondary" id="add-household-btn">Add household</button></div>' : "") +
+      "</div>" : "";
 
     var manualAdd = canWrite ? '<div class="card"><h3>Add one guest</h3><div class="grid-3">' +
       '<div class="field"><label for="f-guest-name">Name</label><input type="text" id="f-guest-name" placeholder="Full name"/></div>' +
@@ -1938,6 +2201,12 @@
               '<div class="field"><label>Last spoke</label><input type="date" data-guest-field="lastContact|' + g.id + '" value="' + escapeHtml(g.lastContact || "") + '" ' + (canWrite ? "" : "disabled") + '/>' + (g.lastContact ? '<div class="last-contact-ago">' + timeSince(g.lastContact) + "</div>" : "") + "</div>" +
               '<div class="field"><label>Closeness</label><select data-guest-field="closeness|' + g.id + '" ' + (canWrite ? "" : "disabled") + '><option value="">—</option>' + CLOSENESS_META.map(function (c) { return '<option value="' + c.value + '"' + (g.closeness === c.value ? " selected" : "") + '>' + c.label + "</option>"; }).join("") + "</select></div>" +
               '<div class="field"><label>Meal choice</label><input type="text" data-guest-field="mealChoice|' + g.id + '" value="' + escapeHtml(g.mealChoice || "") + '" placeholder="e.g. Vegetarian" ' + (canWrite ? "" : "disabled") + '/></div>' +
+              '<div class="field"><label>Email</label><input type="email" data-guest-field="email|' + g.id + '" value="' + escapeHtml(g.email || "") + '" placeholder="name@example.com" ' + (canWrite ? "" : "disabled") + '/></div>' +
+              '<div class="field"><label>Household</label><select data-guest-field="householdId|' + g.id + '" ' + (canWrite ? "" : "disabled") + '><option value="">— none —</option>' + (state.households || []).map(function (h) { return '<option value="' + h.id + '"' + (g.householdId === h.id ? " selected" : "") + '>' + escapeHtml(h.name) + "</option>"; }).join("") + "</select></div>" +
+              (canWrite && !g.householdId ? '<div class="field" style="grid-column:1/-1"><label>Personal RSVP link</label>' +
+                (g.rsvpToken ? '<div class="save-row" style="margin-top:0"><input type="text" readonly value="' + escapeHtml(portalUrl(g.rsvpToken)) + '" onclick="this.select()" style="flex:1"/><button type="button" class="btn btn-secondary btn-sm" data-guest-genlink="' + g.id + '">Regenerate</button></div>' :
+                  '<button type="button" class="btn btn-secondary btn-sm" data-guest-genlink="' + g.id + '">Generate RSVP link</button>') +
+                "</div>" : "") +
               '<div class="field"><label>Plus-one\'s name</label><input type="text" data-guest-field="plusOneName|' + g.id + '" value="' + escapeHtml(g.plusOneName || "") + '" ' + (canWrite ? "" : "disabled") + '/></div>' +
               '<div class="field"><label style="display:flex;align-items:center;gap:0.4em"><input type="checkbox" data-guest-check="needsHotel|' + g.id + '" ' + (g.needsHotel ? "checked" : "") + (canWrite ? "" : " disabled") + ' style="width:16px;height:16px;accent-color:var(--accent)"/> Needs a hotel room</label></div>' +
               '<div class="field"><label>Hotel block</label><input type="text" data-guest-field="hotelBlock|' + g.id + '" value="' + escapeHtml(g.hotelBlock || "") + '" ' + (canWrite ? "" : "disabled") + '/></div>' +
@@ -1961,7 +2230,7 @@
 
     return panel("guests",
       '<div class="card"><h2>Guest list</h2><p class="muted">Upload or build your list here, then work through it to decide who\'s in. This feeds the headcount and budget gap checks on the Overview tab.</p>' + statTiles + "</div>" +
-      importCard + manualAdd +
+      importCard + householdsCard + manualAdd +
       '<div class="card">' + filterBar + tableHtml + saveRow + "</div>"
     );
   }
@@ -2113,9 +2382,18 @@
       '<p class="tiny" style="margin-top:0.75rem">' + (canWrite ? "Drag a table to rearrange the floor plan. " : "") + 'Click a name to unseat that guest. Colors follow RSVP: green attending, red declined, gray awaiting a response.</p>';
   }
 
+  // "Alex Chen" -> "Alex C." — keeps pills legible in a crowded floor
+  // plan; the full name is still always available in the tooltip and in
+  // the List view.
+  function shortGuestName(name) {
+    var parts = (name || "").trim().split(/\s+/).filter(Boolean);
+    if (parts.length < 2) return name || "";
+    return parts[0] + " " + parts[parts.length - 1].charAt(0).toUpperCase() + ".";
+  }
+
   function seatHtml(g, x, y) {
     if (g) {
-      return '<div class="seat-pill ' + seatChipClass(g) + '" style="left:' + x.toFixed(1) + 'px;top:' + y.toFixed(1) + 'px" title="' + escapeHtml(g.name) + (g.rsvp ? " · " + rsvpLabel(g.rsvp) : "") + '"' + (canWrite ? ' data-table-unseat="' + g.id + '"' : "") + ">" + escapeHtml(g.name) + "</div>";
+      return '<div class="seat-pill ' + seatChipClass(g) + '" style="left:' + x.toFixed(1) + 'px;top:' + y.toFixed(1) + 'px" title="' + escapeHtml(g.name) + (g.rsvp ? " · " + rsvpLabel(g.rsvp) : "") + '"' + (canWrite ? ' data-table-unseat="' + g.id + '"' : "") + ">" + escapeHtml(shortGuestName(g.name)) + "</div>";
     }
     return '<div class="seat-dot" style="left:' + x.toFixed(1) + 'px;top:' + y.toFixed(1) + 'px" title="Empty seat"></div>';
   }
@@ -2136,13 +2414,18 @@
   }
 
   function renderSeating() {
-    var invited = state.guests.filter(function (g) { return g.status === "invite"; });
+    // Seating-eligible = RSVP'd attending. A guest already seated stays
+    // visible even if their RSVP later changes, so a table assignment never
+    // just silently vanishes — but the normal path onto this tab is
+    // clicking "Attending" on the Guest List tab.
+    var invited = state.guests.filter(function (g) { return g.rsvp === "attending" || !!g.tableId; });
     var unseated = invited.filter(function (g) { return !g.tableId || !state.tables.some(function (t) { return t.id === g.tableId; }); });
 
     var toggle = '<div class="filter-group seating-toolbar" style="margin-bottom:1rem">' +
       '<div><button class="filter-btn' + (seatingView === "visual" ? " active" : "") + '" data-seating-view="visual">Visual</button>' +
       '<button class="filter-btn' + (seatingView === "list" ? " active" : "") + '" data-seating-view="list">List</button></div>' +
-      (seatingView === "visual" ? '<button class="btn btn-secondary btn-sm" id="fullscreen-seating-btn" type="button">' + (seatingFullscreen ? "Exit full screen" : "⤢ Full screen") + "</button>" : "") +
+      '<div>' + (seatingView === "visual" ? '<button class="btn btn-secondary btn-sm" id="fullscreen-seating-btn" type="button">' + (seatingFullscreen ? "Exit full screen" : "⤢ Full screen") + "</button> " : "") +
+      '<button class="btn btn-secondary btn-sm" id="print-seating-btn" type="button">🖨 Print run sheet</button></div>' +
       "</div>";
     var tablesBlock = seatingView === "visual" ? renderSeatingVisual(invited) : renderSeatingList(invited);
 
@@ -2150,7 +2433,7 @@
       unseated.map(function (g) {
         return "<tr><td>" + escapeHtml(g.name) + '</td><td><select data-guest-field="tableId|' + g.id + '" ' + (canWrite ? "" : "disabled") + '><option value="">— unseated —</option>' +
           state.tables.map(function (t) { return '<option value="' + t.id + '">' + escapeHtml(t.name) + "</option>"; }).join("") + "</select></td></tr>";
-      }).join("") + "</tbody></table></div>" : '<div class="empty-note">' + (invited.length ? "Everyone invited has a seat." : "Mark guests Invited on the Guest List tab, then seat them here.") + "</div>";
+      }).join("") + "</tbody></table></div>" : '<div class="empty-note">' + (invited.length ? "Everyone attending has a seat." : "Mark guests “Attending” on the Guest List tab and they’ll show up here to seat.") + "</div>";
 
     var addTableForm = canWrite ? '<div class="grid-3" style="margin-top:1rem"><div class="field"><label for="f-table-name">Table name</label><input type="text" id="f-table-name" placeholder="e.g. Table 1"/></div>' +
       '<div class="field"><label for="f-table-capacity">Capacity</label><input type="number" min="1" id="f-table-capacity"/></div>' +
@@ -2159,7 +2442,34 @@
 
     return '<div class="card"><h2>Seating chart</h2><p class="muted">Add tables, then assign each invited guest to one — the visual view updates live from your guest list. Round or rectangular, and drag any table to lay out the room.</p>' + toggle + tablesBlock + addTableForm + "</div>" +
       '<div class="card"><h3>Unseated</h3>' + unseatedRows + "</div>" +
-      '<div class="save-row"><span class="save-status" id="save-status-badge-6"></span>' + (canWrite ? '<button class="btn btn-primary" id="save-seating-btn">Save seating chart</button>' : "") + "</div>";
+      '<div class="save-row"><span class="save-status" id="save-status-badge-6"></span>' + (canWrite ? '<button class="btn btn-primary" id="save-seating-btn">Save seating chart</button>' : "") + "</div>" +
+      renderSeatingPrintSheet(invited);
+  }
+
+  // A plain, page-friendly table-by-table list plus the day's schedule —
+  // hidden on screen (see .print-run-sheet CSS), shown only when the
+  // "Print run sheet" button triggers window.print().
+  function renderSeatingPrintSheet(invited) {
+    var p = state.profile;
+    var header = '<div class="prs-header" style="margin-bottom:1rem"><h2 style="margin-bottom:0.2rem">' + escapeHtml(p.coupleNames || "Our Wedding") + " — Seating & Day-Of Run Sheet</h2>" +
+      '<div class="tiny">' + [p.weddingDate ? fmtDate(new Date(p.weddingDate + "T00:00:00")) : "", p.location].filter(Boolean).join(" · ") + "</div></div>";
+
+    var tablesHtml = state.tables.length ? state.tables.map(function (t) {
+      var seated = invited.filter(function (g) { return g.tableId === t.id; });
+      return '<div class="prs-table"><h4>' + escapeHtml(t.name) + (t.capacity ? " (" + seated.length + "/" + t.capacity + ")" : " (" + seated.length + ")") + "</h4>" +
+        (seated.length ? "<ul>" + seated.map(function (g) { return "<li>" + escapeHtml(g.name) + (g.mealChoice ? " — " + escapeHtml(g.mealChoice) : "") + "</li>"; }).join("") + "</ul>" : '<div class="tiny">Empty</div>') +
+        "</div>";
+    }).join("") : '<div class="tiny">No tables added yet.</div>';
+
+    var unseated = invited.filter(function (g) { return !g.tableId; });
+    var unseatedHtml = unseated.length ? '<div class="prs-table"><h4>Unseated</h4><ul>' + unseated.map(function (g) { return "<li>" + escapeHtml(g.name) + "</li>"; }).join("") + "</ul></div>" : "";
+
+    var scheduleHtml = state.timeline.length ? '<div class="prs-table"><h4>Schedule</h4><ul>' +
+      state.timeline.slice().sort(function (a, b) { return (a.time || "").localeCompare(b.time || ""); }).map(function (t) {
+        return "<li><strong>" + escapeHtml(fmtTime(t.time)) + "</strong> — " + escapeHtml(t.title) + (t.notes ? " (" + escapeHtml(t.notes) + ")" : "") + "</li>";
+      }).join("") + "</ul></div>" : "";
+
+    return '<div class="print-run-sheet">' + header + tablesHtml + unseatedHtml + scheduleHtml + "</div>";
   }
 
   function renderSeatingTab() {
@@ -2485,8 +2795,8 @@
         id: makeGuestId(), name: name, side: sideEl ? sideEl.value : "", group: val("f-guest-group").trim(),
         plusOne: !!(document.getElementById("f-guest-plusone") || {}).checked, status: "undecided",
         howYouKnow: "", lastContact: "", closeness: "", notes: "",
-        rsvp: "not_sent", mealChoice: "", plusOneName: "", needsHotel: false, hotelBlock: "", arrival: "", departure: "",
-        giftReceived: false, giftDescription: "", thankYouSent: false, tableId: ""
+        rsvp: "not_sent", mealChoice: "", email: "", plusOneName: "", needsHotel: false, hotelBlock: "", arrival: "", departure: "",
+        giftReceived: false, giftDescription: "", thankYouSent: false, tableId: "", householdId: "", rsvpToken: ""
       });
       saveState(next, { doneLabel: "Added " + name + "." });
     });
@@ -2523,7 +2833,13 @@
         var parts = inp.getAttribute("data-guest-field").split("|");
         var field = parts[0], id = parts[1];
         var g = state.guests.filter(function (x) { return x.id === id; })[0];
-        if (g) g[field] = inp.value;
+        if (!g) return;
+        g[field] = inp.value;
+        // RSVP is the one field with a visible knock-on effect elsewhere
+        // (Guest List stat tiles, and Seating-tab eligibility) — re-render
+        // immediately so "Attending" shows up on the Seating tab right away
+        // instead of waiting for the next unrelated render.
+        if (field === "rsvp") render();
       });
     });
     root.querySelectorAll("[data-guest-plusone]").forEach(function (cb) {
@@ -2564,6 +2880,65 @@
     var saveGuestsBtn = document.getElementById("save-guests-btn");
     if (saveGuestsBtn) saveGuestsBtn.addEventListener("click", function () { saveState(clone(state), { doneLabel: "Guest list saved." }); });
 
+    /* households */
+
+    var addHouseholdBtn = document.getElementById("add-household-btn");
+    if (addHouseholdBtn) addHouseholdBtn.addEventListener("click", function () {
+      var name = val("f-household-name").trim();
+      if (!name) return;
+      var next = clone(state);
+      if (!next.households) next.households = [];
+      next.households.push({ id: makeHouseholdId(), name: name, sendSeparateInvites: false, rsvpToken: "" });
+      saveState(next, { doneLabel: "Added " + name + "." });
+    });
+    root.querySelectorAll("[data-household-field]").forEach(function (inp) {
+      inp.addEventListener("change", function () {
+        var parts = inp.getAttribute("data-household-field").split("|");
+        var field = parts[0], id = parts[1];
+        var h = (state.households || []).filter(function (x) { return x.id === id; })[0];
+        if (h) h[field] = inp.value;
+      });
+    });
+    root.querySelectorAll("[data-household-check]").forEach(function (cb) {
+      cb.addEventListener("change", function () {
+        var parts = cb.getAttribute("data-household-check").split("|");
+        var field = parts[0], id = parts[1];
+        var h = (state.households || []).filter(function (x) { return x.id === id; })[0];
+        if (h) h[field] = cb.checked;
+      });
+    });
+    root.querySelectorAll("[data-household-remove]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-household-remove");
+        state.households = (state.households || []).filter(function (h) { return h.id !== id; });
+        state.guests.forEach(function (g) { if (g.householdId === id) g.householdId = ""; });
+        render();
+      });
+    });
+    // Minting (or rotating) a link is persisted immediately, not left for
+    // the "Save guest list" button — otherwise it's easy to copy a link,
+    // forget to save, and hand out a token the server never actually stored.
+    root.querySelectorAll("[data-household-genlink]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-household-genlink");
+        var next = clone(state);
+        var h = (next.households || []).filter(function (x) { return x.id === id; })[0];
+        if (!h) return;
+        h.rsvpToken = makeRsvpToken();
+        saveState(next, { doneLabel: "RSVP link ready — copy it from the table." });
+      });
+    });
+    root.querySelectorAll("[data-guest-genlink]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-guest-genlink");
+        var next = clone(state);
+        var g = next.guests.filter(function (x) { return x.id === id; })[0];
+        if (!g) return;
+        g.rsvpToken = makeRsvpToken();
+        saveState(next, { doneLabel: "RSVP link ready — copy it below." });
+      });
+    });
+
     /* day-of: timeline */
 
     var addTimelineBtn = document.getElementById("add-timeline-btn");
@@ -2593,6 +2968,8 @@
     });
     var exitFullscreenBtn = document.getElementById("exit-fullscreen-btn");
     if (exitFullscreenBtn) exitFullscreenBtn.addEventListener("click", function () { seatingFullscreen = false; render(); });
+    var printSeatingBtn = document.getElementById("print-seating-btn");
+    if (printSeatingBtn) printSeatingBtn.addEventListener("click", function () { window.print(); });
     var floorPlanBackdrop = document.getElementById("floor-plan-backdrop");
     if (floorPlanBackdrop) floorPlanBackdrop.addEventListener("click", function () { seatingFullscreen = false; render(); });
 
@@ -2719,7 +3096,150 @@
     }
   });
 
+  /* ---------- guest portal (unauthenticated, token-gated RSVP page) ----------
+     Reached at /rsvp/<token> — completely separate from the login/app-shell
+     flow above (no session, no `state`, no access to budget/vendors/other
+     guests). It only ever talks to /api/guest-portal/:token, which the
+     server scopes to just this token's household (or single guest). */
+  var portalToken = null;
+  var portalData = null;
+  var portalError = "";
+  var portalSaving = false;
+  var portalDone = false;
+
+  var PORTAL_RSVP_CHOICES = [
+    { value: "attending", label: "Joyfully accepts" },
+    { value: "declined", label: "Regretfully declines" }
+  ];
+
+  function loadGuestPortal(token) {
+    portalToken = token;
+    fetch("/api/guest-portal/" + encodeURIComponent(token), { credentials: "same-origin" })
+      .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+      .then(function (r) {
+        if (!r.ok) {
+          portalError = (r.data && r.data.error) || "This RSVP link isn't valid.";
+        } else {
+          portalData = r.data;
+          // Local edit buffer, seeded from the server's current values.
+          portalData.members.forEach(function (m) { m._draft = { rsvp: m.rsvp, mealChoice: m.mealChoice, email: m.email }; });
+        }
+        renderGuestPortalPage();
+      }).catch(function () {
+        portalError = "Network error — try reloading this page.";
+        renderGuestPortalPage();
+      });
+  }
+
+  function renderGuestPortalPage() {
+    var root = document.getElementById("app-root");
+    if (portalError) {
+      root.innerHTML = '<div class="portal-shell"><h1>The Wedding Ledger</h1>' +
+        '<div class="login-error">' + escapeHtml(portalError) + "</div></div>";
+      return;
+    }
+    if (!portalData) {
+      root.innerHTML = '<div class="portal-shell"><h1>The Wedding Ledger</h1><div class="portal-sub">Loading your invitation…</div></div>';
+      return;
+    }
+    var p = portalData.profile || {};
+    var dateStr = p.weddingDate ? fmtDate(new Date(p.weddingDate + "T00:00:00")) : "";
+    var scheduleHtml = (portalData.timeline || []).length
+      ? '<div class="portal-card"><h2>Schedule</h2>' + portalData.timeline.map(function (t) {
+          return '<div class="portal-schedule-item"><div class="ps-time">' + escapeHtml(t.time || "") + '</div><div>' + escapeHtml(t.title || "") + "</div>" +
+            (t.notes ? '<div class="tiny">' + escapeHtml(t.notes) + "</div>" : "") + "</div>";
+        }).join("") + "</div>"
+      : "";
+
+    var doneHtml = portalDone ? '<div class="login-notice">Thank you — your RSVP is saved. You can come back to this link any time to update it.</div>' : "";
+
+    var membersHtml = portalData.members.map(function (m) {
+      return '<div class="portal-member"><h3>' + escapeHtml(m.name) + "</h3>" +
+        '<div class="field"><label>Will you be attending?</label><div class="portal-rsvp-choices">' +
+        PORTAL_RSVP_CHOICES.map(function (c) {
+          return '<label><input type="radio" name="portal-rsvp-' + m.id + '" value="' + c.value + '" data-portal-rsvp="' + m.id + '"' + (m._draft.rsvp === c.value ? " checked" : "") + "/>" + c.label + "</label>";
+        }).join("") + "</div></div>" +
+        (m._draft.rsvp === "attending" ? '<div class="field"><label>Meal choice</label><input type="text" data-portal-meal="' + m.id + '" value="' + escapeHtml(m._draft.mealChoice || "") + '" placeholder="e.g. Vegetarian, no allergies"/></div>' : "") +
+        '<div class="field"><label>Email (optional — for updates from us)</label><input type="email" data-portal-email="' + m.id + '" value="' + escapeHtml(m._draft.email || "") + '" placeholder="name@example.com"/></div>' +
+        "</div>";
+    }).join("");
+
+    root.innerHTML = '<div class="portal-shell"><h1>' + escapeHtml(p.coupleNames || "Our Wedding") + "</h1>" +
+      '<div class="portal-sub">' + [dateStr, p.location].filter(Boolean).join(" · ") + (p.address ? "<br/>" + escapeHtml(p.address) : "") + "</div>" +
+      doneHtml + scheduleHtml +
+      '<div class="portal-card"><h2>RSVP' + (portalData.householdName ? " — " + escapeHtml(portalData.householdName) : "") + "</h2>" +
+      '<p class="muted">Let us know if ' + (portalData.members.length > 1 ? "each of you" : "you") + " can make it.</p>" +
+      membersHtml +
+      (portalError ? '<div class="login-error">' + escapeHtml(portalError) + "</div>" : "") +
+      '<div class="save-row"><button class="btn btn-primary" id="portal-submit-btn"' + (portalSaving ? " disabled" : "") + ">" + (portalSaving ? "Saving…" : "Save RSVP") + "</button></div></div></div>";
+
+    bindGuestPortalEvents();
+  }
+
+  function bindGuestPortalEvents() {
+    var root = document.getElementById("app-root");
+    root.querySelectorAll("[data-portal-rsvp]").forEach(function (el) {
+      el.addEventListener("change", function () {
+        var id = el.getAttribute("data-portal-rsvp");
+        var m = portalData.members.filter(function (x) { return x.id === id; })[0];
+        if (m && el.checked) { m._draft.rsvp = el.value; renderGuestPortalPage(); }
+      });
+    });
+    root.querySelectorAll("[data-portal-meal]").forEach(function (el) {
+      el.addEventListener("change", function () {
+        var id = el.getAttribute("data-portal-meal");
+        var m = portalData.members.filter(function (x) { return x.id === id; })[0];
+        if (m) m._draft.mealChoice = el.value;
+      });
+    });
+    root.querySelectorAll("[data-portal-email]").forEach(function (el) {
+      el.addEventListener("change", function () {
+        var id = el.getAttribute("data-portal-email");
+        var m = portalData.members.filter(function (x) { return x.id === id; })[0];
+        if (m) m._draft.email = el.value;
+      });
+    });
+    var submitBtn = document.getElementById("portal-submit-btn");
+    if (submitBtn) submitBtn.addEventListener("click", function () {
+      portalSaving = true;
+      portalError = "";
+      renderGuestPortalPage();
+      var updates = portalData.members.map(function (m) {
+        return { id: m.id, rsvp: m._draft.rsvp, mealChoice: m._draft.mealChoice, email: m._draft.email };
+      });
+      fetch("/api/guest-portal/" + encodeURIComponent(portalToken), {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ updates: updates })
+      }).then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+        .then(function (r) {
+          portalSaving = false;
+          if (!r.ok) {
+            portalError = (r.data && r.data.error) || "Could not save your RSVP.";
+          } else {
+            portalDone = true;
+            portalData.members.forEach(function (m) { m.rsvp = m._draft.rsvp; m.mealChoice = m._draft.mealChoice; m.email = m._draft.email; });
+          }
+          renderGuestPortalPage();
+        }).catch(function () {
+          portalSaving = false;
+          portalError = "Network error — try again.";
+          renderGuestPortalPage();
+        });
+    });
+  }
+
   function boot() {
+    // A guest RSVP link lands here as /rsvp/<token> — a completely separate,
+    // unauthenticated flow that never touches the couple's login or state.
+    var portalMatch = /^\/rsvp\/([^\/?#]+)/.exec(window.location.pathname);
+    if (portalMatch) {
+      loadGuestPortal(decodeURIComponent(portalMatch[1]));
+      renderGuestPortalPage();
+      return;
+    }
+
     // A password-reset email link lands here as /?resetToken=... — grab it
     // and scrub it from the URL bar so a reload/bookmark doesn't resubmit
     // (or leak) the token.
