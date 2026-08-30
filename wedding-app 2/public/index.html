@@ -925,7 +925,7 @@
 
   var TABS = [
     { key: "overview", label: "Overview" },
-    { key: "profile", label: "Profile & Requests" },
+    { key: "profile", label: "Profile" },
     { key: "guestsite", label: "Guest Site" },
     { key: "checklist", label: "Checklist" },
     { key: "budget", label: "Budget" },
@@ -1227,12 +1227,10 @@
         if (cat.bookedVendorId) return;
         if (monthsUntil <= c.lead) {
           var level = monthsUntil <= c.lead / 2 ? "critical" : "warning";
-          if (cat.requestStatus === "none") {
-            gaps.push({ level: level, title: c.label + " — no vendors requested yet", sub: "Typically booked by about " + c.lead + " months out. Request vendors on the Profile tab." });
-          } else if (cat.requestStatus === "pending") {
-            gaps.push({ level: level === "critical" ? "critical" : "warning", sub: "Vendor research is still in progress.", title: c.label + " — research pending" });
-          } else if (cat.requestStatus === "done" && cat.vendors.length && !cat.bookedVendorId) {
-            gaps.push({ level: level, title: c.label + " — vendors found, none booked", sub: "Compare options on the Vendors tab and mark one as booked." });
+          if (!cat.vendors.length) {
+            gaps.push({ level: level, title: c.label + " — no options added yet", sub: "Typically booked by about " + c.lead + " months out. Add an option (or analyze a quote) on the Vendors tab." });
+          } else {
+            gaps.push({ level: level, title: c.label + " — options on file, none booked", sub: "Compare options on the Vendors tab and mark one as booked." });
           }
         }
       });
@@ -1247,11 +1245,6 @@
     if (budget.total && budget.spentPlusAllocated > budget.total) {
       gaps.push({ level: "critical", title: "Over budget", sub: fmtMoney(budget.spentPlusAllocated) + " allocated/spent against a " + fmtMoney(budget.total) + " budget." });
     }
-    state.requests.forEach(function (r) {
-      if (r.status === "pending") {
-        gaps.push({ level: "warning", title: "Request pending: " + (r.category ? categoryLabel(r.category) : "general"), sub: truncate(r.text, 90) });
-      }
-    });
     if (monthsUntil !== null) {
       if (!state.guests.length && monthsUntil <= 10) {
         gaps.push({ level: monthsUntil <= 6 ? "critical" : "warning", title: "Guest list not started", sub: "Upload or add guests on the Guest List tab so invitations and headcounts have somewhere to start." });
@@ -1467,6 +1460,40 @@
     var vals = [v.scorePrice, v.scoreAvailability, v.scoreFit].filter(function (n) { return n !== null && n !== undefined && n !== ""; }).map(Number);
     if (!vals.length) return null;
     return vals.reduce(function (a, b) { return a + b; }, 0) / vals.length;
+  }
+
+  function makeVendorId() { return "v-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7); }
+
+  var PRICING_MODELS = [
+    { value: "flat", label: "Flat fee" },
+    { value: "per_guest", label: "Per guest" },
+    { value: "per_guest_plus_flat", label: "Flat fee + per guest" },
+    { value: "per_hour", label: "Per hour" },
+    { value: "unknown", label: "Not sure / other" }
+  ];
+
+  // Turns a vendor's structured pricing fields into one estimated dollar
+  // figure at a given guest count — the same math powers the comparison
+  // table's price column and the cost simulator.
+  function computeVendorEstimate(v, guestCount) {
+    if (!v) return null;
+    var g = Number(guestCount) || 0;
+    var base = Number(v.basePrice) || 0;
+    var perGuest = Number(v.perGuestRate) || 0;
+    var perHour = Number(v.perHourRate) || 0;
+    var hours = Number(v.estimatedHours) || 0;
+    if (v.pricingModel === "per_guest") return perGuest ? perGuest * g : null;
+    if (v.pricingModel === "per_guest_plus_flat") return (base || perGuest) ? base + perGuest * g : null;
+    if (v.pricingModel === "per_hour") return perHour ? perHour * (hours || 1) : null;
+    return base || null; // "flat" and "unknown" both fall back to a flat base price
+  }
+
+  function vendorPriceLabel(v) {
+    if (v.pricingModel === "per_guest" && v.perGuestRate) return fmtMoney(v.perGuestRate) + "/guest";
+    if (v.pricingModel === "per_guest_plus_flat" && (v.basePrice || v.perGuestRate)) return fmtMoney(v.basePrice || 0) + " + " + fmtMoney(v.perGuestRate || 0) + "/guest";
+    if (v.pricingModel === "per_hour" && v.perHourRate) return fmtMoney(v.perHourRate) + "/hr" + (v.estimatedHours ? " × " + v.estimatedHours + "h" : "");
+    if (v.basePrice) return fmtMoney(v.basePrice);
+    return "—";
   }
 
   function syncCatActualFromPayments(cat) {
@@ -1912,7 +1939,7 @@
     var critical = gaps.filter(function (g) { return g.level === "critical"; }).length;
     var warn = gaps.filter(function (g) { return g.level === "warning"; }).length;
     var budget = computeBudget();
-    var pending = state.requests.filter(function (r) { return r.status === "pending"; }).length;
+    var vendorOptionCount = CATEGORY_META.reduce(function (s, c) { return s + state.categories[c.key].vendors.length; }, 0);
     var bookedCount = CATEGORY_META.filter(function (c) { return state.categories[c.key].bookedVendorId; }).length;
 
     function tile(val, lbl, cls) {
@@ -1922,7 +1949,7 @@
       tile(critical + warn, "open gaps", critical ? "critical" : (warn ? "warn" : "good")) +
       tile(bookedCount + " / " + CATEGORY_META.length, "categories booked", "") +
       tile(budget.total ? fmtMoney(budget.remaining) : "—", "budget remaining", budget.total && budget.remaining < 0 ? "critical" : "") +
-      tile(pending, "requests pending", pending ? "warn" : "good") +
+      tile(vendorOptionCount, "vendor options logged", "") +
       "</div>";
   }
 
@@ -2164,54 +2191,9 @@
       '<div class="save-row"><span class="save-status" id="save-status-badge"></span>' +
       (canWrite ? '<button class="btn btn-primary" id="save-profile-btn">Save profile</button>' : "") + "</div>";
 
-    var catCards = CATEGORY_META.map(function (c) {
-      var cat = state.categories[c.key];
-      var statusPill = requestStatusPill(cat, c.key);
-      var actionBtn = "";
-      if (canWrite) {
-        if (cat.requestStatus === "none") {
-          actionBtn = '<button class="btn btn-secondary btn-sm" data-request-cat="' + c.key + '">Request vendors</button>';
-        } else if (cat.requestStatus === "pending") {
-          actionBtn = '<button class="btn btn-secondary btn-sm" disabled>Waiting…</button>';
-        } else {
-          actionBtn = '<button class="btn btn-secondary btn-sm" data-request-cat="' + c.key + '">Request more</button>';
-        }
-      }
-      return '<div class="cat-card"><div class="cat-card-head"><h3>' + c.label + "</h3>" + statusPill + "</div>" +
-        '<div class="cat-card-body"><div class="cat-note">' + (cat.vendors.length ? cat.vendors.length + " vendor" + (cat.vendors.length === 1 ? "" : "s") + " on file" : "No vendors researched yet") + "</div>" + actionBtn + "</div></div>";
-    }).join("");
-
-    var adhoc = canWrite ? '<div class="field" style="margin-top:0.5rem"><label for="f-adhoc">Ask for something specific</label><textarea id="f-adhoc" placeholder="e.g. Find 3 more florists near the venue under $2,500, or update the budget now that catering is booked at $9,200"></textarea></div><div class="save-row"><button class="btn btn-primary" id="submit-request-btn">Submit request</button></div>' : "";
-
-    var log = state.requests.slice().reverse().map(function (r) {
-      var statusPill = r.status === "pending"
-        ? '<span class="pill"><span class="dot warning"></span>pending</span>'
-        : '<span class="pill"><span class="dot good"></span>done</span>';
-      return '<div class="request-item"><div class="ri-body"><div class="ri-text">' + escapeHtml(r.text) + "</div><div class=\"ri-meta\">" + (r.category ? categoryLabel(r.category) + " · " : "") + fmtDate(new Date(r.createdAt)) + " " + statusPill + "</div>" +
-        (r.response ? '<div class="ri-response">' + escapeHtml(r.response) + "</div>" : "") +
-        "</div></div>";
-    }).join("") || '<div class="empty-note">No requests yet — request a category above or ask for something specific.</div>';
-
-    var vendorImports = state.fileImports.filter(function (fi) { return (fi.targetHint || "").indexOf("vendor:") === 0; }).slice().reverse();
-    var vendorImportLog = vendorImports.length ? '<div class="import-log">' + vendorImports.map(function (fi) {
-      var catKey = fi.targetHint.split(":")[1];
-      var statusPill = fi.status === "pending" ? '<span class="pill"><span class="dot warning"></span>reading…</span>' : '<span class="pill"><span class="dot good"></span>done</span>';
-      return '<div class="import-item"><div style="flex:1"><div class="imp-name">' + escapeHtml(fi.filename) + "</div><div class=\"imp-meta\">" + categoryLabel(catKey) + " · " + fmtDate(new Date(fi.createdAt)) + " " + statusPill + "</div>" +
-        (fi.response ? '<div class="imp-response">' + escapeHtml(fi.response) + "</div>" : "") + "</div></div>";
-    }).join("") + "</div>" : "";
-
-    var vendorUpload = canWrite ? '<div class="card"><h2>Have a quote or brochure?</h2><p class="muted">Upload a PDF, Word doc, spreadsheet, screenshot — whatever a vendor sent you. It\'s logged here for now; automatic parsing into a comparison row isn\'t wired up yet.</p>' +
-      '<div class="grid-3"><div class="field"><label for="f-vendor-doc-cat">Category</label><select id="f-vendor-doc-cat">' + CATEGORY_META.map(function (c) { return '<option value="' + c.key + '">' + c.label + "</option>"; }).join("") + '</select></div>' +
-      '<div class="field" style="grid-column:span 2"><label for="f-vendor-doc-file">File</label><input type="file" id="f-vendor-doc-file"/></div></div>' +
-      '<div class="field" style="margin-top:0.7rem"><label for="f-vendor-doc-note">Anything I should know? (optional)</label><input type="text" id="f-vendor-doc-note" placeholder="e.g. this is their 2027 peak-season pricing"/></div>' +
-      '<div class="save-row"><button class="btn btn-primary" id="upload-vendor-doc-btn">Upload document</button></div>' + vendorImportLog + "</div>" : (vendorImportLog ? '<div class="card"><h2>Uploaded documents</h2>' + vendorImportLog + "</div>" : "");
-
     return panel("profile",
       renderColorwayPicker() +
-      '<div class="card"><h2>Wedding profile</h2><p class="muted">This is what I use to research vendors and build your timeline. Fill it in and save — updates flow back into this dashboard.</p>' + profileForm + "</div>" +
-      '<div class="card"><h2>Vendor categories</h2><p class="muted">Log a research request for any category, or add options yourself on the Vendors tab. Automatic research isn\'t wired up yet — requests just sit logged below until you follow up.</p><div class="grid-3">' + catCards + "</div>" + adhoc + "</div>" +
-      vendorUpload +
-      '<div class="card"><h2>Request log</h2>' + log + "</div>" +
+      '<div class="card"><h2>Wedding profile</h2><p class="muted">This is what I use to build your checklist and budget. Fill it in and save — updates flow back into this dashboard.</p>' + profileForm + "</div>" +
       renderAccountSecurity()
     );
   }
@@ -2380,11 +2362,10 @@
     return passwordCard + loginsCard;
   }
 
-  function requestStatusPill(cat, key) {
+  function vendorCountPill(cat) {
     if (cat.bookedVendorId) return '<span class="booked-badge">✓ Booked</span>';
-    if (cat.requestStatus === "none") return '<span class="pill"><span class="dot neutral"></span>not started</span>';
-    if (cat.requestStatus === "pending") return '<span class="pill"><span class="dot warning"></span>researching</span>';
-    return '<span class="pill"><span class="dot good"></span>' + cat.vendors.length + ' found</span>';
+    if (!cat.vendors.length) return '<span class="pill"><span class="dot neutral"></span>no options yet</span>';
+    return '<span class="pill"><span class="dot good"></span>' + cat.vendors.length + " option" + (cat.vendors.length === 1 ? "" : "s") + "</span>";
   }
 
   // Labels for the fixed checklist buckets below. On a normal 12+ month
@@ -2579,12 +2560,46 @@
       "</div></div>";
   }
 
+  var vendorDocDrafts = {};
+  var vendorDocBusy = {};
+  var vendorDocErr = {};
+  var simGuestCount = null;
+  var simPicks = {};
+
+  function renderVendorFormFields(prefix, v) {
+    v = v || {};
+    var modelOptions = PRICING_MODELS.map(function (m) {
+      return '<option value="' + m.value + '"' + ((v.pricingModel || "flat") === m.value ? " selected" : "") + '>' + m.label + "</option>";
+    }).join("");
+    return '<div class="grid-3">' +
+      '<div class="field"><label for="v-' + prefix + '-name">Vendor name</label><input type="text" id="v-' + prefix + '-name" value="' + escapeHtml(v.name || "") + '" placeholder="e.g. Willowbrook Farms"/></div>' +
+      '<div class="field"><label for="v-' + prefix + '-website">Website (optional)</label><input type="url" id="v-' + prefix + '-website" value="' + escapeHtml(v.website || "") + '" placeholder="https://…"/></div>' +
+      '<div class="field"><label for="v-' + prefix + '-model">Pricing model</label><select id="v-' + prefix + '-model">' + modelOptions + "</select></div>" +
+      '<div class="field"><label for="v-' + prefix + '-base">Flat / base price</label><input type="number" min="0" id="v-' + prefix + '-base" value="' + (v.basePrice || "") + '"/></div>' +
+      '<div class="field"><label for="v-' + prefix + '-perguest">Per-guest rate</label><input type="number" min="0" id="v-' + prefix + '-perguest" value="' + (v.perGuestRate || "") + '"/></div>' +
+      '<div class="field"><label for="v-' + prefix + '-perhour">Per-hour rate</label><input type="number" min="0" id="v-' + prefix + '-perhour" value="' + (v.perHourRate || "") + '"/></div>' +
+      '<div class="field"><label for="v-' + prefix + '-hours">Estimated hours</label><input type="number" min="0" id="v-' + prefix + '-hours" value="' + (v.estimatedHours || "") + '"/></div>' +
+      '<div class="field"><label for="v-' + prefix + '-rating">Rating (1–5)</label><input type="number" min="1" max="5" id="v-' + prefix + '-rating" value="' + (v.rating || "") + '"/></div>' +
+      '<div class="field" style="grid-column:span 3"><label for="v-' + prefix + '-highlights">Highlights / notes</label><input type="text" id="v-' + prefix + '-highlights" value="' + escapeHtml(v.highlights || "") + '" placeholder="What stood out, deposit terms, anything to remember"/></div>' +
+      "</div>";
+  }
+
+  function renderVendorDraftReview(catKey, draft) {
+    return '<div class="card" style="margin-top:0.75rem;background:var(--brass-soft)"><h4 style="margin-top:0">Review before adding</h4>' +
+      (draft.summary ? '<p class="muted">' + escapeHtml(draft.summary) + "</p>" : "") +
+      (draft.confidence === "low" ? '<div class="login-notice">Low confidence — this document was hard to read cleanly. Double-check the numbers below.</div>' : "") +
+      (draft.redFlags ? '<div class="login-notice">⚠ ' + escapeHtml(draft.redFlags) + "</div>" : "") +
+      renderVendorFormFields("draft|" + catKey, draft) +
+      '<div class="save-row"><button type="button" class="btn btn-ghost" data-vendor-draft-discard="' + catKey + '">Discard</button><button type="button" class="btn btn-primary" data-vendor-draft-add="' + catKey + '">Add to comparison</button></div>' +
+      "</div>";
+  }
+
   function renderVendors() {
     var sections = CATEGORY_META.map(function (c) {
       var cat = state.categories[c.key];
       var content;
       if (!cat.vendors.length) {
-        content = '<div class="empty-note">' + (cat.requestStatus === "pending" ? "Research is in progress — check back soon." : "No vendors yet. Request research from the Profile tab.") + "</div>";
+        content = '<div class="empty-note">No options yet — add one yourself below, or upload a quote for AI to read.</div>';
       } else {
         var maxScore = Math.max.apply(null, cat.vendors.map(function (v) { return vendorScore(v) || 0; }).concat([0]));
         var rows = cat.vendors.map(function (v) {
@@ -2595,7 +2610,7 @@
           var expanded = !!expandedVendorScores[scoreKey];
           var scoreCell = '<button class="detail-toggle" data-vendor-score-toggle="' + scoreKey + '">' + (sc !== null ? sc.toFixed(1) + " ★" : "Rate") + "</button>";
           var main = '<tr' + (isBooked ? ' style="background:var(--brass-soft)"' : "") + '><td><strong>' + escapeHtml(v.name) + '</strong>' + (isBooked ? ' <span class="booked-badge">✓ Booked</span>' : "") + (isTop ? ' <span class="booked-badge">★ Top pick</span>' : "") + (v.website ? '<div class="tiny"><a href="' + escapeHtml(v.website) + '" target="_blank" rel="noopener">' + escapeHtml(v.website.replace(/^https?:\/\//, "")) + "</a></div>" : "") + "</td>" +
-            '<td class="num">' + escapeHtml(v.price || "—") + "</td>" +
+            '<td class="num">' + escapeHtml(v.price || vendorPriceLabel(v)) + "</td>" +
             "<td>" + (v.rating ? "★ " + escapeHtml(v.rating) : "—") + "</td>" +
             "<td>" + escapeHtml(v.highlights || "") + "</td>" +
             '<td class="num">' + scoreCell + "</td>" +
@@ -2609,10 +2624,60 @@
         }).join("");
         content = '<div class="table-scroll"><table><thead><tr><th>Vendor</th><th class="num">Price</th><th>Rating</th><th>Highlights</th><th class="num">Score</th><th></th></tr></thead><tbody>' + rows + "</tbody></table></div>";
       }
-      var btn = canWrite ? '<button class="btn btn-secondary btn-sm" data-request-cat="' + c.key + '">' + (cat.vendors.length ? "Request more" : "Request vendors") + "</button>" : "";
-      return '<div class="cat-card" style="margin-bottom:1rem"><div class="cat-card-head"><h3>' + c.label + "</h3>" + requestStatusPill(cat, c.key) + '</div><div class="cat-card-body">' + content + '<div style="margin-top:0.6rem">' + btn + "</div></div></div>" + renderVendorPayment(c, cat);
+
+      var addBlock = canWrite ? '<div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--line)"><h4 style="margin-top:0">Add a vendor</h4>' +
+        renderVendorFormFields("add|" + c.key, {}) +
+        '<div class="save-row"><span></span><button type="button" class="btn btn-secondary" data-vendor-add="' + c.key + '">Add vendor</button></div>' +
+        "</div>" : "";
+
+      var draft = vendorDocDrafts[c.key];
+      var busy = !!vendorDocBusy[c.key];
+      var err = vendorDocErr[c.key];
+      var aiBlock = canWrite ? '<div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--line)"><h4 style="margin-top:0">Analyze a quote with AI</h4>' +
+        '<p class="muted tiny">Upload a PDF or a photo of a quote or brochure — it\'s read for pricing and terms, then discarded; only what you approve below gets saved.</p>' +
+        '<div class="grid-3"><div class="field" style="grid-column:span 2"><label for="v-doc-file-' + c.key + '">File (PDF or image, up to 8&nbsp;MB)</label><input type="file" accept=".pdf,image/*" id="v-doc-file-' + c.key + '"/></div>' +
+        '<div class="field" style="align-self:end"><button type="button" class="btn btn-primary" data-vendor-doc-analyze="' + c.key + '"' + (busy ? " disabled" : "") + ">" + (busy ? "Analyzing…" : "Analyze document") + "</button></div></div>" +
+        (err ? '<div class="login-error">' + escapeHtml(err) + "</div>" : "") +
+        (draft ? renderVendorDraftReview(c.key, draft) : "") +
+        "</div>" : "";
+
+      return '<div class="cat-card" style="margin-bottom:1rem"><div class="cat-card-head"><h3>' + c.label + "</h3>" + vendorCountPill(cat) + '</div><div class="cat-card-body">' + content + addBlock + aiBlock + "</div></div>" + renderVendorPayment(c, cat);
     }).join("");
-    return panel("vendors", '<div class="card"><h2>Vendor comparisons</h2><p class="muted">Side-by-side options per category. Rate options on price, availability, and fit for a quick score, mark your pick as booked to update the budget automatically, and track deposit/balance payments once booked.</p>' + sections + "</div>");
+    return panel("vendors",
+      renderCostSimulator() +
+      '<div class="card"><h2>Vendor comparisons</h2><p class="muted">Add options yourself, or upload a quote for AI to read. Rate options on price, availability, and fit for a quick score, mark your pick as booked to update the budget automatically, and track deposit/balance payments once booked.</p>' + sections + "</div>"
+    );
+  }
+
+  function renderCostSimulator() {
+    var g = simGuestCount !== null ? simGuestCount : (state.profile.guestCount || 0);
+    var total = 0;
+    var rows = CATEGORY_META.map(function (c) {
+      var cat = state.categories[c.key];
+      var options = cat.vendors || [];
+      var pickId = simPicks[c.key] !== undefined ? simPicks[c.key] : (cat.bookedVendorId || (options[0] && options[0].id) || "");
+      var picked = options.filter(function (v) { return v.id === pickId; })[0];
+      var est = picked ? computeVendorEstimate(picked, g) : null;
+      if (est) total += est;
+      var selectHtml = options.length
+        ? '<select data-sim-pick="' + c.key + '"><option value="">— none —</option>' +
+          options.map(function (v) { return '<option value="' + v.id + '"' + (v.id === pickId ? " selected" : "") + '>' + escapeHtml(v.name) + "</option>"; }).join("") +
+          "</select>"
+        : '<span class="tiny muted">No options yet</span>';
+      return "<tr><td>" + c.label + "</td><td>" + selectHtml + '</td><td class="num">' + (est !== null ? fmtMoney(est) : "—") + "</td></tr>";
+    }).join("");
+    var budgetTotal = Number(state.profile.budgetTotal) || 0;
+    var diff = budgetTotal ? total - budgetTotal : null;
+    var diffHtml = budgetTotal
+      ? (diff > 0
+          ? ' <span style="color:var(--critical)">(' + fmtMoney(diff) + " over your " + fmtMoney(budgetTotal) + " budget)</span>"
+          : ' <span style="color:var(--good)">(' + fmtMoney(-diff) + " under your " + fmtMoney(budgetTotal) + " budget)</span>")
+      : "";
+    return '<div class="card"><h2>Cost simulator</h2><p class="muted">Pick one option per category — defaults to whatever\'s booked — and see the total for that combination at a given guest count. Nothing here books or saves anything; it\'s just for comparing choices.</p>' +
+      '<div class="field" style="max-width:220px"><label for="sim-guest-count">Guest count for this simulation</label><input type="number" min="0" id="sim-guest-count" value="' + (simGuestCount !== null ? simGuestCount : "") + '" placeholder="' + (state.profile.guestCount || 0) + '"/></div>' +
+      '<div class="table-scroll"><table><thead><tr><th>Category</th><th>Option</th><th class="num">Est. cost</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
+      '<div class="save-row" style="justify-content:flex-end"><strong>Estimated total: ' + fmtMoney(total) + diffHtml + "</strong></div>" +
+      "</div>";
   }
 
   var guestFilterStatus = "all";
@@ -3434,25 +3499,6 @@
       });
     });
 
-    root.querySelectorAll("[data-request-cat]").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        var key = btn.getAttribute("data-request-cat");
-        var next = clone(state);
-        next.categories[key].requestStatus = "pending";
-        next.requests.push({ id: "req-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7), kind: "category", category: key, text: "Find and compare vendors for " + categoryLabel(key) + ".", status: "pending", createdAt: Date.now(), response: null });
-        saveState(next, { doneLabel: "Request sent — researching " + categoryLabel(key) + "." });
-      });
-    });
-
-    var submitReqBtn = document.getElementById("submit-request-btn");
-    if (submitReqBtn) submitReqBtn.addEventListener("click", function () {
-      var text = val("f-adhoc", true).trim();
-      if (!text) return;
-      var next = clone(state);
-      next.requests.push({ id: "req-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7), kind: "adhoc", category: null, text: text, status: "pending", createdAt: Date.now(), response: null });
-      saveState(next, { doneLabel: "Request submitted." });
-    });
-
     root.querySelectorAll("[data-check]").forEach(function (cb) {
       cb.addEventListener("change", function () {
         var id = cb.getAttribute("data-check");
@@ -3689,6 +3735,133 @@
       });
     });
 
+    /* vendors: manual add, AI document analysis, cost simulator */
+
+    function readVendorFormFields(prefix) {
+      var modelEl = document.getElementById("v-" + prefix + "-model");
+      return {
+        name: val("v-" + prefix + "-name").trim(),
+        website: val("v-" + prefix + "-website").trim(),
+        pricingModel: modelEl ? modelEl.value : "flat",
+        basePrice: numOrNull(val("v-" + prefix + "-base")),
+        perGuestRate: numOrNull(val("v-" + prefix + "-perguest")),
+        perHourRate: numOrNull(val("v-" + prefix + "-perhour")),
+        estimatedHours: numOrNull(val("v-" + prefix + "-hours")),
+        rating: numOrNull(val("v-" + prefix + "-rating")),
+        highlights: val("v-" + prefix + "-highlights").trim()
+      };
+    }
+
+    function buildVendorFromFields(fields, guestCount) {
+      var v = Object.assign({ id: makeVendorId(), scorePrice: null, scoreAvailability: null, scoreFit: null }, fields);
+      v.priceValue = computeVendorEstimate(v, guestCount);
+      v.price = vendorPriceLabel(v);
+      return v;
+    }
+
+    root.querySelectorAll("[data-vendor-add]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var catKey = btn.getAttribute("data-vendor-add");
+        var fields = readVendorFormFields("add|" + catKey);
+        if (!fields.name) { showToast("Give the vendor a name first."); return; }
+        var next = clone(state);
+        next.categories[catKey].vendors.push(buildVendorFromFields(fields, next.profile.guestCount || 0));
+        saveState(next, { doneLabel: fields.name + " added." });
+      });
+    });
+
+    root.querySelectorAll("[data-vendor-doc-analyze]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var catKey = btn.getAttribute("data-vendor-doc-analyze");
+        var fileEl = document.getElementById("v-doc-file-" + catKey);
+        var file = fileEl && fileEl.files && fileEl.files[0];
+        if (!file) { showToast("Choose a PDF or image first."); return; }
+        if (file.size > MAX_IMPORT_BYTES) {
+          vendorDocErr[catKey] = "That file's too big (" + Math.round(file.size / 1024 / 1024) + " MB) — 8 MB max.";
+          render();
+          return;
+        }
+        vendorDocErr[catKey] = "";
+        vendorDocBusy[catKey] = true;
+        render();
+        readFileAsDataURL(file).then(function (dataUrl) {
+          var comma = dataUrl.indexOf(",");
+          var meta = dataUrl.slice(5, comma);
+          var mimeType = meta.split(";")[0] || file.type || "application/octet-stream";
+          var base64 = dataUrl.slice(comma + 1);
+          return fetch("/api/analyze-vendor-doc", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ category: catKey, guestCount: state.profile.guestCount || null, filename: file.name, mimeType: mimeType, fileBase64: base64 })
+          });
+        }).then(function (res) {
+          if (res.status === 401) { currentUser = null; vendorDocBusy[catKey] = false; render(); return null; }
+          return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+        }).then(function (r) {
+          vendorDocBusy[catKey] = false;
+          if (!r) return;
+          if (!r.ok) {
+            vendorDocErr[catKey] = (r.data && r.data.error) || "Could not analyze that document.";
+            render();
+            return;
+          }
+          var ex = r.data.extracted || {};
+          vendorDocDrafts[catKey] = {
+            name: ex.vendorName || "", website: "",
+            pricingModel: ex.pricingModel || "flat",
+            basePrice: ex.basePrice != null ? ex.basePrice : null,
+            perGuestRate: ex.perGuestRate != null ? ex.perGuestRate : null,
+            perHourRate: ex.perHourRate != null ? ex.perHourRate : null,
+            estimatedHours: ex.estimatedHours != null ? ex.estimatedHours : null,
+            rating: null,
+            highlights: [ex.includes, ex.excludesOrFees].filter(Boolean).join(" — "),
+            summary: ex.summary || "", confidence: ex.confidence || "", redFlags: ex.redFlags || ""
+          };
+          if (fileEl) fileEl.value = "";
+          render();
+        }).catch(function () {
+          vendorDocBusy[catKey] = false;
+          vendorDocErr[catKey] = "Network error — try again.";
+          render();
+        });
+      });
+    });
+
+    root.querySelectorAll("[data-vendor-draft-add]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var catKey = btn.getAttribute("data-vendor-draft-add");
+        var fields = readVendorFormFields("draft|" + catKey);
+        if (!fields.name) { showToast("Give the vendor a name first."); return; }
+        var next = clone(state);
+        next.categories[catKey].vendors.push(buildVendorFromFields(fields, next.profile.guestCount || 0));
+        delete vendorDocDrafts[catKey];
+        delete vendorDocErr[catKey];
+        saveState(next, { doneLabel: fields.name + " added to comparison." });
+      });
+    });
+
+    root.querySelectorAll("[data-vendor-draft-discard]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var catKey = btn.getAttribute("data-vendor-draft-discard");
+        delete vendorDocDrafts[catKey];
+        delete vendorDocErr[catKey];
+        render();
+      });
+    });
+
+    root.querySelectorAll("[data-sim-pick]").forEach(function (sel) {
+      sel.addEventListener("change", function () {
+        simPicks[sel.getAttribute("data-sim-pick")] = sel.value;
+        render();
+      });
+    });
+    var simGuestInput = document.getElementById("sim-guest-count");
+    if (simGuestInput) simGuestInput.addEventListener("change", function () {
+      simGuestCount = simGuestInput.value === "" ? null : Number(simGuestInput.value);
+      render();
+    });
+
     /* guest list */
 
     var fileInput = document.getElementById("guest-file-input");
@@ -3704,16 +3877,6 @@
         queueFileImport(file, "guests", "");
       }
       fileInput.value = "";
-    });
-
-    var vendorDocBtn = document.getElementById("upload-vendor-doc-btn");
-    if (vendorDocBtn) vendorDocBtn.addEventListener("click", function () {
-      var fileEl = document.getElementById("f-vendor-doc-file");
-      var file = fileEl && fileEl.files && fileEl.files[0];
-      if (!file) { showToast("Choose a file first."); return; }
-      var catKey = val("f-vendor-doc-cat");
-      var note = val("f-vendor-doc-note").trim();
-      queueFileImport(file, "vendor:" + catKey, note).then(function () { if (fileEl) fileEl.value = ""; });
     });
 
     var sortSelect = document.getElementById("guest-sort-select");
