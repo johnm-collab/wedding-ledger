@@ -76,6 +76,17 @@ const { chromium } = require("playwright");
   await page.click("#save-seating-btn");
   await page.waitForFunction(() => /saved/i.test(document.getElementById("save-status-badge-6")?.textContent || ""), { timeout: 5000 });
 
+  // Regression test: a freshly added table's default position used to sit
+  // close enough to the top of the floor-plan canvas that its (much bigger,
+  // overflow-visible) seat ring bled outside the canvas and covered the
+  // Visual/List toggle row above it, silently eating clicks on "List".
+  await page.click('[data-seating-view="list"]', { timeout: 5000 });
+  await page.waitForFunction(() => document.querySelector('[data-seating-view="list"]').classList.contains("active"), { timeout: 5000 });
+  await page.waitForSelector('.tab-panel.active[data-panel="seating"] .cat-card', { timeout: 5000 });
+  console.log("PASS: the List toggle is clickable and switches views (not blocked by the floor plan canvas)");
+  await page.click('[data-seating-view="visual"]', { timeout: 5000 });
+  await page.waitForSelector(".seat-table-visual", { timeout: 5000 });
+
   // Full names, not initials, should now be visible directly on the seating chart
   await page.waitForFunction(() => {
     const pills = Array.from(document.querySelectorAll(".seat-pill"));
@@ -108,9 +119,43 @@ const { chromium } = require("playwright");
   await page.waitForFunction(() => !Array.from(document.querySelectorAll(".seat-pill")).some((p) => p.textContent.includes("Alex Chen")), { timeout: 5000 });
   console.log("PASS: clicking a name pill unseats that guest immediately");
 
+  // Table names now render inside the table shape itself, not in a label
+  // floating below the whole (much larger) stage
+  const table1Name = page.locator(".seat-table-name", { hasText: "Table 1" });
+  const table1Box = await table1Name.boundingBox();
+  const table1ShapeBox = await page.locator('.floor-table', { has: table1Name }).locator('[data-table-drag]').boundingBox();
+  const nameCenterY = table1Box.y + table1Box.height / 2;
+  if (nameCenterY < table1ShapeBox.y || nameCenterY > table1ShapeBox.y + table1ShapeBox.height) {
+    throw new Error("table name is not positioned inside its own table shape");
+  }
+  console.log("PASS: table name renders inside the table shape, right next to the seat count");
+
+  // Rotating a table: click Rotate once (45°) and confirm the shape's
+  // transform picks up the rotation, while the name/count label counter-
+  // rotates to stay upright
+  const table1Wrap = page.locator('.floor-table', { has: table1Name });
+  await table1Wrap.locator('[data-table-rotate]').click();
+  await page.waitForFunction(() => {
+    const shape = document.querySelector('.floor-table [data-table-drag]');
+    return shape && /rotate\(45deg\)/.test(shape.style.transform);
+  }, { timeout: 5000 });
+  const centerTransform = await page.locator(".seat-table-center").first().evaluate((el) => el.style.transform);
+  if (!/rotate\(-45deg\)/.test(centerTransform)) throw new Error("table label did not counter-rotate to stay upright, got: " + centerTransform);
+  console.log("PASS: rotating a table turns the shape 45° and keeps its label upright");
+
+  // Full screen: toggling it applies the fullscreen class and an Exit
+  // control appears; toggling again (via Exit) removes it
+  await page.click("#fullscreen-seating-btn");
+  await page.waitForSelector(".floor-plan-canvas.fullscreen", { timeout: 5000 });
+  await page.waitForSelector("#exit-fullscreen-btn", { timeout: 5000 });
+  console.log("PASS: Full screen expands the floor plan canvas");
+  await page.click("#exit-fullscreen-btn");
+  await page.waitForFunction(() => !document.querySelector(".floor-plan-canvas.fullscreen"), { timeout: 5000 });
+  console.log("PASS: Exit full screen returns the floor plan to its normal size");
+
   // Drag Table 1 to a new spot on the floor plan and confirm the position
   // both updates live and survives a Save + reload
-  const floorTable = page.locator('.floor-table', { has: page.locator('.seat-visual-name', { hasText: "Table 1" }) });
+  const floorTable = page.locator('.floor-table', { has: page.locator('.seat-table-name', { hasText: "Table 1" }) });
   const beforeBox = await floorTable.boundingBox();
   const shapeHandle = floorTable.locator('[data-table-drag]');
   const shapeBox = await shapeHandle.boundingBox();
@@ -144,7 +189,7 @@ const { chromium } = require("playwright");
   await page.waitForSelector(".masthead-title", { timeout: 5000 });
   await page.click('[data-tab="seating"]');
   await page.waitForSelector('[data-panel="seating"]', { timeout: 5000 });
-  const afterReloadPct = await readPct(page.locator('.floor-table', { has: page.locator('.seat-visual-name', { hasText: "Table 1" }) }));
+  const afterReloadPct = await readPct(page.locator('.floor-table', { has: page.locator('.seat-table-name', { hasText: "Table 1" }) }));
   const persisted = Math.hypot(afterReloadPct.left - afterDragPct.left, afterReloadPct.top - afterDragPct.top) < 1;
   if (!persisted) throw new Error("dragged table position did not survive save + reload — after-drag %: " + JSON.stringify(afterDragPct) + " after-reload %: " + JSON.stringify(afterReloadPct));
   console.log("PASS: dragged table position persists after Save and a page reload");
