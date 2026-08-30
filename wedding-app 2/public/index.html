@@ -596,6 +596,17 @@
   .legend span { display: inline-flex; align-items: center; gap: 0.4em; }
   .legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
 
+  /* ---- Simulations tab: per-scenario grouped bar charts ---- */
+  .simchart-cat { margin-bottom: 0.9rem; }
+  .simchart-cat-label { font-size: 0.82rem; color: var(--ink-2); margin-bottom: 0.35rem; font-weight: 600; }
+  .simchart-bars { display: flex; flex-direction: column; gap: 0.3rem; }
+  .simchart-bar-row { display: grid; grid-template-columns: 110px 1fr 90px; align-items: center; gap: 0.55rem; }
+  .simchart-bar-name { font-size: 0.76rem; color: var(--ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .simchart-track { position: relative; height: 12px; background: var(--paper-2); border-radius: 4px; overflow: visible; }
+  .simchart-fill { position: absolute; top: 0; left: 0; height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+  .simchart-budget-marker { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--critical); }
+  .simchart-val { font-size: 0.76rem; text-align: right; font-family: "Manrope", sans-serif; font-variant-numeric: tabular-nums; font-weight: 700; }
+
   /* ---- Fluid budget sliders: proportional-redistribution allocation ---- */
   .fluid-row { padding: 0.85rem 0; border-bottom: 1px solid var(--line); }
   .fluid-row:last-child { border-bottom: none; }
@@ -930,6 +941,7 @@
     { key: "checklist", label: "Checklist" },
     { key: "budget", label: "Budget" },
     { key: "vendors", label: "Vendors" },
+    { key: "simulations", label: "Simulations" },
     { key: "guests", label: "Guest List" },
     { key: "message", label: "Message Guests" },
     { key: "seating", label: "Seating" },
@@ -988,6 +1000,7 @@
       faq: [],
       registryLinks: [],
       messageLog: [],
+      simulations: [],
       settings: { colorway: "classic", onboardingComplete: false },
       writable: true,
       _rev: 0
@@ -1001,6 +1014,12 @@
     { value: "lost_touch", label: "Lost touch" }
   ];
   var MAX_IMPORT_BYTES = 8 * 1024 * 1024;
+  // Contracts are persisted (unlike an AI-analyzed quote, which is read then
+  // discarded), so they live inside the same JSONB blob that's rewritten on
+  // every save — capped smaller than the 8MB analyze-and-discard limit to
+  // keep that blob (and every future save's request body) from growing
+  // unboundedly as more vendors get a contract attached.
+  var MAX_CONTRACT_BYTES = 3 * 1024 * 1024;
 
   function partnerLabels() {
     var raw = (state.profile.coupleNames || "").split(/\s*(?:&|\+|,| and )\s*/i).map(function (s) { return s.trim(); }).filter(Boolean);
@@ -1496,6 +1515,54 @@
     return "—";
   }
 
+  /* ---------- what-if simulations: named, saved side-by-side scenarios ---------- */
+
+  var MAX_SCENARIOS = 4;
+  var SCENARIO_SERIES = ["--series-1", "--series-2", "--accent", "--brass"];
+
+  function makeSimId() { return "sim-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7); }
+
+  function nextScenarioName(existing) {
+    var letters = ["A", "B", "C", "D", "E", "F"];
+    for (var i = 0; i < letters.length; i++) {
+      var name = "Scenario " + letters[i];
+      if (!existing.some(function (s) { return s.name === name; })) return name;
+    }
+    return "Scenario " + (existing.length + 1);
+  }
+
+  // Seeds a new scenario from whatever's already booked (or the first
+  // option) per category, at the current guest count — a reasonable
+  // starting point to branch a variant from, rather than an all-blank grid.
+  function buildScenario(name, sourceState) {
+    var picks = {};
+    CATEGORY_META.forEach(function (c) {
+      var cat = sourceState.categories[c.key];
+      var options = cat.vendors || [];
+      picks[c.key] = cat.bookedVendorId || (options[0] && options[0].id) || "";
+    });
+    return { id: makeSimId(), name: name, guestCount: null, picks: picks };
+  }
+
+  // Per-category vendor + estimate for one scenario, plus its total — the
+  // one function both the comparison table and the charts read from, so
+  // they can never disagree with each other.
+  function computeScenarioTotals(scenario, sourceState) {
+    var g = (scenario.guestCount !== null && scenario.guestCount !== undefined && scenario.guestCount !== "")
+      ? Number(scenario.guestCount) : (Number(sourceState.profile.guestCount) || 0);
+    var perCat = {}, total = 0;
+    CATEGORY_META.forEach(function (c) {
+      var cat = sourceState.categories[c.key];
+      var options = cat.vendors || [];
+      var pickId = (scenario.picks || {})[c.key];
+      var picked = pickId ? options.filter(function (v) { return v.id === pickId; })[0] : null;
+      var est = picked ? computeVendorEstimate(picked, g) : null;
+      if (est) total += est;
+      perCat[c.key] = { vendor: picked || null, est: est };
+    });
+    return { guestCount: g, perCat: perCat, total: total };
+  }
+
   function syncCatActualFromPayments(cat) {
     var p = cat.payment;
     if (!p) return;
@@ -1760,7 +1827,7 @@
     root.innerHTML = renderMasthead() + renderReadonlyBanner() + renderStatStrip() +
       '<div class="app-shell">' + renderTabs() +
       '<div class="main-content"><div class="tab-panels">' +
-      renderOverview() + renderProfile() + renderGuestSite() + renderChecklist() + renderBudget() + renderVendors() + renderGuestList() + renderMessaging() + renderSeatingTab() + renderDayOf() +
+      renderOverview() + renderProfile() + renderGuestSite() + renderChecklist() + renderBudget() + renderVendors() + renderSimulations() + renderGuestList() + renderMessaging() + renderSeatingTab() + renderDayOf() +
       "</div></div></div>" + renderFooter();
     bindEvents();
   }
@@ -2547,6 +2614,41 @@
 
   var expandedVendorScores = {};
 
+  // Small append-only communication log plus one attached contract file per
+  // vendor — folded into the same score/detail expander so there's one
+  // "more about this vendor" toggle per row rather than two.
+  function renderVendorNotesAndContract(c, v) {
+    var notes = v.notes || [];
+    var notesHtml = notes.length
+      ? '<div class="import-log">' + notes.map(function (n) {
+          return '<div class="import-item"><div style="flex:1"><div class="tiny muted">' + fmtDate(new Date(n.createdAt)) + '</div><div>' + escapeHtml(n.text) + "</div></div>" +
+            (canWrite ? '<button type="button" class="btn btn-ghost btn-sm" data-vendor-note-remove="' + c.key + "|" + v.id + "|" + n.id + '">Remove</button>' : "") +
+            "</div>";
+        }).join("") + "</div>"
+      : '<p class="tiny muted">No notes yet.</p>';
+    var addNoteHtml = canWrite
+      ? '<div class="grid-2" style="margin-top:0.5rem"><div class="field" style="grid-column:1/-1"><label for="v-note-' + c.key + "-" + v.id + '">Add a note (call, email, decision — anything worth remembering)</label><input type="text" id="v-note-' + c.key + "-" + v.id + '" placeholder="e.g. Called 8/30 — confirmed Saturday availability, holding the date until 9/5"/></div></div>' +
+        '<div class="save-row" style="margin-top:0.4rem"><span></span><button type="button" class="btn btn-secondary btn-sm" data-vendor-note-add="' + c.key + "|" + v.id + '">Add note</button></div>'
+      : "";
+
+    var contractHtml;
+    if (v.contractFile && v.contractFile.data) {
+      contractHtml = '<div class="import-item"><div style="flex:1"><div class="imp-name">' + escapeHtml(v.contractFile.name || "Contract") + '</div><div class="imp-meta">Attached ' + fmtDate(new Date(v.contractFile.uploadedAt || Date.now())) + "</div></div>" +
+        '<a class="btn btn-secondary btn-sm" href="data:' + escapeHtml(v.contractFile.mimeType || "application/octet-stream") + ";base64," + v.contractFile.data + '" download="' + escapeHtml(v.contractFile.name || "contract") + '">Download</a>' +
+        (canWrite ? '<button type="button" class="btn btn-ghost btn-sm" data-vendor-contract-remove="' + c.key + "|" + v.id + '">Remove</button>' : "") +
+        "</div>";
+    } else {
+      contractHtml = canWrite
+        ? '<div class="file-input-row"><input type="file" accept=".pdf,image/*" id="v-contract-' + c.key + "-" + v.id + '"/><button type="button" class="btn btn-secondary btn-sm" data-vendor-contract-upload="' + c.key + "|" + v.id + '">Attach contract</button></div><p class="tiny muted">PDF or image, up to 3&nbsp;MB — stored with your planner data.</p>'
+        : '<p class="tiny muted">No contract attached.</p>';
+    }
+
+    return '<div style="grid-column:1/-1;margin-top:0.85rem;padding-top:0.75rem;border-top:1px solid var(--line)">' +
+      '<h5 style="margin:0 0 0.5rem">Notes</h5>' + notesHtml + addNoteHtml +
+      '<h5 style="margin:0.9rem 0 0.5rem">Contract</h5>' + contractHtml +
+      "</div>";
+  }
+
   function renderVendorPayment(c, cat) {
     if (!cat.bookedVendorId) return "";
     var p = cat.payment || defaultPayment();
@@ -2608,7 +2710,9 @@
           var isTop = sc !== null && sc === maxScore && maxScore > 0;
           var scoreKey = c.key + "|" + v.id;
           var expanded = !!expandedVendorScores[scoreKey];
-          var scoreCell = '<button class="detail-toggle" data-vendor-score-toggle="' + scoreKey + '">' + (sc !== null ? sc.toFixed(1) + " ★" : "Rate") + "</button>";
+          var noteCount = (v.notes || []).length;
+          var extraLabel = (noteCount ? noteCount + (noteCount === 1 ? " note" : " notes") : "") + (noteCount && v.contractFile ? ", " : "") + (v.contractFile ? "contract" : "");
+          var scoreCell = '<button class="detail-toggle" data-vendor-score-toggle="' + scoreKey + '">' + (sc !== null ? sc.toFixed(1) + " ★" : "Rate") + (extraLabel ? " · " + extraLabel : "") + "</button>";
           var main = '<tr' + (isBooked ? ' style="background:var(--brass-soft)"' : "") + '><td><strong>' + escapeHtml(v.name) + '</strong>' + (isBooked ? ' <span class="booked-badge">✓ Booked</span>' : "") + (isTop ? ' <span class="booked-badge">★ Top pick</span>' : "") + (v.website ? '<div class="tiny"><a href="' + escapeHtml(v.website) + '" target="_blank" rel="noopener">' + escapeHtml(v.website.replace(/^https?:\/\//, "")) + "</a></div>" : "") + "</td>" +
             '<td class="num">' + escapeHtml(v.price || vendorPriceLabel(v)) + "</td>" +
             "<td>" + (v.rating ? "★ " + escapeHtml(v.rating) : "—") + "</td>" +
@@ -2619,6 +2723,7 @@
             '<div class="field"><label>Price fit (1–5)</label><input type="number" min="1" max="5" data-vendor-score="scorePrice|' + c.key + "|" + v.id + '" value="' + (v.scorePrice || "") + '" ' + (canWrite ? "" : "disabled") + '/></div>' +
             '<div class="field"><label>Availability (1–5)</label><input type="number" min="1" max="5" data-vendor-score="scoreAvailability|' + c.key + "|" + v.id + '" value="' + (v.scoreAvailability || "") + '" ' + (canWrite ? "" : "disabled") + '/></div>' +
             '<div class="field"><label>Overall fit (1–5)</label><input type="number" min="1" max="5" data-vendor-score="scoreFit|' + c.key + "|" + v.id + '" value="' + (v.scoreFit || "") + '" ' + (canWrite ? "" : "disabled") + '/></div>' +
+            renderVendorNotesAndContract(c, v) +
             "</div></td></tr>" : "";
           return main + detail;
         }).join("");
@@ -2677,6 +2782,113 @@
       '<div class="field" style="max-width:220px"><label for="sim-guest-count">Guest count for this simulation</label><input type="number" min="0" id="sim-guest-count" value="' + (simGuestCount !== null ? simGuestCount : "") + '" placeholder="' + (state.profile.guestCount || 0) + '"/></div>' +
       '<div class="table-scroll"><table><thead><tr><th>Category</th><th>Option</th><th class="num">Est. cost</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
       '<div class="save-row" style="justify-content:flex-end"><strong>Estimated total: ' + fmtMoney(total) + diffHtml + "</strong></div>" +
+      "</div>";
+  }
+
+  /* ---------- simulations tab: saved side-by-side scenarios ---------- */
+
+  function renderSimulations() {
+    var scenarios = state.simulations || [];
+    var intro = '<p class="muted">Save named "what-if" scenarios — a different vendor pick per category, and optionally a different guest count — and compare them side by side, with charts, against your budget. Changes here save automatically, just like everywhere else.</p>';
+
+    if (!scenarios.length) {
+      return panel("simulations", '<div class="card"><h2>Simulations</h2>' + intro +
+        '<div class="empty-note">No scenarios yet.' + (canWrite ? ' <button type="button" class="btn btn-primary btn-sm" data-sim-seed="1" style="margin-top:0.75rem">Create two scenarios to compare</button>' : "") + "</div></div>");
+    }
+
+    var totals = scenarios.map(function (s) { return computeScenarioTotals(s, state); });
+    var cheapestTotal = Math.min.apply(null, totals.map(function (t) { return t.total; }).concat([Infinity]));
+    var budgetTotal = Number(state.profile.budgetTotal) || 0;
+
+    var headCells = scenarios.map(function (s) {
+      return '<th style="min-width:190px">' +
+        (canWrite
+          ? '<input type="text" data-sim-name="' + s.id + '" value="' + escapeHtml(s.name) + '" style="font-weight:700;margin-bottom:0.35rem" aria-label="Scenario name"/>'
+          : "<strong>" + escapeHtml(s.name) + "</strong>") +
+        '<div class="field" style="margin:0"><label class="tiny" for="sim-guests-' + s.id + '">Guest count</label><input type="number" min="0" id="sim-guests-' + s.id + '" data-sim-guestcount="' + s.id + '" value="' + (s.guestCount !== null && s.guestCount !== undefined ? s.guestCount : "") + '" placeholder="' + (state.profile.guestCount || 0) + '" ' + (canWrite ? "" : "disabled") + "/></div>" +
+        (canWrite ? '<div class="btn-row" style="margin-top:0.4rem"><button type="button" class="btn btn-ghost btn-sm" data-sim-duplicate="' + s.id + '">Duplicate</button><button type="button" class="btn btn-ghost btn-sm" data-sim-remove="' + s.id + '">Remove</button></div>' : "") +
+        "</th>";
+    }).join("");
+
+    var catRows = CATEGORY_META.map(function (c) {
+      var cat = state.categories[c.key];
+      var options = cat.vendors || [];
+      var cells = scenarios.map(function (s, i) {
+        var pickId = (s.picks || {})[c.key] || "";
+        var est = totals[i].perCat[c.key].est;
+        var selectHtml = options.length
+          ? '<select data-sim-vendorpick="' + s.id + "|" + c.key + '" ' + (canWrite ? "" : "disabled") + '><option value="">— none —</option>' +
+            options.map(function (v) { return '<option value="' + v.id + '"' + (v.id === pickId ? " selected" : "") + '>' + escapeHtml(v.name) + "</option>"; }).join("") +
+            "</select>"
+          : '<span class="tiny muted">No options yet</span>';
+        return "<td>" + selectHtml + '<div class="tiny mono" style="margin-top:0.25rem">' + (est !== null ? fmtMoney(est) : "—") + "</div></td>";
+      }).join("");
+      return "<tr><td>" + c.label + "</td>" + cells + "</tr>";
+    }).join("");
+
+    var totalCells = scenarios.map(function (s, i) {
+      var isCheapest = scenarios.length > 1 && totals[i].total === cheapestTotal && totals[i].total > 0;
+      return '<td class="num mono" style="font-weight:800">' + fmtMoney(totals[i].total) + (isCheapest ? ' <span class="booked-badge">Lowest</span>' : "") + "</td>";
+    }).join("");
+
+    var budgetCells = totals.map(function (t) {
+      if (!budgetTotal) return '<td class="num tiny muted">—</td>';
+      var diff = t.total - budgetTotal;
+      return '<td class="num mono" style="' + (diff > 0 ? "color:var(--critical)" : "color:var(--good)") + '">' + (diff > 0 ? fmtMoney(diff) + " over" : fmtMoney(-diff) + " under") + "</td>";
+    }).join("");
+
+    var addBtn = canWrite && scenarios.length < MAX_SCENARIOS
+      ? '<button type="button" class="btn btn-secondary btn-sm" data-sim-add="1">Add scenario</button>'
+      : (scenarios.length >= MAX_SCENARIOS ? '<span class="tiny muted">Up to ' + MAX_SCENARIOS + ' scenarios at a time — remove one to add another.</span>' : "");
+
+    return panel("simulations",
+      '<div class="card"><h2>Simulations</h2>' + intro +
+      '<div class="save-row" style="justify-content:flex-start;margin-top:0">' + addBtn + "</div>" +
+      '<div class="table-scroll" style="margin-top:0.75rem"><table><thead><tr><th></th>' + headCells + "</tr></thead><tbody>" +
+      catRows +
+      '<tr style="border-top:2px solid var(--line-strong)"><td><strong>Estimated total</strong></td>' + totalCells + "</tr>" +
+      "<tr><td>vs. your " + (budgetTotal ? fmtMoney(budgetTotal) : "—") + " budget</td>" + budgetCells + "</tr>" +
+      "</tbody></table></div></div>" +
+      renderSimulationCharts(scenarios, totals, budgetTotal)
+    );
+  }
+
+  function renderSimulationCharts(scenarios, totals, budgetTotal) {
+    if (scenarios.length < 2) {
+      return '<div class="card"><h2>Charts</h2><div class="empty-note">Add a second scenario to see a side-by-side chart.</div></div>';
+    }
+    var maxTotal = Math.max.apply(null, totals.map(function (t) { return t.total; }).concat([budgetTotal || 0, 1]));
+
+    var catBlocks = CATEGORY_META.map(function (c) {
+      var ests = totals.map(function (t) { return t.perCat[c.key].est; });
+      if (!ests.some(function (e) { return e; })) return "";
+      var maxCat = Math.max.apply(null, ests.map(function (e) { return e || 0; }).concat([1]));
+      var rows = scenarios.map(function (s, i) {
+        var est = ests[i];
+        var pct = est ? Math.min(100, (est / maxCat) * 100) : 0;
+        var color = "var(" + SCENARIO_SERIES[i % SCENARIO_SERIES.length] + ")";
+        return '<div class="simchart-bar-row"><div class="simchart-bar-name">' + escapeHtml(s.name) + '</div><div class="simchart-track"><div class="simchart-fill" style="width:' + pct + "%;background:" + color + '"></div></div><div class="simchart-val">' + (est ? fmtMoney(est) : "—") + "</div></div>";
+      }).join("");
+      return '<div class="simchart-cat"><div class="simchart-cat-label">' + c.label + '</div><div class="simchart-bars">' + rows + "</div></div>";
+    }).join("");
+
+    var totalRows = scenarios.map(function (s, i) {
+      var t = totals[i].total;
+      var pct = Math.min(100, (t / maxTotal) * 100);
+      var budgetPct = budgetTotal ? Math.min(100, (budgetTotal / maxTotal) * 100) : null;
+      var color = "var(" + SCENARIO_SERIES[i % SCENARIO_SERIES.length] + ")";
+      var over = !!(budgetTotal && t > budgetTotal);
+      return '<div class="simchart-bar-row"><div class="simchart-bar-name">' + escapeHtml(s.name) + '</div><div class="simchart-track" style="height:16px"><div class="simchart-fill" style="width:' + pct + "%;background:" + (over ? "var(--critical)" : color) + '"></div>' +
+        (budgetPct !== null ? '<div class="simchart-budget-marker" style="left:' + budgetPct + '%"></div>' : "") +
+        '</div><div class="simchart-val" style="' + (over ? "color:var(--critical)" : "") + '">' + fmtMoney(t) + "</div></div>";
+    }).join("");
+
+    return '<div class="card"><h2>Charts</h2>' +
+      '<h4 style="margin-top:0">Total cost vs. budget</h4>' +
+      (budgetTotal ? '<p class="tiny muted">The vertical line marks your ' + fmtMoney(budgetTotal) + " budget.</p>" : '<p class="tiny muted">Add a total budget on the Profile tab to see it marked here.</p>') +
+      '<div class="simchart-bars" style="margin-bottom:1.25rem">' + totalRows + "</div>" +
+      "<h4>Cost by category</h4><p class=\"tiny muted\">Only categories with at least one priced option in a scenario are shown.</p>" +
+      (catBlocks.replace(/\s/g, "") ? catBlocks : '<div class="empty-note">Price some vendor options to see a category breakdown.</div>') +
       "</div>";
   }
 
@@ -3735,6 +3947,75 @@
       });
     });
 
+    /* vendors: notes + contract (per-vendor CRM) */
+
+    root.querySelectorAll("[data-vendor-note-add]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var parts = btn.getAttribute("data-vendor-note-add").split("|");
+        var catKey = parts[0], vendorId = parts[1];
+        var inputEl = document.getElementById("v-note-" + catKey + "-" + vendorId);
+        var text = inputEl ? inputEl.value.trim() : "";
+        if (!text) { showToast("Write a note first."); return; }
+        var next = clone(state);
+        var v = next.categories[catKey].vendors.filter(function (x) { return x.id === vendorId; })[0];
+        if (!v) return;
+        if (!v.notes) v.notes = [];
+        v.notes.push({ id: "note-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7), text: text, createdAt: Date.now() });
+        saveState(next, { doneLabel: "Note added." });
+      });
+    });
+
+    root.querySelectorAll("[data-vendor-note-remove]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var parts = btn.getAttribute("data-vendor-note-remove").split("|");
+        var catKey = parts[0], vendorId = parts[1], noteId = parts[2];
+        var next = clone(state);
+        var v = next.categories[catKey].vendors.filter(function (x) { return x.id === vendorId; })[0];
+        if (!v || !v.notes) return;
+        v.notes = v.notes.filter(function (n) { return n.id !== noteId; });
+        saveState(next, { doneLabel: "Note removed." });
+      });
+    });
+
+    root.querySelectorAll("[data-vendor-contract-upload]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var parts = btn.getAttribute("data-vendor-contract-upload").split("|");
+        var catKey = parts[0], vendorId = parts[1];
+        var fileEl = document.getElementById("v-contract-" + catKey + "-" + vendorId);
+        var file = fileEl && fileEl.files && fileEl.files[0];
+        if (!file) { showToast("Choose a PDF or image first."); return; }
+        if (file.size > MAX_CONTRACT_BYTES) {
+          showToast("That file's too big (" + Math.round(file.size / 1024 / 1024) + " MB) — 3 MB max.");
+          return;
+        }
+        readFileAsDataURL(file).then(function (dataUrl) {
+          var comma = dataUrl.indexOf(",");
+          var meta = dataUrl.slice(5, comma);
+          var mimeType = meta.split(";")[0] || file.type || "application/octet-stream";
+          var base64 = dataUrl.slice(comma + 1);
+          var next = clone(state);
+          var v = next.categories[catKey].vendors.filter(function (x) { return x.id === vendorId; })[0];
+          if (!v) return;
+          v.contractFile = { name: file.name, mimeType: mimeType, data: base64, uploadedAt: Date.now() };
+          saveState(next, { doneLabel: "Contract attached." });
+        }).catch(function () {
+          showToast("Couldn't read that file.");
+        });
+      });
+    });
+
+    root.querySelectorAll("[data-vendor-contract-remove]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var parts = btn.getAttribute("data-vendor-contract-remove").split("|");
+        var catKey = parts[0], vendorId = parts[1];
+        var next = clone(state);
+        var v = next.categories[catKey].vendors.filter(function (x) { return x.id === vendorId; })[0];
+        if (!v) return;
+        v.contractFile = null;
+        saveState(next, { doneLabel: "Contract removed." });
+      });
+    });
+
     /* vendors: manual add, AI document analysis, cost simulator */
 
     function readVendorFormFields(prefix) {
@@ -3860,6 +4141,85 @@
     if (simGuestInput) simGuestInput.addEventListener("change", function () {
       simGuestCount = simGuestInput.value === "" ? null : Number(simGuestInput.value);
       render();
+    });
+
+    /* simulations tab */
+
+    var simSeedBtn = document.querySelector("[data-sim-seed]");
+    if (simSeedBtn) simSeedBtn.addEventListener("click", function () {
+      var next = clone(state);
+      next.simulations = next.simulations || [];
+      next.simulations.push(buildScenario("Scenario A", next));
+      next.simulations.push(buildScenario("Scenario B", next));
+      saveState(next, { doneLabel: "Two scenarios created — pick different vendors in each to compare." });
+    });
+
+    var simAddBtn = document.querySelector("[data-sim-add]");
+    if (simAddBtn) simAddBtn.addEventListener("click", function () {
+      var next = clone(state);
+      next.simulations = next.simulations || [];
+      if (next.simulations.length >= MAX_SCENARIOS) return;
+      next.simulations.push(buildScenario(nextScenarioName(next.simulations), next));
+      saveState(next, { doneLabel: "Scenario added." });
+    });
+
+    root.querySelectorAll("[data-sim-duplicate]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-sim-duplicate");
+        var next = clone(state);
+        if (next.simulations.length >= MAX_SCENARIOS) { showToast("Up to " + MAX_SCENARIOS + " scenarios at a time — remove one first."); return; }
+        var src = next.simulations.filter(function (s) { return s.id === id; })[0];
+        if (!src) return;
+        var copy = clone(src);
+        copy.id = makeSimId();
+        copy.name = nextScenarioName(next.simulations);
+        next.simulations.push(copy);
+        saveState(next, { doneLabel: "Duplicated " + src.name + "." });
+      });
+    });
+
+    root.querySelectorAll("[data-sim-remove]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-sim-remove");
+        var next = clone(state);
+        next.simulations = next.simulations.filter(function (s) { return s.id !== id; });
+        saveState(next, { doneLabel: "Scenario removed." });
+      });
+    });
+
+    root.querySelectorAll("[data-sim-name]").forEach(function (inp) {
+      inp.addEventListener("change", function () {
+        var id = inp.getAttribute("data-sim-name");
+        var next = clone(state);
+        var s = next.simulations.filter(function (x) { return x.id === id; })[0];
+        if (!s) return;
+        s.name = inp.value.trim() || s.name;
+        saveState(next, { doneLabel: "Renamed." });
+      });
+    });
+
+    root.querySelectorAll("[data-sim-guestcount]").forEach(function (inp) {
+      inp.addEventListener("change", function () {
+        var id = inp.getAttribute("data-sim-guestcount");
+        var next = clone(state);
+        var s = next.simulations.filter(function (x) { return x.id === id; })[0];
+        if (!s) return;
+        s.guestCount = numOrNull(inp.value);
+        saveState(next, { doneLabel: "Guest count updated." });
+      });
+    });
+
+    root.querySelectorAll("[data-sim-vendorpick]").forEach(function (sel) {
+      sel.addEventListener("change", function () {
+        var parts = sel.getAttribute("data-sim-vendorpick").split("|");
+        var id = parts[0], catKey = parts[1];
+        var next = clone(state);
+        var s = next.simulations.filter(function (x) { return x.id === id; })[0];
+        if (!s) return;
+        if (!s.picks) s.picks = {};
+        s.picks[catKey] = sel.value;
+        saveState(next, { doneLabel: "Pick updated." });
+      });
     });
 
     /* guest list */
