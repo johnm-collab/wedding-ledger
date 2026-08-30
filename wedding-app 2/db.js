@@ -65,7 +65,7 @@ function defaultState() {
     id, title, offset, category: category || null, done: false, custom: false
   }));
   return {
-    profile: { coupleNames: "", weddingDate: "", location: "", address: "", guestCount: null, budgetTotal: null, style: "", notes: "", couplePhoto: "" },
+    profile: { coupleNames: "", weddingDate: "", location: "", address: "", guestCount: null, budgetTotal: null, style: "", notes: "" },
     categories,
     checklist,
     requests: [],
@@ -74,7 +74,7 @@ function defaultState() {
     fileImports: [],
     timeline: [],
     tables: [],
-    settings: { colorway: "classic", onboardingComplete: false },
+    settings: { colorway: "classic" },
     writable: true,
     _rev: 0
   };

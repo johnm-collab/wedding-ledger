@@ -161,10 +161,6 @@ app.put("/api/state", auth.requireAuth, async (req, res) => {
     if (!state || typeof expectedRev !== "number") {
       return res.status(400).json({ error: "Malformed save request." });
     }
-    const photo = state.profile && state.profile.couplePhoto;
-    if (typeof photo === "string" && photo.length > 3 * 1024 * 1024) {
-      return res.status(400).json({ error: "That photo is too large — try a smaller image." });
-    }
     const result = await db.saveState(state, expectedRev, req.user.email);
     if (result.conflict) {
       return res.status(409).json({ state: result.state, rev: result.rev });
@@ -207,12 +203,8 @@ function resolvePortalScope(state, token) {
     return { kind: "household", household, guestIds };
   }
   const guest = (state.guests || []).find((g) => g.rsvpToken && g.rsvpToken === token);
-  if (guest) return { kind: "guest", guestIds: [guest.id], guest };
+  if (guest) return { kind: "guest", guestIds: [guest.id] };
   return null;
-}
-
-function makePortalGuestId() {
-  return "g-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7);
 }
 
 app.get("/api/guest-portal/:token", portalLimiter, async (req, res) => {
@@ -230,13 +222,11 @@ app.get("/api/guest-portal/:token", portalLimiter, async (req, res) => {
     res.json({
       ok: true,
       householdName: scope.kind === "household" ? scope.household.name : null,
-      colorway: (state.settings && state.settings.colorway) || "classic",
       profile: {
         coupleNames: (state.profile && state.profile.coupleNames) || "",
         weddingDate: (state.profile && state.profile.weddingDate) || "",
         location: (state.profile && state.profile.location) || "",
-        address: (state.profile && state.profile.address) || "",
-        couplePhoto: (state.profile && state.profile.couplePhoto) || ""
+        address: (state.profile && state.profile.address) || ""
       },
       timeline: (state.timeline || []).map((t) => ({ time: t.time || "", title: t.title || "", notes: t.notes || "" })),
       members
@@ -249,11 +239,8 @@ app.get("/api/guest-portal/:token", portalLimiter, async (req, res) => {
 
 app.post("/api/guest-portal/:token", portalLimiter, async (req, res) => {
   try {
-    const { updates, additions } = req.body || {};
-    const hasUpdates = Array.isArray(updates) && updates.length;
-    const hasAdditions = Array.isArray(additions) && additions.length;
-    if (!hasUpdates && !hasAdditions) return res.status(400).json({ error: "No changes submitted." });
-    if (hasAdditions && additions.length > 6) return res.status(400).json({ error: "Too many people added at once — please submit a few at a time." });
+    const { updates } = req.body || {};
+    if (!Array.isArray(updates) || !updates.length) return res.status(400).json({ error: "No changes submitted." });
 
     const VALID_RSVP = new Set(["not_sent", "sent", "attending", "declined"]);
     for (let attempt = 0; attempt < 5; attempt++) {
@@ -264,7 +251,7 @@ app.post("/api/guest-portal/:token", portalLimiter, async (req, res) => {
       const allowedIds = new Set(scope.guestIds);
       const next = JSON.parse(JSON.stringify(state));
       let changed = false;
-      (updates || []).forEach((u) => {
+      updates.forEach((u) => {
         if (!u || !allowedIds.has(u.id)) return; // never touch a guest outside this link's own household
         const g = next.guests.find((x) => x.id === u.id);
         if (!g) return;
@@ -272,33 +259,6 @@ app.post("/api/guest-portal/:token", portalLimiter, async (req, res) => {
         if (typeof u.mealChoice === "string") { g.mealChoice = u.mealChoice.slice(0, 200); changed = true; }
         if (typeof u.email === "string") { g.email = u.email.slice(0, 200); changed = true; }
       });
-
-      // A guest can add a family member/+1 who wasn't already on the list.
-      // These land as new guest records, scoped to this link's own
-      // household (or unattached, for a personal link), flagged
-      // pendingApproval so the couple reviews them before they count
-      // toward headcount/seating — this can never touch or reveal any
-      // other guest's data.
-      const addedNoteBase = scope.kind === "household"
-        ? "Added via the " + (scope.household.name || "household") + " RSVP link"
-        : "Added via " + ((scope.guest && scope.guest.name) || "a guest") + "'s RSVP link";
-      (additions || []).forEach((a) => {
-        if (!a || typeof a.name !== "string") return;
-        const name = a.name.trim().slice(0, 120);
-        if (!name) return;
-        const rsvp = typeof a.rsvp === "string" && VALID_RSVP.has(a.rsvp) ? a.rsvp : "attending";
-        const mealChoice = typeof a.mealChoice === "string" ? a.mealChoice.slice(0, 200) : "";
-        next.guests.push({
-          id: makePortalGuestId(), name, side: "", group: "", plusOne: false, status: "invite",
-          howYouKnow: "", lastContact: "", closeness: "", notes: addedNoteBase,
-          rsvp, mealChoice, email: "", plusOneName: "", needsHotel: false, hotelBlock: "", arrival: "", departure: "",
-          giftReceived: false, giftDescription: "", thankYouSent: false, tableId: "",
-          householdId: scope.kind === "household" ? scope.household.id : "", rsvpToken: "",
-          pendingApproval: true
-        });
-        changed = true;
-      });
-
       if (!changed) return res.status(400).json({ error: "No valid changes submitted." });
 
       const result = await db.saveState(next, rev, "guest-portal:" + req.params.token.slice(0, 8));
