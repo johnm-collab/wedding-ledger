@@ -35,17 +35,6 @@
     --shadow: 0 1px 2px rgba(35,37,58,0.06), 0 8px 24px -12px rgba(35,37,58,0.18);
     --radius: 10px;
     font-size: 16px;
-    /* The "theme" a couple picks packages a colorway with a matching
-       background — built entirely from that colorway's own --accent-soft /
-       --brass-soft / --paper tokens (which already change per colorway and
-       per light/dark mode above), so every theme gets a distinct, on-brand
-       background wash for free, with no separate image assets needed. Used
-       on guest-facing pages (RSVP portal) and the first-run setup wizard —
-       never on the couple's own working dashboard. */
-    --theme-bg: radial-gradient(circle at 12% -10%, var(--accent-soft) 0%, transparent 48%),
-                radial-gradient(circle at 92% 8%, var(--brass-soft) 0%, transparent 42%),
-                radial-gradient(circle at 50% 115%, var(--accent-soft) 0%, transparent 55%),
-                linear-gradient(165deg, var(--paper) 0%, var(--paper-2) 100%);
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
@@ -673,50 +662,11 @@
   .portal-schedule-item:last-child { border-bottom: none; }
   .portal-schedule-item .ps-time { font-family: "IBM Plex Mono", monospace; font-size: 0.8rem; color: var(--ink-2); }
   .portal-member { border: 1px solid var(--line); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+  .portal-member h3 { font-size: 1rem; margin-bottom: 0.7rem; }
   .portal-member .field { margin-bottom: 0.8rem; }
-  .portal-attend-row { display: flex; align-items: center; gap: 0.65em; cursor: pointer; margin-bottom: 0.7rem; }
-  .portal-attend-row input { width: 20px; height: 20px; accent-color: var(--accent); flex: none; }
-  .portal-member-name { font-family: "Fraunces", Georgia, serif; font-size: 1.05rem; font-weight: 600; }
-  .portal-eyebrow { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--brass-ink, var(--ink-2)); font-weight: 700; margin-bottom: 0.5rem; }
-  .portal-shell { border-top: 3px solid var(--brass); padding-top: 1.75rem; }
-  .household-members-select { min-height: 90px; }
-
-  /* Themed pages — the RSVP portal and the first-run setup wizard. Never
-     used on the couple's own working dashboard. */
-  .themed-page { background: var(--theme-bg); min-height: 100vh; }
-  .couple-photo-frame {
-    display: block; width: 140px; height: 140px; margin: 0 auto 1rem; border-radius: 50%;
-    border: 4px solid var(--brass); box-shadow: var(--shadow); object-fit: cover; background: var(--surface);
-  }
-  .portal-search-shell, .wizard-shell { max-width: 480px; margin: 0 auto; padding: 3.5rem 1.25rem 4rem; text-align: center; }
-  .portal-search-shell h1, .wizard-shell h1 { font-size: 1.6rem; margin-bottom: 0.35rem; }
-  .portal-search-shell .portal-sub, .wizard-shell .wizard-sub { color: var(--ink-2); font-size: 0.95rem; margin-bottom: 1.75rem; }
-  .portal-search-shell .field, .portal-found-name { text-align: left; }
-  .portal-match-list { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 1rem; }
-  .portal-match-btn {
-    text-align: left; padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid var(--line); background: var(--surface);
-    cursor: pointer; font-size: 0.95rem; font-weight: 600; color: var(--ink);
-  }
-  .portal-match-btn:hover { border-color: var(--accent); }
-  .portal-addition-row { display: flex; gap: 0.6rem; margin-top: 0.75rem; align-items: flex-end; }
-  .portal-addition-row .field { flex: 1; margin-bottom: 0; }
-  .portal-addition-list { display: flex; flex-direction: column; gap: 0.4rem; margin: 0.75rem 0; }
-  .portal-addition-chip {
-    display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.5rem 0.75rem;
-    border-radius: 8px; background: var(--accent-soft); font-size: 0.85rem;
-  }
-  .portal-addition-chip button { background: none; border: none; color: var(--ink-muted); cursor: pointer; font-size: 0.8rem; text-decoration: underline; }
-  .pending-approval-badge {
-    display: inline-block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
-    color: var(--warning); background: var(--warning-soft); border-radius: 999px; padding: 0.15em 0.55em; margin-left: 0.4em; vertical-align: middle;
-  }
-
-  /* First-run setup wizard */
-  .wizard-shell { text-align: left; max-width: 640px; }
-  .wizard-shell .card { margin-bottom: 1.25rem; }
-  .wizard-photo-upload { text-align: center; margin-bottom: 1rem; }
-  .wizard-photo-upload input[type=file] { display: block; margin: 0.6rem auto 0; }
-  .wizard-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; }
+  .portal-rsvp-choices { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .portal-rsvp-choices label { display: flex; align-items: center; gap: 0.4em; font-weight: 400; border: 1px solid var(--line-strong); border-radius: 7px; padding: 0.45em 0.8em; cursor: pointer; color: var(--ink); }
+  .portal-rsvp-choices input { width: auto; }
   .login-links { display: flex; justify-content: space-between; margin-top: 0.9rem; }
   .link-btn { background: none; border: none; color: var(--accent); font-size: 0.82rem; font-weight: 600; cursor: pointer; text-decoration: underline; padding: 0; }
   .masthead-account { display: flex; align-items: center; gap: 0.75rem; }
@@ -847,7 +797,7 @@
       cats[c.key] = { requestStatus: "none", requestNote: "", vendors: [], bookedVendorId: null, allocated: null, actual: null, payment: defaultPayment() };
     });
     return {
-      profile: { coupleNames: "", weddingDate: "", location: "", address: "", guestCount: null, budgetTotal: null, style: "", notes: "", couplePhoto: "" },
+      profile: { coupleNames: "", weddingDate: "", location: "", address: "", guestCount: null, budgetTotal: null, style: "", notes: "" },
       categories: cats,
       checklist: CHECKLIST_DEFAULTS.map(function (d) {
         return { id: d.id, title: d.title, offset: d.offset, category: d.category || null, done: false, custom: false };
@@ -858,7 +808,7 @@
       fileImports: [],
       timeline: [],
       tables: [],
-      settings: { colorway: "classic", onboardingComplete: false },
+      settings: { colorway: "classic" },
       writable: true,
       _rev: 0
     };
@@ -897,20 +847,6 @@
   var resetErr = "";
   var changePasswordMsg = "";
   var changePasswordErr = "";
-
-  // First-run setup wizard — shown once, right after a couple's first
-  // sign-in, before they ever see the normal dashboard (state.settings.
-  // onboardingComplete gates it). "Skip for now" only dismisses it for the
-  // current session (onboardingSkipped); it comes back next sign-in until
-  // Finish is clicked. wizardDraft/wizardColorway/wizardPhoto are a local
-  // scratch copy — nothing here touches the couple's real profile until
-  // "Finish setup" saves it, same pattern as the RSVP portal's own _draft.
-  var onboardingSkipped = false;
-  var wizardDraft = null;
-  var wizardColorway = null;
-  var wizardPhoto = "";
-  var wizardError = "";
-  var photoError = ""; // upload error for the Theme card's photo control (Profile tab, post-onboarding)
 
   function applyLoadedState(parsed) {
     state = Object.assign(defaultState(), parsed, {
@@ -1578,14 +1514,6 @@
       }
       return;
     }
-    if (canWrite && state.settings && !state.settings.onboardingComplete && !onboardingSkipped) {
-      root.innerHTML = renderOnboardingWizard();
-      bindOnboardingWizardEvents();
-      return;
-    }
-    // Whatever the wizard (or anything else) left previewed on <html>, the
-    // dashboard always reflects the couple's actually-saved colorway.
-    applyColorway(state.settings && state.settings.colorway);
     root.innerHTML = renderMasthead() + renderReadonlyBanner() + renderStatStrip() +
       '<div class="app-shell">' + renderTabs() +
       '<div class="main-content"><div class="tab-panels">' +
@@ -1832,143 +1760,6 @@
     );
   }
 
-  // Reads an <input type=file> image, downscales it on a canvas, and
-  // resolves a compressed JPEG data URL — kept well under the server's
-  // couplePhoto size cap without needing any external image storage; the
-  // photo just rides along in the same JSON state blob as everything else.
-  function readAndResizeImage(file, maxDim, quality) {
-    maxDim = maxDim || 900;
-    quality = quality || 0.82;
-    return new Promise(function (resolve, reject) {
-      if (!file) { reject(new Error("No file chosen.")); return; }
-      if (!/^image\//.test(file.type)) { reject(new Error("Please choose an image file.")); return; }
-      var reader = new FileReader();
-      reader.onerror = function () { reject(new Error("Could not read that file.")); };
-      reader.onload = function () {
-        var img = new Image();
-        img.onerror = function () { reject(new Error("Could not read that image.")); };
-        img.onload = function () {
-          var scale = Math.min(1, maxDim / Math.max(img.width, img.height));
-          var w = Math.max(1, Math.round(img.width * scale));
-          var h = Math.max(1, Math.round(img.height * scale));
-          var canvas = document.createElement("canvas");
-          canvas.width = w; canvas.height = h;
-          var ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0, w, h);
-          resolve(canvas.toDataURL("image/jpeg", quality));
-        };
-        img.src = reader.result;
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  /* ---------- first-run setup wizard ---------- */
-
-  function wizardProfileFromForm(base) {
-    if (!document.getElementById("w-names")) return base;
-    return Object.assign({}, base, {
-      coupleNames: val("w-names"),
-      weddingDate: val("w-date"),
-      location: val("w-location"),
-      address: val("w-address"),
-      guestCount: numOrNull(val("w-guests")),
-      budgetTotal: numOrNull(val("w-budget")),
-      style: val("w-style"),
-      notes: val("w-notes", true)
-    });
-  }
-
-  function renderOnboardingWizard() {
-    if (!wizardDraft) wizardDraft = Object.assign({}, state.profile);
-    if (!wizardColorway) wizardColorway = (state.settings && state.settings.colorway) || "classic";
-    applyColorway(wizardColorway); // live preview while choosing
-    var d = wizardDraft;
-    var f = function (id, label, value, type, extra) {
-      type = type || "text";
-      return '<div class="field"><label for="' + id + '">' + label + '</label><input id="' + id + '" type="' + type + '" value="' + escapeHtml(value === null || value === undefined ? "" : value) + '" ' + (extra || "") + "/></div>";
-    };
-    var profileFields = '<div class="grid-2">' +
-      f("w-names", "Couple's names", d.coupleNames, "text", 'placeholder="e.g. Maya & Devon"') +
-      f("w-date", "Wedding date", d.weddingDate, "date") +
-      f("w-location", "Location (city, state / country)", d.location) +
-      f("w-address", "Address (venue or general area)", d.address) +
-      f("w-guests", "Guest count", d.guestCount, "number", 'min="0"') +
-      f("w-budget", "Total budget (USD)", d.budgetTotal, "number", 'min="0"') +
-      f("w-style", "Style / vibe", d.style) +
-      "</div>" +
-      '<div class="field" style="margin-top:1rem"><label for="w-notes">Notes for planning</label><textarea id="w-notes">' + escapeHtml(d.notes || "") + "</textarea></div>";
-
-    var themeOptions = COLORWAYS.map(function (c) {
-      var active = c.key === wizardColorway;
-      return '<button type="button" class="colorway-option' + (active ? " active" : "") + '" data-wizard-colorway="' + c.key + '">' +
-        '<span class="colorway-swatch"><span style="background:' + c.colors[0] + '"></span><span style="background:' + c.colors[1] + '"></span></span>' +
-        '<span class="colorway-label">' + escapeHtml(c.label) + (active ? " ✓" : "") + '</span>' +
-        '<span class="colorway-sub">' + escapeHtml(c.sub) + "</span>" +
-        "</button>";
-    }).join("");
-
-    var photoSrc = wizardPhoto || d.couplePhoto || "";
-    var photoPreview = photoSrc
-      ? '<img class="couple-photo-frame" src="' + photoSrc + '" alt="The couple" />'
-      : '<div class="couple-photo-frame" style="display:flex;align-items:center;justify-content:center;color:var(--ink-muted);font-size:0.72rem;text-align:center;padding:0.5rem">Add a photo</div>';
-
-    return '<div class="themed-page"><div class="wizard-shell">' +
-      '<h1 style="text-align:center">Welcome to The Wedding Ledger</h1>' +
-      '<div class="wizard-sub" style="text-align:center">Let’s set up your wedding site — takes about a minute, and you can change any of this later from the Profile tab.</div>' +
-      (wizardError ? '<div class="login-error">' + escapeHtml(wizardError) + "</div>" : "") +
-      '<div class="card"><h2>A photo of the two of you</h2><p class="muted">Optional — shown on your RSVP page as part of your theme.</p><div class="wizard-photo-upload">' + photoPreview + '<input type="file" id="w-photo-input" accept="image/*"/></div></div>' +
-      '<div class="card"><h2>Pick a theme</h2><p class="muted">Colors and a matching background — this is what your guests will see on the RSVP page.</p><div class="colorway-grid">' + themeOptions + "</div></div>" +
-      '<div class="card"><h2>Your details</h2>' + profileFields + "</div>" +
-      '<div class="wizard-actions"><button type="button" class="link-btn" id="wizard-skip-btn">Skip for now</button>' +
-      '<span class="save-status" id="wizard-save-status"></span>' +
-      '<button class="btn btn-primary" id="wizard-finish-btn"' + (saving ? " disabled" : "") + ">" + (saving ? "Saving…" : "Finish setup") + "</button></div>" +
-      "</div></div>";
-  }
-
-  function bindOnboardingWizardEvents() {
-    var root = document.getElementById("app-root");
-    root.querySelectorAll("[data-wizard-colorway]").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        wizardDraft = wizardProfileFromForm(wizardDraft);
-        wizardColorway = btn.getAttribute("data-wizard-colorway");
-        applyColorway(wizardColorway);
-        render();
-      });
-    });
-    var photoInput = document.getElementById("w-photo-input");
-    if (photoInput) photoInput.addEventListener("change", function () {
-      var file = photoInput.files && photoInput.files[0];
-      if (!file) return;
-      readAndResizeImage(file).then(function (dataUrl) {
-        wizardDraft = wizardProfileFromForm(wizardDraft);
-        wizardPhoto = dataUrl;
-        wizardError = "";
-        render();
-      }).catch(function (e) {
-        wizardDraft = wizardProfileFromForm(wizardDraft);
-        wizardError = e.message || "Could not use that photo.";
-        render();
-      });
-    });
-    var skipBtn = document.getElementById("wizard-skip-btn");
-    if (skipBtn) skipBtn.addEventListener("click", function () {
-      onboardingSkipped = true;
-      applyColorway(state.settings && state.settings.colorway);
-      render();
-    });
-    var finishBtn = document.getElementById("wizard-finish-btn");
-    if (finishBtn) finishBtn.addEventListener("click", function () {
-      wizardDraft = wizardProfileFromForm(wizardDraft);
-      var next = clone(state);
-      next.profile = Object.assign({}, next.profile, wizardDraft, { couplePhoto: wizardPhoto || next.profile.couplePhoto || "" });
-      next.settings = Object.assign({}, next.settings, { colorway: wizardColorway, onboardingComplete: true });
-      saveState(next, { doneLabel: "All set — welcome!" }).then(function () {
-        wizardDraft = null; wizardColorway = null; wizardPhoto = ""; wizardError = "";
-      });
-    });
-  }
-
   function renderColorwayPicker() {
     var current = (state.settings && state.settings.colorway) || "classic";
     var options = COLORWAYS.map(function (c) {
@@ -1979,20 +1770,9 @@
         '<span class="colorway-sub">' + escapeHtml(c.sub) + "</span>" +
         "</button>";
     }).join("");
-    var photo = state.profile.couplePhoto || "";
-    var photoPreview = photo
-      ? '<img class="couple-photo-frame" src="' + photo + '" alt="The couple" />'
-      : '<div class="couple-photo-frame" style="display:flex;align-items:center;justify-content:center;color:var(--ink-muted);font-size:0.72rem;text-align:center;padding:0.5rem">No photo yet</div>';
-    var photoSection = canWrite
-      ? '<div style="margin-top:1.25rem;text-align:center">' + photoPreview +
-        '<input type="file" id="f-couple-photo" accept="image/*" style="display:block;margin:0.6rem auto 0"/>' +
-        (photo ? '<button type="button" class="link-btn" id="remove-couple-photo-btn" style="margin-top:0.5rem">Remove photo</button>' : "") +
-        (photoError ? '<div class="login-error" style="margin-top:0.6rem">' + escapeHtml(photoError) + "</div>" : "") +
-        "</div>"
-      : (photo ? '<div style="margin-top:1.25rem;text-align:center">' + photoPreview + "</div>" : "");
-    return '<div class="card"><h2>Theme</h2><p class="muted">' +
-      (canWrite ? "Colors, a matching background, and your photo — this is what guests see on your RSVP page. Applies for both of you right away." : "The site's current theme. Ask the owner to change it.") +
-      '</p><div class="colorway-grid">' + options + "</div>" + photoSection + "</div>";
+    return '<div class="card"><h2>Site colorway</h2><p class="muted">' +
+      (canWrite ? "Pick a palette — it applies for both of you right away." : "The site's current color palette. Ask the owner to change it.") +
+      '</p><div class="colorway-grid">' + options + "</div></div>";
   }
 
   function renderProfile() {
@@ -2325,20 +2105,13 @@
       guestImportLog +
       "</div>" : (copyFallback || guestImportLog ? '<div class="card">' + fallback + guestImportLog + "</div>" : "");
 
-    var householdsCard = state.guests.length ? '<div class="card"><h3>Households</h3><p class="muted">Group family members who should share one invitation and one RSVP link — ctrl/cmd-click (or tap, on mobile) to select everyone in a household from the Members list below.</p>' +
+    var householdsCard = state.guests.length ? '<div class="card"><h3>Households</h3><p class="muted">Group family members who should share one invitation and one RSVP link — set who\'s in which household from a guest\'s Details panel below. Everyone else counts, and RSVPs, on their own.</p>' +
       ((state.households || []).length ? '<div class="table-scroll"><table><thead><tr><th>Household</th><th>Members</th><th>Invite</th><th>RSVP link</th><th></th></tr></thead><tbody>' +
         state.households.map(function (h) {
-          var memberIds = {};
-          state.guests.forEach(function (g) { if (g.householdId === h.id) memberIds[g.id] = true; });
+          var members = state.guests.filter(function (g) { return g.householdId === h.id; });
           var link = h.rsvpToken ? portalUrl(h.rsvpToken) : "";
-          var memberOptions = state.guests.slice().sort(function (a, b) { return a.name.localeCompare(b.name); }).map(function (g) {
-            // A guest already in a different household still appears (so you
-            // can move them), labeled with where they currently are.
-            var other = g.householdId && g.householdId !== h.id ? (state.households.filter(function (x) { return x.id === g.householdId; })[0] || {}).name : "";
-            return '<option value="' + g.id + '"' + (memberIds[g.id] ? " selected" : "") + '>' + escapeHtml(g.name) + (other ? " (in " + escapeHtml(other) + ")" : "") + "</option>";
-          }).join("");
           return "<tr><td><input type=\"text\" data-household-field=\"name|" + h.id + "\" value=\"" + escapeHtml(h.name) + "\" " + (canWrite ? "" : "disabled") + "/></td>" +
-            "<td><select multiple class=\"household-members-select\" data-household-members=\"" + h.id + "\" " + (canWrite ? "" : "disabled") + ">" + memberOptions + "</select></td>" +
+            "<td>" + members.length + (members.length ? ": " + escapeHtml(members.map(function (g) { return g.name; }).join(", ")) : "") + "</td>" +
             "<td><label style=\"display:flex;align-items:center;gap:0.4em;font-weight:400;white-space:nowrap\"><input type=\"checkbox\" data-household-check=\"sendSeparateInvites|" + h.id + "\" " + (h.sendSeparateInvites ? "checked" : "") + (canWrite ? "" : " disabled") + " style=\"width:16px;height:16px;accent-color:var(--accent)\"/> Send separate</label></td>" +
             "<td>" + (link ? "<input type=\"text\" readonly value=\"" + escapeHtml(link) + "\" onclick=\"this.select()\" style=\"width:220px\"/>" : '<span class="tiny">Not generated yet</span>') +
               (canWrite ? ' <button type="button" class="btn btn-secondary btn-sm" data-household-genlink="' + h.id + '">' + (link ? "Regenerate" : "Generate link") + "</button>" : "") + "</td>" +
@@ -2410,8 +2183,7 @@
           var rows = b.items.map(function (g) {
             var expanded = !!expandedGuestIds[g.id];
             var main = '<tr>' +
-              '<td class="guest-row-name">' + closenessDot(g) + '<input type="text" data-guest-field="name|' + g.id + '" value="' + escapeHtml(g.name) + '" ' + (canWrite ? "" : "disabled") + '/>' +
-                (g.pendingApproval ? '<span class="pending-approval-badge" title="Added by a guest through the RSVP portal — review and approve">New, via RSVP</span>' : "") + "</td>" +
+              '<td class="guest-row-name">' + closenessDot(g) + '<input type="text" data-guest-field="name|' + g.id + '" value="' + escapeHtml(g.name) + '" ' + (canWrite ? "" : "disabled") + '/></td>' +
               '<td class="guest-row-side"><input type="text" data-guest-field="side|' + g.id + '" value="' + escapeHtml(g.side || "") + '" ' + (canWrite ? "" : "disabled") + '/></td>' +
               '<td class="guest-row-group"><input type="text" data-guest-field="group|' + g.id + '" value="' + escapeHtml(g.group || "") + '" ' + (canWrite ? "" : "disabled") + '/></td>' +
               '<td class="guest-plus1"><input type="checkbox" data-guest-plusone="' + g.id + '" ' + (g.plusOne ? "checked" : "") + (canWrite ? "" : " disabled") + '/></td>' +
@@ -2422,7 +2194,7 @@
                 }).join("") + "</div>" : '<span class="pill"><span class="dot ' + (g.status === "invite" ? "good" : g.status === "no" ? "critical" : "neutral") + '"></span>' + (g.status === "invite" ? "Invited" : g.status === "no" ? "Not invited" : "To decide") + "</span>") + "</td>" +
               '<td><select data-guest-field="rsvp|' + g.id + '" ' + (canWrite ? "" : "disabled") + '>' + RSVP_META.map(function (r) { return '<option value="' + r.value + '"' + ((g.rsvp || "not_sent") === r.value ? " selected" : "") + '>' + r.label + "</option>"; }).join("") + "</select></td>" +
               "<td><button class=\"detail-toggle\" data-guest-toggle=\"" + g.id + '">' + (expanded ? "Hide ▾" : "Details ▸") + "</button></td>" +
-              "<td>" + (canWrite ? (g.pendingApproval ? '<button class="btn btn-secondary btn-sm" data-guest-approve="' + g.id + '">Approve</button> ' : "") + '<button class="btn btn-ghost btn-sm" data-guest-remove="' + g.id + '">Remove</button>' : "") + "</td>" +
+              "<td>" + (canWrite ? '<button class="btn btn-ghost btn-sm" data-guest-remove="' + g.id + '">Remove</button>' : "") + "</td>" +
               "</tr>";
             var detail = expanded ? '<tr class="detail-row"><td colspan="8"><div class="detail-grid">' +
               '<div class="field"><label>How you know them</label><input type="text" data-guest-field="howYouKnow|' + g.id + '" value="' + escapeHtml(g.howYouKnow || "") + '" placeholder="e.g. College roommate" ' + (canWrite ? "" : "disabled") + '/></div>' +
@@ -2736,30 +2508,17 @@
       });
     });
 
-    // Reads whatever's currently typed into the profile form fields, when
-    // they're on screen (i.e. we're on the Profile tab). Shared by the Save
-    // Profile button and the colorway picker below — picking a colorway
-    // saves+re-renders on its own, and without this, that re-render would
-    // silently overwrite the visible inputs with the last-saved (stale)
-    // values, wiping out anything typed but not yet saved.
-    function profileFieldsFromForm(profile) {
-      if (!document.getElementById("f-names")) return profile;
-      return Object.assign({}, profile, {
-        coupleNames: val("f-names"),
-        weddingDate: val("f-date"),
-        location: val("f-location"),
-        address: val("f-address"),
-        guestCount: numOrNull(val("f-guests")),
-        budgetTotal: numOrNull(val("f-budget")),
-        style: val("f-style"),
-        notes: val("f-notes", true)
-      });
-    }
-
     var saveProfileBtn = document.getElementById("save-profile-btn");
     if (saveProfileBtn) saveProfileBtn.addEventListener("click", function () {
       var next = clone(state);
-      next.profile = profileFieldsFromForm(next.profile);
+      next.profile.coupleNames = val("f-names");
+      next.profile.weddingDate = val("f-date");
+      next.profile.location = val("f-location");
+      next.profile.address = val("f-address");
+      next.profile.guestCount = numOrNull(val("f-guests"));
+      next.profile.budgetTotal = numOrNull(val("f-budget"));
+      next.profile.style = val("f-style");
+      next.profile.notes = val("f-notes", true);
       saveState(next, { doneLabel: "Profile saved." });
     });
 
@@ -2810,7 +2569,6 @@
         if (key === (state.settings && state.settings.colorway)) return;
         applyColorway(key); // instant preview, doesn't wait on the save round-trip
         var next = clone(state);
-        next.profile = profileFieldsFromForm(next.profile);
         next.settings = Object.assign({}, next.settings, { colorway: key });
         var picked = COLORWAYS.filter(function (c) { return c.key === key; })[0];
         saveState(next, { doneLabel: (picked ? picked.label : "Colorway") + " applied." }).then(function () {
@@ -2819,27 +2577,6 @@
           applyColorway(state.settings && state.settings.colorway);
         });
       });
-    });
-
-    var couplePhotoInput = document.getElementById("f-couple-photo");
-    if (couplePhotoInput) couplePhotoInput.addEventListener("change", function () {
-      var file = couplePhotoInput.files && couplePhotoInput.files[0];
-      if (!file) return;
-      readAndResizeImage(file).then(function (dataUrl) {
-        var next = clone(state);
-        next.profile = Object.assign({}, profileFieldsFromForm(next.profile), { couplePhoto: dataUrl });
-        photoError = "";
-        saveState(next, { doneLabel: "Photo updated." });
-      }).catch(function (e) {
-        photoError = e.message || "Could not use that photo.";
-        render();
-      });
-    });
-    var removePhotoBtn = document.getElementById("remove-couple-photo-btn");
-    if (removePhotoBtn) removePhotoBtn.addEventListener("click", function () {
-      var next = clone(state);
-      next.profile = Object.assign({}, profileFieldsFromForm(next.profile), { couplePhoto: "" });
-      saveState(next, { doneLabel: "Photo removed." });
     });
 
     root.querySelectorAll("[data-request-cat]").forEach(function (btn) {
@@ -3128,14 +2865,6 @@
         render();
       });
     });
-    root.querySelectorAll("[data-guest-approve]").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        var id = btn.getAttribute("data-guest-approve");
-        var g = state.guests.filter(function (x) { return x.id === id; })[0];
-        if (g) g.pendingApproval = false;
-        render();
-      });
-    });
     root.querySelectorAll("[data-guest-bulk]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         var parts = btn.getAttribute("data-guest-bulk").split("|");
@@ -3183,23 +2912,6 @@
         var id = btn.getAttribute("data-household-remove");
         state.households = (state.households || []).filter(function (h) { return h.id !== id; });
         state.guests.forEach(function (g) { if (g.householdId === id) g.householdId = ""; });
-        render();
-      });
-    });
-    root.querySelectorAll("[data-household-members]").forEach(function (sel) {
-      sel.addEventListener("change", function () {
-        var id = sel.getAttribute("data-household-members");
-        var selected = {};
-        Array.prototype.forEach.call(sel.selectedOptions, function (opt) { selected[opt.value] = true; });
-        // This one control is the source of truth for the household's
-        // roster: a guest checked here joins it (leaving whatever household
-        // they were in before, since a guest belongs to at most one), and a
-        // guest that was a member but is no longer selected is released
-        // back to being ungrouped.
-        state.guests.forEach(function (g) {
-          if (selected[g.id]) g.householdId = id;
-          else if (g.householdId === id) g.householdId = "";
-        });
         render();
       });
     });
@@ -3394,28 +3106,14 @@
   var portalError = "";
   var portalSaving = false;
   var portalDone = false;
-  // portalStep walks: "search" (type your name) -> "choose" (multiple name
-  // matches) or "notfound" (no match) -> "attend" (the actual RSVP form).
-  // Reusing the household's full member list for the "attend" step (rather
-  // than only the person who searched) keeps the existing, valuable "one
-  // person manages the whole family's RSVP" behavior once they've gotten in.
-  var portalStep = "search";
-  var portalQuery = "";
-  var portalMatches = [];
-  var portalIdentified = null;
-  var portalAddName = "";
-  // New family members/+1s a guest adds that weren't already on the list.
-  // Queued locally until Save RSVP; submitted as `additions` and land on
-  // the couple's Guest tab flagged pendingApproval for them to confirm.
-  var portalNewAdditions = [];
+
+  var PORTAL_RSVP_CHOICES = [
+    { value: "attending", label: "Joyfully accepts" },
+    { value: "declined", label: "Regretfully declines" }
+  ];
 
   function loadGuestPortal(token) {
     portalToken = token;
-    portalStep = "search";
-    portalQuery = "";
-    portalMatches = [];
-    portalIdentified = null;
-    portalNewAdditions = [];
     fetch("/api/guest-portal/" + encodeURIComponent(token), { credentials: "same-origin" })
       .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
       .then(function (r) {
@@ -3423,11 +3121,6 @@
           portalError = (r.data && r.data.error) || "This RSVP link isn't valid.";
         } else {
           portalData = r.data;
-          // Match the same theme the couple picked during setup — the RSVP
-          // page is a guest's first impression, so it should look like the
-          // same wedding (colors, background, and their photo), not a
-          // generic gray form.
-          applyColorway(portalData.colorway);
           // Local edit buffer, seeded from the server's current values.
           portalData.members.forEach(function (m) { m._draft = { rsvp: m.rsvp, mealChoice: m.mealChoice, email: m.email }; });
         }
@@ -3438,171 +3131,58 @@
       });
   }
 
-  var PORTAL_EYEBROW = '<div class="portal-eyebrow">The Wedding Ledger</div>';
-
-  function portalHeader() {
-    var p = (portalData && portalData.profile) || {};
-    var dateStr = p.weddingDate ? fmtDate(new Date(p.weddingDate + "T00:00:00")) : "";
-    var photo = p.couplePhoto ? '<img class="couple-photo-frame" src="' + p.couplePhoto + '" alt="' + escapeHtml(p.coupleNames || "The couple") + '"/>' : "";
-    return photo + PORTAL_EYEBROW + "<h1>" + escapeHtml(p.coupleNames || "Our Wedding") + "</h1>" +
-      '<div class="portal-sub">' + [dateStr, p.location].filter(Boolean).join(" · ") + (p.address ? "<br/>" + escapeHtml(p.address) : "") + "</div>";
-  }
-
-  // Loose, forgiving name matching — case-insensitive substring in either
-  // direction, plus a per-word check, so "jordan" finds "Jordan Reyes" and
-  // "reyes" finds it too.
-  function portalSearchMembers(query) {
-    var q = query.trim().toLowerCase();
-    if (!q) return [];
-    return portalData.members.filter(function (m) {
-      var name = m.name.toLowerCase();
-      if (name.indexOf(q) !== -1 || q.indexOf(name) !== -1) return true;
-      return name.split(/\s+/).some(function (part) { return part && (part.indexOf(q) !== -1 || q.indexOf(part) !== -1); });
-    });
-  }
-
   function renderGuestPortalPage() {
     var root = document.getElementById("app-root");
-    if (portalError && !portalData) {
-      root.innerHTML = '<div class="themed-page"><div class="portal-search-shell">' + PORTAL_EYEBROW + "<h1>RSVP</h1>" +
-        '<div class="login-error">' + escapeHtml(portalError) + "</div></div></div>";
+    if (portalError) {
+      root.innerHTML = '<div class="portal-shell"><h1>The Wedding Ledger</h1>' +
+        '<div class="login-error">' + escapeHtml(portalError) + "</div></div>";
       return;
     }
     if (!portalData) {
-      root.innerHTML = '<div class="themed-page"><div class="portal-search-shell">' + PORTAL_EYEBROW + '<h1>RSVP</h1><div class="portal-sub">Loading your invitation…</div></div></div>';
+      root.innerHTML = '<div class="portal-shell"><h1>The Wedding Ledger</h1><div class="portal-sub">Loading your invitation…</div></div>';
       return;
     }
-    if (portalDone) {
-      root.innerHTML = '<div class="themed-page"><div class="portal-shell">' + portalHeader() +
-        '<div class="login-notice">Thank you — your RSVP is saved. You can come back to this link any time to update it.</div></div></div>';
-      return;
-    }
-    if (portalStep === "attend") { root.innerHTML = renderPortalAttend(); bindGuestPortalEvents(); return; }
-    if (portalStep === "choose") { root.innerHTML = renderPortalChoose(); bindGuestPortalEvents(); return; }
-    if (portalStep === "notfound") { root.innerHTML = renderPortalNotFound(); bindGuestPortalEvents(); return; }
-    root.innerHTML = renderPortalSearch();
-    bindGuestPortalEvents();
-  }
-
-  function renderPortalSearch() {
-    return '<div class="themed-page"><div class="portal-search-shell">' + portalHeader() +
-      '<div class="portal-sub">Type your name to find your invitation.</div>' +
-      (portalError ? '<div class="login-error">' + escapeHtml(portalError) + "</div>" : "") +
-      '<div class="field"><label for="portal-search-input">Your name</label><input type="text" id="portal-search-input" placeholder="e.g. Jordan Reyes" value="' + escapeHtml(portalQuery) + '"/></div>' +
-      '<div class="save-row" style="justify-content:center"><button class="btn btn-primary" id="portal-search-btn">Find my invitation</button></div>' +
-      "</div></div>";
-  }
-
-  function renderPortalChoose() {
-    var list = portalMatches.map(function (m) {
-      return '<button type="button" class="portal-match-btn" data-portal-pick="' + m.id + '">' + escapeHtml(m.name) + "</button>";
-    }).join("");
-    return '<div class="themed-page"><div class="portal-search-shell">' + portalHeader() +
-      '<div class="portal-sub">A few names matched &ldquo;' + escapeHtml(portalQuery) + '&rdquo; — which one are you?</div>' +
-      '<div class="portal-match-list">' + list + "</div>" +
-      '<div class="save-row" style="justify-content:center"><button type="button" class="link-btn" id="portal-back-to-search">None of these — try again</button></div>' +
-      "</div></div>";
-  }
-
-  function renderPortalNotFound() {
-    return '<div class="themed-page"><div class="portal-search-shell">' + portalHeader() +
-      '<div class="portal-sub">We couldn&rsquo;t find &ldquo;' + escapeHtml(portalQuery) + '&rdquo;' + (portalData.householdName ? " on the list for " + escapeHtml(portalData.householdName) : " on the list") + '. Double-check the spelling, or let the couple know you&rsquo;ll be joining — they\'ll confirm it on their end.</div>' +
-      '<div class="save-row" style="justify-content:center;gap:0.6rem"><button type="button" class="btn btn-secondary" id="portal-back-to-search">Try again</button>' +
-      '<button type="button" class="btn btn-primary" id="portal-add-self-btn">Continue as &ldquo;' + escapeHtml(portalQuery) + '&rdquo;</button></div>' +
-      "</div></div>";
-  }
-
-  function renderPortalAttend() {
+    var p = portalData.profile || {};
+    var dateStr = p.weddingDate ? fmtDate(new Date(p.weddingDate + "T00:00:00")) : "";
     var scheduleHtml = (portalData.timeline || []).length
       ? '<div class="portal-card"><h2>Schedule</h2>' + portalData.timeline.map(function (t) {
-          return '<div class="portal-schedule-item"><div class="ps-time">' + escapeHtml(fmtTime(t.time)) + '</div><div>' + escapeHtml(t.title || "") + "</div>" +
+          return '<div class="portal-schedule-item"><div class="ps-time">' + escapeHtml(t.time || "") + '</div><div>' + escapeHtml(t.title || "") + "</div>" +
             (t.notes ? '<div class="tiny">' + escapeHtml(t.notes) + "</div>" : "") + "</div>";
         }).join("") + "</div>"
       : "";
 
-    // A single checkbox per person — check off everyone from the household
-    // who's coming, rather than an accept/decline choice per person. Meal
-    // choice only makes sense once someone's marked as attending.
+    var doneHtml = portalDone ? '<div class="login-notice">Thank you — your RSVP is saved. You can come back to this link any time to update it.</div>' : "";
+
     var membersHtml = portalData.members.map(function (m) {
-      var attending = m._draft.rsvp === "attending";
-      return '<div class="portal-member"><label class="portal-attend-row">' +
-        '<input type="checkbox" data-portal-attending="' + m.id + '"' + (attending ? " checked" : "") + '/>' +
-        '<span class="portal-member-name">' + escapeHtml(m.name) + "</span></label>" +
-        (attending ? '<div class="field"><label>Meal choice</label><input type="text" data-portal-meal="' + m.id + '" value="' + escapeHtml(m._draft.mealChoice || "") + '" placeholder="e.g. Vegetarian, no allergies"/></div>' : "") +
+      return '<div class="portal-member"><h3>' + escapeHtml(m.name) + "</h3>" +
+        '<div class="field"><label>Will you be attending?</label><div class="portal-rsvp-choices">' +
+        PORTAL_RSVP_CHOICES.map(function (c) {
+          return '<label><input type="radio" name="portal-rsvp-' + m.id + '" value="' + c.value + '" data-portal-rsvp="' + m.id + '"' + (m._draft.rsvp === c.value ? " checked" : "") + "/>" + c.label + "</label>";
+        }).join("") + "</div></div>" +
+        (m._draft.rsvp === "attending" ? '<div class="field"><label>Meal choice</label><input type="text" data-portal-meal="' + m.id + '" value="' + escapeHtml(m._draft.mealChoice || "") + '" placeholder="e.g. Vegetarian, no allergies"/></div>' : "") +
         '<div class="field"><label>Email (optional — for updates from us)</label><input type="email" data-portal-email="' + m.id + '" value="' + escapeHtml(m._draft.email || "") + '" placeholder="name@example.com"/></div>' +
         "</div>";
     }).join("");
 
-    var additionsHtml = portalNewAdditions.length ? '<div class="portal-addition-list">' + portalNewAdditions.map(function (a, i) {
-      return '<div class="portal-addition-chip"><label style="display:flex;align-items:center;gap:0.5em;flex:1;font-weight:600;cursor:pointer">' +
-        '<input type="checkbox" data-portal-addition-attending="' + i + '"' + (a.rsvp === "attending" ? " checked" : "") + '/>' +
-        escapeHtml(a.name) + ' <span class="tiny" style="font-weight:400">(new — pending review)</span></label>' +
-        '<button type="button" data-portal-addition-remove="' + i + '">Remove</button></div>';
-    }).join("") + "</div>" : "";
-
-    var addForm = '<div class="portal-addition-row"><div class="field"><label for="portal-add-name">Add a family member or +1 we missed</label>' +
-      '<input type="text" id="portal-add-name" placeholder="Full name" value="' + escapeHtml(portalAddName) + '"/></div>' +
-      '<button type="button" class="btn btn-secondary btn-sm" id="portal-add-btn">Add</button></div>';
-
-    var greeting = portalIdentified ? "Hi " + escapeHtml(portalIdentified.name) + "! " : "";
-    var rsvpIntro = greeting + (portalData.members.length > 1
-      ? "Check off everyone from " + (portalData.householdName ? escapeHtml(portalData.householdName) : "your household") + " who'll be joining us."
-      : "Let us know if you'll be joining us.");
-
-    return '<div class="themed-page"><div class="portal-shell">' + portalHeader() + scheduleHtml +
+    root.innerHTML = '<div class="portal-shell"><h1>' + escapeHtml(p.coupleNames || "Our Wedding") + "</h1>" +
+      '<div class="portal-sub">' + [dateStr, p.location].filter(Boolean).join(" · ") + (p.address ? "<br/>" + escapeHtml(p.address) : "") + "</div>" +
+      doneHtml + scheduleHtml +
       '<div class="portal-card"><h2>RSVP' + (portalData.householdName ? " — " + escapeHtml(portalData.householdName) : "") + "</h2>" +
-      '<p class="muted">' + rsvpIntro + "</p>" +
-      membersHtml + additionsHtml + addForm +
+      '<p class="muted">Let us know if ' + (portalData.members.length > 1 ? "each of you" : "you") + " can make it.</p>" +
+      membersHtml +
       (portalError ? '<div class="login-error">' + escapeHtml(portalError) + "</div>" : "") +
-      '<div class="save-row"><button class="btn btn-primary" id="portal-submit-btn"' + (portalSaving ? " disabled" : "") + ">" + (portalSaving ? "Saving…" : "Save RSVP") + "</button></div></div></div></div>";
+      '<div class="save-row"><button class="btn btn-primary" id="portal-submit-btn"' + (portalSaving ? " disabled" : "") + ">" + (portalSaving ? "Saving…" : "Save RSVP") + "</button></div></div></div>";
+
+    bindGuestPortalEvents();
   }
 
   function bindGuestPortalEvents() {
     var root = document.getElementById("app-root");
-
-    var searchInput = document.getElementById("portal-search-input");
-    var searchBtn = document.getElementById("portal-search-btn");
-    function doPortalSearch() {
-      portalQuery = searchInput ? searchInput.value : portalQuery;
-      if (!portalQuery.trim()) { portalError = "Enter your name to continue."; renderGuestPortalPage(); return; }
-      var matches = portalSearchMembers(portalQuery);
-      portalError = "";
-      if (matches.length === 0) { portalStep = "notfound"; }
-      else if (matches.length === 1) { portalIdentified = matches[0]; portalStep = "attend"; }
-      else { portalMatches = matches; portalStep = "choose"; }
-      renderGuestPortalPage();
-    }
-    if (searchBtn) searchBtn.addEventListener("click", doPortalSearch);
-    if (searchInput) searchInput.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); doPortalSearch(); } });
-
-    root.querySelectorAll("[data-portal-pick]").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        var id = btn.getAttribute("data-portal-pick");
-        portalIdentified = portalData.members.filter(function (m) { return m.id === id; })[0] || null;
-        portalStep = "attend";
-        renderGuestPortalPage();
-      });
-    });
-
-    var backBtn = document.getElementById("portal-back-to-search");
-    if (backBtn) backBtn.addEventListener("click", function () {
-      portalStep = "search"; portalError = ""; portalMatches = [];
-      renderGuestPortalPage();
-    });
-
-    var addSelfBtn = document.getElementById("portal-add-self-btn");
-    if (addSelfBtn) addSelfBtn.addEventListener("click", function () {
-      portalNewAdditions.push({ name: portalQuery.trim(), rsvp: "attending", mealChoice: "" });
-      portalIdentified = null;
-      portalStep = "attend";
-      renderGuestPortalPage();
-    });
-
-    root.querySelectorAll("[data-portal-attending]").forEach(function (el) {
+    root.querySelectorAll("[data-portal-rsvp]").forEach(function (el) {
       el.addEventListener("change", function () {
-        var id = el.getAttribute("data-portal-attending");
+        var id = el.getAttribute("data-portal-rsvp");
         var m = portalData.members.filter(function (x) { return x.id === id; })[0];
-        if (m) { m._draft.rsvp = el.checked ? "attending" : "declined"; renderGuestPortalPage(); }
+        if (m && el.checked) { m._draft.rsvp = el.value; renderGuestPortalPage(); }
       });
     });
     root.querySelectorAll("[data-portal-meal]").forEach(function (el) {
@@ -3619,72 +3199,19 @@
         if (m) m._draft.email = el.value;
       });
     });
-
-    root.querySelectorAll("[data-portal-addition-attending]").forEach(function (el) {
-      el.addEventListener("change", function () {
-        var i = Number(el.getAttribute("data-portal-addition-attending"));
-        if (portalNewAdditions[i]) portalNewAdditions[i].rsvp = el.checked ? "attending" : "declined";
-      });
-    });
-    root.querySelectorAll("[data-portal-addition-remove]").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        var i = Number(btn.getAttribute("data-portal-addition-remove"));
-        portalNewAdditions.splice(i, 1);
-        renderGuestPortalPage();
-      });
-    });
-
-    var addNameInput = document.getElementById("portal-add-name");
-    var addBtn = document.getElementById("portal-add-btn");
-    function addPortalAddition() {
-      var name = addNameInput ? addNameInput.value.trim() : "";
-      if (!name) return;
-      if (portalNewAdditions.length >= 6) {
-        portalError = "You can add up to 6 people at once — save this RSVP, then use the link again for more.";
-        renderGuestPortalPage();
-        return;
-      }
-      portalNewAdditions.push({ name: name, rsvp: "attending", mealChoice: "" });
-      portalAddName = "";
-      portalError = "";
-      renderGuestPortalPage();
-    }
-    if (addBtn) addBtn.addEventListener("click", addPortalAddition);
-    if (addNameInput) addNameInput.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); addPortalAddition(); } });
-
     var submitBtn = document.getElementById("portal-submit-btn");
     if (submitBtn) submitBtn.addEventListener("click", function () {
-      // Submitting is the definitive headcount: whatever's checked right
-      // now becomes "attending" and everything else becomes "declined" —
-      // including any member whose checkbox was never touched — so the
-      // couple gets a real yes/no for every person, not a lingering
-      // "no response yet". Read the live checkbox state before the render
-      // below replaces these elements.
-      root.querySelectorAll("[data-portal-attending]").forEach(function (el) {
-        var id = el.getAttribute("data-portal-attending");
-        var m = portalData.members.filter(function (x) { return x.id === id; })[0];
-        if (m) m._draft.rsvp = el.checked ? "attending" : "declined";
-      });
-      root.querySelectorAll("[data-portal-addition-attending]").forEach(function (el) {
-        var i = Number(el.getAttribute("data-portal-addition-attending"));
-        if (portalNewAdditions[i]) portalNewAdditions[i].rsvp = el.checked ? "attending" : "declined";
-      });
-
       portalSaving = true;
       portalError = "";
       renderGuestPortalPage();
       var updates = portalData.members.map(function (m) {
         return { id: m.id, rsvp: m._draft.rsvp, mealChoice: m._draft.mealChoice, email: m._draft.email };
       });
-      var body = { updates: updates };
-      if (portalNewAdditions.length) {
-        body.additions = portalNewAdditions.map(function (a) { return { name: a.name, rsvp: a.rsvp, mealChoice: a.mealChoice }; });
-      }
       fetch("/api/guest-portal/" + encodeURIComponent(portalToken), {
         method: "POST",
         credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
+        body: JSON.stringify({ updates: updates })
       }).then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
         .then(function (r) {
           portalSaving = false;
@@ -3693,7 +3220,6 @@
           } else {
             portalDone = true;
             portalData.members.forEach(function (m) { m.rsvp = m._draft.rsvp; m.mealChoice = m._draft.mealChoice; m.email = m._draft.email; });
-            portalNewAdditions = [];
           }
           renderGuestPortalPage();
         }).catch(function () {
