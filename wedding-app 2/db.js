@@ -65,7 +65,7 @@ function defaultState() {
     id, title, offset, category: category || null, done: false, custom: false
   }));
   return {
-    profile: { coupleNames: "", weddingDate: "", location: "", address: "", guestCount: null, budgetTotal: null, style: "", notes: "", couplePhoto: "", story: "" },
+    profile: { coupleNames: "", weddingDate: "", location: "", address: "", guestCount: null, budgetTotal: null, style: "", notes: "", couplePhoto: "", story: "", storyPhotos: [] },
     categories,
     checklist,
     requests: [],
@@ -183,6 +183,20 @@ async function updateAccountPassword(email, newHash) {
   );
 }
 
+// Creates a brand-new login. Returns false (no insert performed) if an
+// account with this email already exists, so the caller can distinguish
+// "already there" from an unexpected DB error rather than silently
+// swallowing a duplicate — used by the "Add a login" flow, which must be
+// able to tell the user "that login already exists."
+async function createAccount(email, passwordHash) {
+  const normalized = String(email || "").toLowerCase();
+  const { rowCount } = await pool.query(
+    "INSERT INTO accounts (email, password_hash) VALUES ($1, $2) ON CONFLICT (email) DO NOTHING",
+    [normalized, passwordHash]
+  );
+  return rowCount > 0;
+}
+
 async function createPasswordReset(email, token, expiresAt) {
   await pool.query(
     "INSERT INTO password_resets (token, email, expires_at) VALUES ($1, $2, $3)",
@@ -250,7 +264,7 @@ async function saveState(nextState, expectedRev, updatedBy) {
 
 module.exports = {
   pool, init, getState, saveState, defaultState,
-  getAccountByEmail, updateAccountPassword, listAccountEmails,
+  getAccountByEmail, updateAccountPassword, listAccountEmails, createAccount,
   createPasswordReset, getValidPasswordReset, markPasswordResetUsed,
   CATEGORY_KEYS, CATEGORY_LABELS, CHECKLIST_DEFAULTS
 };

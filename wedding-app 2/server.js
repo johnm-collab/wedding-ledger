@@ -145,6 +145,60 @@ app.post("/api/reset-password", authActionLimiter, async (req, res) => {
   }
 });
 
+// ---- adding more logins ----
+//
+// Only the two founding partners can sign in out of the box (seeded from
+// AUTH_USER_n_* env vars — see db.js). This lets an already-signed-in user
+// add a handful more logins, without opening the door to a public signup
+// page: the email has to be on a fixed allowlist baked into the server, so
+// even a signed-in user can't create an account for an arbitrary address.
+// Add more addresses to this list if the couple wants to invite more people
+// to have their own login later.
+const ALLOWED_NEW_ACCOUNT_EMAILS = new Set([
+  "jmundia18@gmail.com",
+  "99amethyst@gmail.com",
+  "jkmundia99@gmail.com"
+]);
+
+app.get("/api/accounts", auth.requireAuth, async (req, res) => {
+  try {
+    const emails = await db.listAccountEmails();
+    res.json({ ok: true, emails });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Could not load accounts right now." });
+  }
+});
+
+app.post("/api/accounts", authActionLimiter, auth.requireAuth, async (req, res) => {
+  try {
+    const { email: rawEmail, password } = req.body || {};
+    const targetEmail = String(rawEmail || "").trim().toLowerCase();
+    if (!targetEmail || !password) {
+      return res.status(400).json({ error: "Email and password are required." });
+    }
+    if (!ALLOWED_NEW_ACCOUNT_EMAILS.has(targetEmail)) {
+      return res.status(403).json({ error: "That email isn't on the approved list for new logins." });
+    }
+    if (String(password).length < 8) {
+      return res.status(400).json({ error: "Password must be at least 8 characters." });
+    }
+    const existing = await db.getAccountByEmail(targetEmail);
+    if (existing) {
+      return res.status(400).json({ error: "That login already exists." });
+    }
+    const hash = auth.hashPassword(password);
+    const created = await db.createAccount(targetEmail, hash);
+    if (!created) {
+      return res.status(400).json({ error: "That login already exists." });
+    }
+    res.json({ ok: true, email: targetEmail });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Could not create that login right now." });
+  }
+});
+
 app.get("/api/state", auth.requireAuth, async (req, res) => {
   try {
     const { state, rev } = await db.getState();
@@ -164,6 +218,16 @@ app.put("/api/state", auth.requireAuth, async (req, res) => {
     const photo = state.profile && state.profile.couplePhoto;
     if (typeof photo === "string" && photo.length > 3 * 1024 * 1024) {
       return res.status(400).json({ error: "That photo is too large — try a smaller image." });
+    }
+    const storyPhotos = (state.profile && state.profile.storyPhotos) || [];
+    if (Array.isArray(storyPhotos)) {
+      if (storyPhotos.length > 12) {
+        return res.status(400).json({ error: "Too many story photos — please keep it to 12 or fewer." });
+      }
+      const oversized = storyPhotos.some((p) => typeof p === "string" && p.length > 3 * 1024 * 1024);
+      if (oversized) {
+        return res.status(400).json({ error: "One of your story photos is too large — try a smaller image." });
+      }
     }
     const result = await db.saveState(state, expectedRev, req.user.email);
     if (result.conflict) {
@@ -237,7 +301,8 @@ app.get("/api/guest-portal/:token", portalLimiter, async (req, res) => {
         location: (state.profile && state.profile.location) || "",
         address: (state.profile && state.profile.address) || "",
         couplePhoto: (state.profile && state.profile.couplePhoto) || "",
-        story: (state.profile && state.profile.story) || ""
+        story: (state.profile && state.profile.story) || "",
+        storyPhotos: (state.profile && Array.isArray(state.profile.storyPhotos)) ? state.profile.storyPhotos : []
       },
       timeline: (state.timeline || []).map((t) => ({ time: t.time || "", title: t.title || "", notes: t.notes || "" })),
       weddingParty: (state.weddingParty || []).map((p) => ({ name: p.name || "", role: p.role || "", photo: p.photo || "", blurb: p.blurb || "" })),
@@ -328,7 +393,7 @@ app.post("/api/guest-portal/:token", portalLimiter, async (req, res) => {
 // out to real emails against a third-party provider's own limits/costs.
 const messageLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
-  max: 10,
+  max: 60,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Too many sends this hour. Try again later." }
@@ -367,7 +432,7 @@ app.post("/api/send-guest-message", messageLimiter, auth.requireAuth, async (req
     const recipients = (state.guests || []).filter((g) => guestMatchesAudience(g, aud) && g.email && String(g.email).trim());
     if (!recipients.length) return res.status(400).json({ error: "No guests in that group have an email on file." });
 
-    const results = await sendInBatches(recipients, 5, (g) =>
+    const results = await sendInBatches(recipients, 10, (g) =>
       email.sendEmail({ to: g.email, subject: subj, html: bodyHtml }).then((r) => Object.assign({}, r, { guestId: g.id }))
     );
     const skipped = results.filter((r) => r.skipped).length;
