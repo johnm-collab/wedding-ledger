@@ -161,6 +161,10 @@ app.put("/api/state", auth.requireAuth, async (req, res) => {
     if (!state || typeof expectedRev !== "number") {
       return res.status(400).json({ error: "Malformed save request." });
     }
+    const photo = state.profile && state.profile.couplePhoto;
+    if (typeof photo === "string" && photo.length > 3 * 1024 * 1024) {
+      return res.status(400).json({ error: "That photo is too large — try a smaller image." });
+    }
     const result = await db.saveState(state, expectedRev, req.user.email);
     if (result.conflict) {
       return res.status(409).json({ state: result.state, rev: result.rev });
@@ -203,8 +207,12 @@ function resolvePortalScope(state, token) {
     return { kind: "household", household, guestIds };
   }
   const guest = (state.guests || []).find((g) => g.rsvpToken && g.rsvpToken === token);
-  if (guest) return { kind: "guest", guestIds: [guest.id] };
+  if (guest) return { kind: "guest", guestIds: [guest.id], guest };
   return null;
+}
+
+function makePortalGuestId() {
+  return "g-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7);
 }
 
 app.get("/api/guest-portal/:token", portalLimiter, async (req, res) => {
@@ -222,13 +230,19 @@ app.get("/api/guest-portal/:token", portalLimiter, async (req, res) => {
     res.json({
       ok: true,
       householdName: scope.kind === "household" ? scope.household.name : null,
+      colorway: (state.settings && state.settings.colorway) || "classic",
       profile: {
         coupleNames: (state.profile && state.profile.coupleNames) || "",
         weddingDate: (state.profile && state.profile.weddingDate) || "",
         location: (state.profile && state.profile.location) || "",
-        address: (state.profile && state.profile.address) || ""
+        address: (state.profile && state.profile.address) || "",
+        couplePhoto: (state.profile && state.profile.couplePhoto) || "",
+        story: (state.profile && state.profile.story) || ""
       },
       timeline: (state.timeline || []).map((t) => ({ time: t.time || "", title: t.title || "", notes: t.notes || "" })),
+      weddingParty: (state.weddingParty || []).map((p) => ({ name: p.name || "", role: p.role || "", photo: p.photo || "", blurb: p.blurb || "" })),
+      faq: (state.faq || []).map((q) => ({ question: q.question || "", answer: q.answer || "" })),
+      registryLinks: (state.registryLinks || []).map((r) => ({ label: r.label || "", url: r.url || "", type: r.type || "other" })),
       members
     });
   } catch (e) {
@@ -239,8 +253,11 @@ app.get("/api/guest-portal/:token", portalLimiter, async (req, res) => {
 
 app.post("/api/guest-portal/:token", portalLimiter, async (req, res) => {
   try {
-    const { updates } = req.body || {};
-    if (!Array.isArray(updates) || !updates.length) return res.status(400).json({ error: "No changes submitted." });
+    const { updates, additions } = req.body || {};
+    const hasUpdates = Array.isArray(updates) && updates.length;
+    const hasAdditions = Array.isArray(additions) && additions.length;
+    if (!hasUpdates && !hasAdditions) return res.status(400).json({ error: "No changes submitted." });
+    if (hasAdditions && additions.length > 6) return res.status(400).json({ error: "Too many people added at once — please submit a few at a time." });
 
     const VALID_RSVP = new Set(["not_sent", "sent", "attending", "declined"]);
     for (let attempt = 0; attempt < 5; attempt++) {
@@ -251,7 +268,7 @@ app.post("/api/guest-portal/:token", portalLimiter, async (req, res) => {
       const allowedIds = new Set(scope.guestIds);
       const next = JSON.parse(JSON.stringify(state));
       let changed = false;
-      updates.forEach((u) => {
+      (updates || []).forEach((u) => {
         if (!u || !allowedIds.has(u.id)) return; // never touch a guest outside this link's own household
         const g = next.guests.find((x) => x.id === u.id);
         if (!g) return;
@@ -259,6 +276,33 @@ app.post("/api/guest-portal/:token", portalLimiter, async (req, res) => {
         if (typeof u.mealChoice === "string") { g.mealChoice = u.mealChoice.slice(0, 200); changed = true; }
         if (typeof u.email === "string") { g.email = u.email.slice(0, 200); changed = true; }
       });
+
+      // A guest can add a family member/+1 who wasn't already on the list.
+      // These land as new guest records, scoped to this link's own
+      // household (or unattached, for a personal link), flagged
+      // pendingApproval so the couple reviews them before they count
+      // toward headcount/seating — this can never touch or reveal any
+      // other guest's data.
+      const addedNoteBase = scope.kind === "household"
+        ? "Added via the " + (scope.household.name || "household") + " RSVP link"
+        : "Added via " + ((scope.guest && scope.guest.name) || "a guest") + "'s RSVP link";
+      (additions || []).forEach((a) => {
+        if (!a || typeof a.name !== "string") return;
+        const name = a.name.trim().slice(0, 120);
+        if (!name) return;
+        const rsvp = typeof a.rsvp === "string" && VALID_RSVP.has(a.rsvp) ? a.rsvp : "attending";
+        const mealChoice = typeof a.mealChoice === "string" ? a.mealChoice.slice(0, 200) : "";
+        next.guests.push({
+          id: makePortalGuestId(), name, side: "", group: "", plusOne: false, status: "invite",
+          howYouKnow: "", lastContact: "", closeness: "", notes: addedNoteBase,
+          rsvp, mealChoice, email: "", plusOneName: "", needsHotel: false, hotelBlock: "", arrival: "", departure: "",
+          giftReceived: false, giftDescription: "", thankYouSent: false, tableId: "",
+          householdId: scope.kind === "household" ? scope.household.id : "", rsvpToken: "",
+          pendingApproval: true
+        });
+        changed = true;
+      });
+
       if (!changed) return res.status(400).json({ error: "No valid changes submitted." });
 
       const result = await db.saveState(next, rev, "guest-portal:" + req.params.token.slice(0, 8));
@@ -271,6 +315,87 @@ app.post("/api/guest-portal/:token", portalLimiter, async (req, res) => {
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: "Could not save your RSVP right now." });
+  }
+});
+
+// ---- mass messaging: one email, sent to a filtered slice of the guest list ----
+//
+// Reuses email.js's Resend client (already wired up for password-reset and
+// the weekly digest) — sends degrade to a no-op with a clear "skipped"
+// count if RESEND_API_KEY/RESEND_FROM_EMAIL aren't set, same as those other
+// flows, so this never crashes just because email isn't configured yet.
+// Capped low (relative to the other limiters) since each request can fan
+// out to real emails against a third-party provider's own limits/costs.
+const messageLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many sends this hour. Try again later." }
+});
+
+function guestMatchesAudience(g, audience) {
+  if (audience === "attending") return g.rsvp === "attending";
+  if (audience === "declined") return g.rsvp === "declined";
+  if (audience === "no_response") return g.rsvp !== "attending" && g.rsvp !== "declined";
+  return true; // "all"
+}
+
+// Sends in small concurrent batches rather than all-at-once or fully
+// sequential — kind to the provider's own rate limits while still being
+// reasonably fast for a guest list of a few hundred.
+async function sendInBatches(items, batchSize, fn) {
+  const results = [];
+  for (let i = 0; i < items.length; i += batchSize) {
+    const batch = items.slice(i, i + batchSize);
+    const batchResults = await Promise.all(batch.map(fn));
+    results.push(...batchResults);
+    if (i + batchSize < items.length) await new Promise((r) => setTimeout(r, 350));
+  }
+  return results;
+}
+
+app.post("/api/send-guest-message", messageLimiter, auth.requireAuth, async (req, res) => {
+  try {
+    const { subject, html, audience } = req.body || {};
+    const subj = String(subject || "").trim().slice(0, 200);
+    const bodyHtml = String(html || "").trim();
+    const aud = ["all", "attending", "no_response", "declined"].includes(audience) ? audience : "all";
+    if (!subj || !bodyHtml) return res.status(400).json({ error: "Subject and message are required." });
+
+    const { state } = await db.getState();
+    const recipients = (state.guests || []).filter((g) => guestMatchesAudience(g, aud) && g.email && String(g.email).trim());
+    if (!recipients.length) return res.status(400).json({ error: "No guests in that group have an email on file." });
+
+    const results = await sendInBatches(recipients, 5, (g) =>
+      email.sendEmail({ to: g.email, subject: subj, html: bodyHtml }).then((r) => Object.assign({}, r, { guestId: g.id }))
+    );
+    const skipped = results.filter((r) => r.skipped).length;
+    const failed = results.filter((r) => !r.skipped && r.error).length;
+    const sent = results.length - skipped - failed;
+
+    // Best-effort send history for the compose screen — same
+    // read-modify-write-retry as the guest-portal POST handler above,
+    // since this write path is outside the client's normal saveState flow
+    // and could otherwise race the couple's own in-progress edits.
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const { state: freshState, rev } = await db.getState();
+      const nextState = JSON.parse(JSON.stringify(freshState));
+      if (!Array.isArray(nextState.messageLog)) nextState.messageLog = [];
+      nextState.messageLog.unshift({
+        id: "msg-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7),
+        subject: subj, audience: aud, recipientCount: recipients.length,
+        sent, skipped, failed, sentBy: req.user.email, createdAt: Date.now()
+      });
+      nextState.messageLog = nextState.messageLog.slice(0, 20);
+      const result = await db.saveState(nextState, rev, req.user.email);
+      if (!result.conflict) break;
+    }
+
+    res.json({ ok: true, recipientCount: recipients.length, sent, skipped, failed });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Could not send that message right now." });
   }
 });
 
